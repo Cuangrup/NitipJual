@@ -1,5 +1,67 @@
 <!DOCTYPE html>
-<html>
-<head><title>NitipJual</title></head>
-<body><h1>NitipJual — Coming Soon</h1></body>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NitipJual — Marketplace Lokal</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- HALAMAN LOGIN -->
+  <div id="page-login" class="page active">
+    <div class="login-wrap">
+      <div class="logo">🛍️</div>
+      <h1>NitipJual</h1>
+      <p>Marketplace lokal Gresik, Surabaya & Sidoarjo</p>
+      <button id="btn-google" onclick="loginGoogle()">
+        Masuk dengan Google
+      </button>
+      <div class="nitipbibit-note">
+        🌱 2,5% dari setiap jasa berkontribusi ke NitipBibit
+      </div>
+    </div>
+  </div>
+
+  <!-- HALAMAN HOME -->
+  <div id="page-home" class="page">
+    <div class="topbar">
+      <span class="logo-sm">NitipJual</span>
+      <span id="user-nama"></span>
+    </div>
+    <div class="content">
+      <input type="text" id="search" placeholder="Cari produk di kotamu..." oninput="cariProduk()">
+      <div id="produk-list"></div>
+    </div>
+    <div class="bottomnav">
+      <button onclick="showPage('page-home')">🏠 Beranda</button>
+      <button onclick="showPage('page-jual')">➕ Jual</button>
+      <button onclick="logout()">👤 Keluar</button>
+    </div>
+  </div>
+
+  <!-- HALAMAN JUAL -->
+  <div id="page-jual" class="page">
+    <div class="topbar">
+      <button onclick="showPage('page-home')">← Kembali</button>
+      <span>Jual Produk</span>
+    </div>
+    <div class="content">
+      <div class="form-wrap">
+        <input type="text" id="nama-produk" placeholder="Nama produk">
+        <textarea id="deskripsi" placeholder="Deskripsi produk"></textarea>
+        <input type="number" id="harga" placeholder="Harga (Rp)">
+        <select id="kondisi">
+          <option value="baru">Baru</option>
+          <option value="preloved">Preloved</option>
+        </select>
+        <input type="text" id="kategori" placeholder="Kategori (misal: elektronik)">
+        <button onclick="postingProduk()">Posting Produk</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
 </html>

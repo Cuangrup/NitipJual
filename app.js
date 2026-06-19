@@ -1,28 +1,36 @@
-// SUPABASE INIT
 const { createClient } = supabase
 const db = createClient(
   'https://gshstlssjlyefxxefspa.supabase.co',
-  'sb_publishable_vwGZFBrtZRQIVpIVsYrQbg_SPYyl7me'
+  'GANTI_PUBLISHABLE_KEY_KAMU'
 )
 
 // CEK SESSION
 async function cekSession() {
   const { data: { session } } = await db.auth.getSession()
   if (session) {
-    document.getElementById('user-nama').textContent = session.user.user_metadata.full_name
-    showPage('page-home')
-    loadProduk()
+    tampilHome(session.user)
   } else {
     showPage('page-login')
   }
 }
 
+// TAMPIL HOME
+function tampilHome(user) {
+  const nama = user.user_metadata?.full_name || user.email
+  document.getElementById('user-nama').textContent = nama
+  showPage('page-home')
+  loadProduk()
+}
+
 // LOGIN GOOGLE
 async function loginGoogle() {
-  await db.auth.signInWithOAuth({
+  const { error } = await db.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: window.location.origin }
+    options: {
+      redirectTo: 'https://nitipjual.vercel.app'
+    }
   })
+  if (error) console.error('Login error:', error.message)
 }
 
 // LOGOUT
@@ -31,7 +39,7 @@ async function logout() {
   showPage('page-login')
 }
 
-// NAVIGASI HALAMAN
+// NAVIGASI
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'))
   document.getElementById(id).classList.add('active')
@@ -42,25 +50,32 @@ async function loadProduk(keyword = '') {
   const list = document.getElementById('produk-list')
   list.innerHTML = '<p class="empty">Memuat produk...</p>'
 
-  let query = db.from('products').select('*, users(nama, kota)').eq('status', 'aktif').order('created_at', { ascending: false })
+  let query = db
+    .from('products')
+    .select('*, users(nama, kota)')
+    .eq('status', 'aktif')
+    .order('created_at', { ascending: false })
 
   if (keyword) query = query.ilike('nama', `%${keyword}%`)
 
   const { data, error } = await query
 
   if (error || !data || data.length === 0) {
-    list.innerHTML = '<p class="empty">Belum ada produk di kotamu.</p>'
+    list.innerHTML = '<p class="empty">Belum ada iklan di kotamu.</p>'
     return
   }
 
   list.innerHTML = data.map(p => `
-    <div class="produk-card">
-      <span class="badge ${p.kondisi === 'baru' ? 'badge-baru' : 'badge-preloved'}">
-        ${p.kondisi === 'baru' ? 'Baru' : 'Preloved'}
-      </span>
-      <div class="nama">${p.nama}</div>
-      <div class="harga">Rp ${p.harga.toLocaleString('id-ID')}</div>
-      <div class="meta">📍 ${p.users?.kota || 'Lokal'} · ${p.users?.nama || 'Seller'}</div>
+    <div class="produk-card" onclick="lihatDetail('${p.id}')">
+      <div class="pimg"><i class="ti ti-package" aria-hidden="true"></i></div>
+      <div class="pinfo">
+        <span class="badge ${p.kondisi === 'baru' ? 'b-baru' : 'b-preloved'}">
+          ${p.kondisi === 'baru' ? 'Baru' : 'Preloved'}
+        </span>
+        <div class="pname">${p.nama}</div>
+        <div class="pharga">Rp ${p.harga.toLocaleString('id-ID')}</div>
+        <div class="ploc"><i class="ti ti-map-pin" style="font-size:10px"></i> ${p.users?.kota || 'Lokal'}</div>
+      </div>
     </div>
   `).join('')
 }
@@ -69,6 +84,11 @@ async function loadProduk(keyword = '') {
 function cariProduk() {
   const keyword = document.getElementById('search').value
   loadProduk(keyword)
+}
+
+// LIHAT DETAIL (nanti dikembangkan)
+function lihatDetail(id) {
+  console.log('Lihat produk:', id)
 }
 
 // POSTING PRODUK
@@ -86,7 +106,8 @@ async function postingProduk() {
 
   const { error } = await db.from('products').insert({
     seller_id: session.user.id,
-    nama, deskripsi, harga, kondisi, kategori
+    nama, deskripsi, harga, kondisi, kategori,
+    status: 'aktif'
   })
 
   if (error) {
@@ -94,10 +115,19 @@ async function postingProduk() {
     return
   }
 
-  alert('Produk berhasil diposting!')
+  alert('Iklan berhasil dipasang!')
   showPage('page-home')
   loadProduk()
 }
+
+// AUTH STATE CHANGE
+db.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_IN' && session) {
+    tampilHome(session.user)
+  } else if (event === 'SIGNED_OUT') {
+    showPage('page-login')
+  }
+})
 
 // JALANKAN
 cekSession()

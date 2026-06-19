@@ -1,7 +1,7 @@
 const { createClient } = supabase
 const db = createClient(
   'https://gshstlssjlyefxxefspa.supabase.co',
-  'GANTI_PUBLISHABLE_KEY_KAMU'
+  'sb_publishable_vwGZFBrtZRQIVpIVsYrQbg_SPYyl7me'
 )
 
 // CEK SESSION

@@ -280,8 +280,14 @@ function setToggle(groupId, el) {
 }
 
 db.auth.onAuthStateChange((event, session) => {
-  if (event === 'SIGNED_IN' && session) tampilHome(session.user)
-  else if (event === 'SIGNED_OUT') showPage('page-login')
+  if (event === 'SIGNED_IN' && session) {
+    const halamanAktif = document.querySelector('.page.active')?.id
+    if (halamanAktif === 'page-login') {
+      tampilHome(session.user)
+    }
+  } else if (event === 'SIGNED_OUT') {
+    showPage('page-login')
+  }
 })
 
 cekSession()

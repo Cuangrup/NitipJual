@@ -53,14 +53,66 @@ async function loginGoogle() {
 
 async function logout() {
   await db.auth.signOut()
+  localStorage.removeItem('draft-iklan')
   showPage('page-login')
 }
 
 function showPage(id) {
+  if (id !== 'page-jual') simpanDraftIklan()
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'))
   document.getElementById(id).classList.add('active')
   window.scrollTo(0, 0)
-  if (id === 'page-jual') resetFormJual()
+  if (id === 'page-jual') {
+    setTimeout(() => {
+      muatDraftIklan()
+      initFotoRow()
+    }, 50)
+  }
+}
+
+function simpanDraftIklan() {
+  const nama = document.getElementById('nama-produk')?.value || ''
+  const harga = document.getElementById('harga')?.value || ''
+  const deskripsi = document.getElementById('deskripsi')?.value || ''
+  const kategori = document.getElementById('kategori')?.value || ''
+  const lokasi = document.getElementById('lokasi')?.value || ''
+  const kondisi = document.querySelector('#kondisi-group .tg-btn.active')?.textContent.trim() || 'Baru'
+  const tipe = document.querySelector('#tipe-group .tg-btn.active')?.textContent.trim() || 'Individu'
+  if (nama || harga || deskripsi) {
+    localStorage.setItem('draft-iklan', JSON.stringify({ nama, harga, deskripsi, kategori, lokasi, kondisi, tipe }))
+  }
+}
+
+function muatDraftIklan() {
+  const draft = localStorage.getItem('draft-iklan')
+  if (!draft) return
+  const d = JSON.parse(draft)
+  if (document.getElementById('nama-produk')) document.getElementById('nama-produk').value = d.nama || ''
+  if (document.getElementById('harga')) document.getElementById('harga').value = d.harga || ''
+  if (document.getElementById('deskripsi')) document.getElementById('deskripsi').value = d.deskripsi || ''
+  if (document.getElementById('kategori')) document.getElementById('kategori').value = d.kategori || ''
+  if (document.getElementById('lokasi')) document.getElementById('lokasi').value = d.lokasi || 'Gresik'
+  document.querySelectorAll('#kondisi-group .tg-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.textContent.trim() === d.kondisi)
+  })
+  document.querySelectorAll('#tipe-group .tg-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.textContent.trim() === d.tipe)
+  })
+}
+
+function initFotoRow() {
+  const row = document.getElementById('foto-row')
+  if (!row) return
+  if (fotoFiles.length > 0) {
+    renderFotoPreview()
+  } else {
+    row.innerHTML = `
+      <label for="foto-input" class="photo-add" style="cursor:pointer">
+        <i class="ti ti-camera"></i><span>Tambah</span>
+      </label>
+      <input type="file" id="foto-input" accept="image/*" multiple style="display:none" onchange="handleFotoInput(event)">
+    `
+  }
 }
 
 async function loadProduk(keyword = '', kategori = '') {
@@ -126,14 +178,11 @@ async function kompresiFoto(file) {
       const img = new Image()
       img.onload = () => {
         const canvas = document.createElement('canvas')
-        let w = img.width
-        let h = img.height
+        let w = img.width, h = img.height
         const maxW = 800
         if (w > maxW) { h = h * maxW / w; w = maxW }
-        canvas.width = w
-        canvas.height = h
-        const ctx = canvas.getContext('2d')
-        ctx.drawImage(img, 0, 0, w, h)
+        canvas.width = w; canvas.height = h
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h)
         canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.75)
       }
       img.src = e.target.result
@@ -145,55 +194,34 @@ async function kompresiFoto(file) {
 function handleFotoInput(event) {
   const files = Array.from(event.target.files)
   const sisa = 5 - fotoFiles.length
-  const tambah = files.slice(0, sisa)
-  fotoFiles = [...fotoFiles, ...tambah]
+  fotoFiles = [...fotoFiles, ...files.slice(0, sisa)]
   renderFotoPreview()
 }
 
 function renderFotoPreview() {
   const row = document.getElementById('foto-row')
+  if (!row) return
   const previews = fotoFiles.map((file, i) => {
     const url = URL.createObjectURL(file)
     return `
       <div style="position:relative;width:70px;height:70px;flex-shrink:0">
         <img src="${url}" style="width:70px;height:70px;object-fit:cover;border-radius:10px;border:0.5px solid var(--pkbr)">
-        <button onclick="hapusFoto(${i})" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:#e53935;color:#fff;border:none;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;padding:0">×</button>
+        <button onclick="hapusFoto(${i})" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:#e53935;color:#fff;border:none;cursor:pointer;font-size:14px;line-height:1;padding:0">×</button>
       </div>
     `
   }).join('')
-
   const tambahBtn = fotoFiles.length < 5
     ? `<label for="foto-input" class="photo-add" style="cursor:pointer">
         <i class="ti ti-camera"></i><span>Tambah</span>
        </label>
        <input type="file" id="foto-input" accept="image/*" multiple style="display:none" onchange="handleFotoInput(event)">`
     : ''
-
   row.innerHTML = previews + tambahBtn
 }
 
 function hapusFoto(index) {
   fotoFiles.splice(index, 1)
   renderFotoPreview()
-}
-
-function resetFormJual() {
-  fotoFiles = []
-  const row = document.getElementById('foto-row')
-  if (row) row.innerHTML = `
-    <label for="foto-input" class="photo-add" style="cursor:pointer">
-      <i class="ti ti-camera"></i><span>Tambah</span>
-    </label>
-    <input type="file" id="foto-input" accept="image/*" multiple style="display:none" onchange="handleFotoInput(event)">
-  `
-  const fields = ['nama-produk','harga','deskripsi']
-  fields.forEach(id => {
-    const el = document.getElementById(id)
-    if (el) el.value = ''
-  })
-  document.getElementById('kategori').value = ''
-  setToggle('kondisi-group', document.querySelector('#kondisi-group .tg-btn'))
-  setToggle('tipe-group', document.querySelector('#tipe-group .tg-btn'))
 }
 
 async function postingProduk() {
@@ -209,20 +237,16 @@ async function postingProduk() {
 
   if (!nama || !harga) return alert('Nama produk dan harga wajib diisi.')
 
-  const btnPosting = document.querySelector('.btnp')
+  const btnPosting = document.querySelector('#page-jual .btnp')
   btnPosting.textContent = 'Memproses...'
   btnPosting.disabled = true
 
   let foto_urls = []
   for (let i = 0; i < fotoFiles.length; i++) {
-    const file = fotoFiles[i]
-    const compressed = await kompresiFoto(file)
+    const compressed = await kompresiFoto(fotoFiles[i])
     const fileName = `${session.user.id}/${Date.now()}_${i}.jpg`
-    const { data, error } = await db.storage.from(BUCKET).upload(fileName, compressed, {
-      contentType: 'image/jpeg',
-      upsert: false
-    })
-    if (!error) {
+    const { error: upErr } = await db.storage.from(BUCKET).upload(fileName, compressed, { contentType: 'image/jpeg' })
+    if (!upErr) {
       const { data: urlData } = db.storage.from(BUCKET).getPublicUrl(fileName)
       foto_urls.push(urlData.publicUrl)
     }
@@ -230,8 +254,7 @@ async function postingProduk() {
 
   const { error } = await db.from('products').insert({
     seller_id: session.user.id,
-    nama, deskripsi, harga, kondisi, kategori,
-    foto_urls, status: 'aktif'
+    nama, deskripsi, harga, kondisi, kategori, foto_urls, status: 'aktif'
   })
 
   btnPosting.textContent = 'Pasang iklan sekarang'
@@ -242,6 +265,8 @@ async function postingProduk() {
     return
   }
 
+  localStorage.removeItem('draft-iklan')
+  fotoFiles = []
   alert('Iklan berhasil dipasang!')
   showPage('page-home')
   loadProduk()
@@ -251,14 +276,12 @@ function setToggle(groupId, el) {
   if (!el) return
   document.querySelectorAll(`#${groupId} .tg-btn`).forEach(b => b.classList.remove('active'))
   el.classList.add('active')
+  simpanDraftIklan()
 }
 
 db.auth.onAuthStateChange((event, session) => {
-  if (event === 'SIGNED_IN' && session) {
-    tampilHome(session.user)
-  } else if (event === 'SIGNED_OUT') {
-    showPage('page-login')
-  }
+  if (event === 'SIGNED_IN' && session) tampilHome(session.user)
+  else if (event === 'SIGNED_OUT') showPage('page-login')
 })
 
 cekSession()

@@ -4,7 +4,6 @@ const db = createClient(
   'sb_publishable_vwGZFBrtZRQIVpIVsYrQbg_SPYyl7me'
 )
 
-// CEK SESSION
 async function cekSession() {
   const { data: { session } } = await db.auth.getSession()
   if (session) {
@@ -14,41 +13,63 @@ async function cekSession() {
   }
 }
 
-// TAMPIL HOME
 function tampilHome(user) {
   const nama = user.user_metadata?.full_name || user.email
-  document.getElementById('user-nama').textContent = nama
+  const inisial = nama.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase()
+  const foto = user.user_metadata?.avatar_url
+
+  const avaEl = document.getElementById('user-ava')
+  if (avaEl) {
+    if (foto) {
+      avaEl.innerHTML = `<img src="${foto}" alt="${nama}">`
+    } else {
+      avaEl.textContent = inisial
+    }
+  }
+
+  const profilAva = document.getElementById('profil-ava')
+  if (profilAva) {
+    if (foto) {
+      profilAva.innerHTML = `<img src="${foto}" alt="${nama}">`
+    } else {
+      profilAva.textContent = inisial
+    }
+  }
+
+  const profilNama = document.getElementById('profil-nama')
+  if (profilNama) profilNama.textContent = nama
+
+  const profilEmail = document.getElementById('profil-email')
+  if (profilEmail) profilEmail.textContent = user.email
+
   showPage('page-home')
   loadProduk()
 }
 
-// LOGIN GOOGLE
 async function loginGoogle() {
   const { error } = await db.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: 'https://nitipjual.vercel.app'
+      redirectTo: window.location.origin
     }
   })
   if (error) console.error('Login error:', error.message)
 }
 
-// LOGOUT
 async function logout() {
   await db.auth.signOut()
   showPage('page-login')
 }
 
-// NAVIGASI
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'))
   document.getElementById(id).classList.add('active')
+  window.scrollTo(0, 0)
 }
 
-// LOAD PRODUK
-async function loadProduk(keyword = '') {
+async function loadProduk(keyword = '', kategori = '') {
   const list = document.getElementById('produk-list')
-  list.innerHTML = '<p class="empty">Memuat produk...</p>'
+  list.innerHTML = '<p class="empty">Memuat iklan...</p>'
 
   let query = db
     .from('products')
@@ -57,6 +78,7 @@ async function loadProduk(keyword = '') {
     .order('created_at', { ascending: false })
 
   if (keyword) query = query.ilike('nama', `%${keyword}%`)
+  if (kategori) query = query.eq('kategori', kategori)
 
   const { data, error } = await query
 
@@ -67,31 +89,35 @@ async function loadProduk(keyword = '') {
 
   list.innerHTML = data.map(p => `
     <div class="produk-card" onclick="lihatDetail('${p.id}')">
-      <div class="pimg"><i class="ti ti-package" aria-hidden="true"></i></div>
+      <div class="pimg"><i class="ti ti-package"></i></div>
       <div class="pinfo">
         <span class="badge ${p.kondisi === 'baru' ? 'b-baru' : 'b-preloved'}">
           ${p.kondisi === 'baru' ? 'Baru' : 'Preloved'}
         </span>
         <div class="pname">${p.nama}</div>
-        <div class="pharga">Rp ${p.harga.toLocaleString('id-ID')}</div>
+        <div class="pharga">Rp ${Number(p.harga).toLocaleString('id-ID')}</div>
         <div class="ploc"><i class="ti ti-map-pin" style="font-size:10px"></i> ${p.users?.kota || 'Lokal'}</div>
       </div>
     </div>
   `).join('')
 }
 
-// CARI PRODUK
 function cariProduk() {
-  const keyword = document.getElementById('search').value
-  loadProduk(keyword)
+  const kw = document.getElementById('search')?.value || document.getElementById('search-desktop')?.value || ''
+  loadProduk(kw)
 }
 
-// LIHAT DETAIL (nanti dikembangkan)
+function filterKategori(el, kat) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'))
+  document.querySelectorAll('.sb-item').forEach(c => c.classList.remove('active'))
+  if (el) el.classList.add('active')
+  loadProduk('', kat)
+}
+
 function lihatDetail(id) {
   console.log('Lihat produk:', id)
 }
 
-// POSTING PRODUK
 async function postingProduk() {
   const { data: { session } } = await db.auth.getSession()
   if (!session) return alert('Kamu harus login dulu.')
@@ -99,8 +125,9 @@ async function postingProduk() {
   const nama = document.getElementById('nama-produk').value.trim()
   const deskripsi = document.getElementById('deskripsi').value.trim()
   const harga = parseInt(document.getElementById('harga').value)
-  const kondisi = document.getElementById('kondisi').value
-  const kategori = document.getElementById('kategori').value.trim()
+  const kondisi = document.querySelector('#kondisi-group .tg-btn.active')?.textContent.toLowerCase() === 'preloved' ? 'preloved' : 'baru'
+  const kategori = document.getElementById('kategori').value
+  const lokasi = document.getElementById('lokasi').value.trim()
 
   if (!nama || !harga) return alert('Nama produk dan harga wajib diisi.')
 
@@ -120,7 +147,11 @@ async function postingProduk() {
   loadProduk()
 }
 
-// AUTH STATE CHANGE
+function setToggle(groupId, el) {
+  document.querySelectorAll(`#${groupId} .tg-btn`).forEach(b => b.classList.remove('active'))
+  el.classList.add('active')
+}
+
 db.auth.onAuthStateChange((event, session) => {
   if (event === 'SIGNED_IN' && session) {
     tampilHome(session.user)
@@ -129,5 +160,4 @@ db.auth.onAuthStateChange((event, session) => {
   }
 })
 
-// JALANKAN
 cekSession()

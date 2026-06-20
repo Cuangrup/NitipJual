@@ -1,8 +1,11 @@
 const { createClient } = supabase
 const db = createClient(
   'https://gshstlssjlyefxxefspa.supabase.co',
-  'sb_publishable_vwGZFBrtZRQIVpIVsYrQbg_SPYyl7me'
+  'GANTI_PUBLISHABLE_KEY_KAMU'
 )
+
+const BUCKET = 'foto produk'
+let fotoFiles = []
 
 async function cekSession() {
   const { data: { session } } = await db.auth.getSession()
@@ -20,20 +23,14 @@ function tampilHome(user) {
 
   const avaEl = document.getElementById('user-ava')
   if (avaEl) {
-    if (foto) {
-      avaEl.innerHTML = `<img src="${foto}" alt="${nama}">`
-    } else {
-      avaEl.textContent = inisial
-    }
+    if (foto) avaEl.innerHTML = `<img src="${foto}" alt="${nama}">`
+    else avaEl.textContent = inisial
   }
 
   const profilAva = document.getElementById('profil-ava')
   if (profilAva) {
-    if (foto) {
-      profilAva.innerHTML = `<img src="${foto}" alt="${nama}">`
-    } else {
-      profilAva.textContent = inisial
-    }
+    if (foto) profilAva.innerHTML = `<img src="${foto}" alt="${nama}">`
+    else profilAva.textContent = inisial
   }
 
   const profilNama = document.getElementById('profil-nama')
@@ -49,9 +46,7 @@ function tampilHome(user) {
 async function loginGoogle() {
   const { error } = await db.auth.signInWithOAuth({
     provider: 'google',
-    options: {
-      redirectTo: window.location.origin
-    }
+    options: { redirectTo: window.location.origin }
   })
   if (error) console.error('Login error:', error.message)
 }
@@ -65,6 +60,7 @@ function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'))
   document.getElementById(id).classList.add('active')
   window.scrollTo(0, 0)
+  if (id === 'page-jual') resetFormJual()
 }
 
 async function loadProduk(keyword = '', kategori = '') {
@@ -87,19 +83,24 @@ async function loadProduk(keyword = '', kategori = '') {
     return
   }
 
-  list.innerHTML = data.map(p => `
-    <div class="produk-card" onclick="lihatDetail('${p.id}')">
-      <div class="pimg"><i class="ti ti-package"></i></div>
-      <div class="pinfo">
-        <span class="badge ${p.kondisi === 'baru' ? 'b-baru' : 'b-preloved'}">
-          ${p.kondisi === 'baru' ? 'Baru' : 'Preloved'}
-        </span>
-        <div class="pname">${p.nama}</div>
-        <div class="pharga">Rp ${Number(p.harga).toLocaleString('id-ID')}</div>
-        <div class="ploc"><i class="ti ti-map-pin" style="font-size:10px"></i> ${p.users?.kota || 'Lokal'}</div>
+  list.innerHTML = data.map(p => {
+    const foto = p.foto_urls && p.foto_urls.length > 0
+      ? `<img src="${p.foto_urls[0]}" alt="${p.nama}" style="width:100%;height:100%;object-fit:cover">`
+      : `<i class="ti ti-package"></i>`
+    return `
+      <div class="produk-card" onclick="lihatDetail('${p.id}')">
+        <div class="pimg">${foto}</div>
+        <div class="pinfo">
+          <span class="badge ${p.kondisi === 'baru' ? 'b-baru' : 'b-preloved'}">
+            ${p.kondisi === 'baru' ? 'Baru' : 'Preloved'}
+          </span>
+          <div class="pname">${p.nama}</div>
+          <div class="pharga">Rp ${Number(p.harga).toLocaleString('id-ID')}</div>
+          <div class="ploc"><i class="ti ti-map-pin" style="font-size:10px"></i> ${p.users?.kota || 'Lokal'}</div>
+        </div>
       </div>
-    </div>
-  `).join('')
+    `
+  }).join('')
 }
 
 function cariProduk() {
@@ -118,6 +119,83 @@ function lihatDetail(id) {
   console.log('Lihat produk:', id)
 }
 
+async function kompresiFoto(file) {
+  return new Promise((resolve) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const img = new Image()
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        let w = img.width
+        let h = img.height
+        const maxW = 800
+        if (w > maxW) { h = h * maxW / w; w = maxW }
+        canvas.width = w
+        canvas.height = h
+        const ctx = canvas.getContext('2d')
+        ctx.drawImage(img, 0, 0, w, h)
+        canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.75)
+      }
+      img.src = e.target.result
+    }
+    reader.readAsDataURL(file)
+  })
+}
+
+function handleFotoInput(event) {
+  const files = Array.from(event.target.files)
+  const sisa = 5 - fotoFiles.length
+  const tambah = files.slice(0, sisa)
+  fotoFiles = [...fotoFiles, ...tambah]
+  renderFotoPreview()
+}
+
+function renderFotoPreview() {
+  const row = document.getElementById('foto-row')
+  const previews = fotoFiles.map((file, i) => {
+    const url = URL.createObjectURL(file)
+    return `
+      <div style="position:relative;width:70px;height:70px;flex-shrink:0">
+        <img src="${url}" style="width:70px;height:70px;object-fit:cover;border-radius:10px;border:0.5px solid var(--pkbr)">
+        <button onclick="hapusFoto(${i})" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:#e53935;color:#fff;border:none;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;padding:0">×</button>
+      </div>
+    `
+  }).join('')
+
+  const tambahBtn = fotoFiles.length < 5
+    ? `<label for="foto-input" class="photo-add" style="cursor:pointer">
+        <i class="ti ti-camera"></i><span>Tambah</span>
+       </label>
+       <input type="file" id="foto-input" accept="image/*" multiple style="display:none" onchange="handleFotoInput(event)">`
+    : ''
+
+  row.innerHTML = previews + tambahBtn
+}
+
+function hapusFoto(index) {
+  fotoFiles.splice(index, 1)
+  renderFotoPreview()
+}
+
+function resetFormJual() {
+  fotoFiles = []
+  const row = document.getElementById('foto-row')
+  if (row) row.innerHTML = `
+    <label for="foto-input" class="photo-add" style="cursor:pointer">
+      <i class="ti ti-camera"></i><span>Tambah</span>
+    </label>
+    <input type="file" id="foto-input" accept="image/*" multiple style="display:none" onchange="handleFotoInput(event)">
+  `
+  const fields = ['nama-produk','harga','deskripsi']
+  fields.forEach(id => {
+    const el = document.getElementById(id)
+    if (el) el.value = ''
+  })
+  document.getElementById('kategori').value = ''
+  setToggle('kondisi-group', document.querySelector('#kondisi-group .tg-btn'))
+  setToggle('tipe-group', document.querySelector('#tipe-group .tg-btn'))
+}
+
 async function postingProduk() {
   const { data: { session } } = await db.auth.getSession()
   if (!session) return alert('Kamu harus login dulu.')
@@ -125,17 +203,39 @@ async function postingProduk() {
   const nama = document.getElementById('nama-produk').value.trim()
   const deskripsi = document.getElementById('deskripsi').value.trim()
   const harga = parseInt(document.getElementById('harga').value)
-  const kondisi = document.querySelector('#kondisi-group .tg-btn.active')?.textContent.toLowerCase() === 'preloved' ? 'preloved' : 'baru'
+  const kondisi = document.querySelector('#kondisi-group .tg-btn.active')?.textContent.trim().toLowerCase() === 'preloved' ? 'preloved' : 'baru'
   const kategori = document.getElementById('kategori').value
-  const lokasi = document.getElementById('lokasi').value.trim()
+  const lokasi = document.getElementById('lokasi')?.value.trim() || 'Gresik'
 
   if (!nama || !harga) return alert('Nama produk dan harga wajib diisi.')
+
+  const btnPosting = document.querySelector('.btnp')
+  btnPosting.textContent = 'Memproses...'
+  btnPosting.disabled = true
+
+  let foto_urls = []
+  for (let i = 0; i < fotoFiles.length; i++) {
+    const file = fotoFiles[i]
+    const compressed = await kompresiFoto(file)
+    const fileName = `${session.user.id}/${Date.now()}_${i}.jpg`
+    const { data, error } = await db.storage.from(BUCKET).upload(fileName, compressed, {
+      contentType: 'image/jpeg',
+      upsert: false
+    })
+    if (!error) {
+      const { data: urlData } = db.storage.from(BUCKET).getPublicUrl(fileName)
+      foto_urls.push(urlData.publicUrl)
+    }
+  }
 
   const { error } = await db.from('products').insert({
     seller_id: session.user.id,
     nama, deskripsi, harga, kondisi, kategori,
-    status: 'aktif'
+    foto_urls, status: 'aktif'
   })
+
+  btnPosting.textContent = 'Pasang iklan sekarang'
+  btnPosting.disabled = false
 
   if (error) {
     alert('Gagal posting: ' + error.message)
@@ -148,6 +248,7 @@ async function postingProduk() {
 }
 
 function setToggle(groupId, el) {
+  if (!el) return
   document.querySelectorAll(`#${groupId} .tg-btn`).forEach(b => b.classList.remove('active'))
   el.classList.add('active')
 }

@@ -146,9 +146,12 @@
     <div class="content">
       <div class="form-card">
         <div class="slabel">Foto produk <span class="slabel-note">(max 5, otomatis dikompres)</span></div>
-        <div class="photo-row">
-          <div class="photo-add"><i class="ti ti-camera"></i><span>Tambah</span></div>
-        </div>
+        <div class="photo-row" id="foto-row">
+  <label for="foto-input" class="photo-add" style="cursor:pointer">
+    <i class="ti ti-camera"></i><span>Tambah</span>
+  </label>
+  <input type="file" id="foto-input" accept="image/*" multiple style="display:none" onchange="handleFotoInput(event)">
+</div>
         <div class="slabel">Judul iklan</div>
         <input class="finput" id="nama-produk" placeholder="Contoh: Laptop Asus Vivobook i5">
         <div class="slabel">Harga</div>

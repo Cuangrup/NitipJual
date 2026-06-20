@@ -7,19 +7,15 @@ const db = createClient(
 const BUCKET = 'foto produk'
 let fotoFiles = []
 let produkAktif = null
+let fotoIndex = 0
+let fotoList = []
 
-function showToast(pesan, tipe = 'sukses') {
-  const warna = tipe === 'sukses' ? 'linear-gradient(90deg,#C4789A,#9B7FD4)' : '#e53935'
-  const icon = tipe === 'sukses' ? 'ti-circle-check' : 'ti-alert-circle'
+function showToast(pesan, tipe='sukses') {
+  const warna = tipe==='sukses' ? 'linear-gradient(90deg,#C4789A,#9B7FD4)' : '#e53935'
+  const icon = tipe==='sukses' ? 'ti-circle-check' : 'ti-alert-circle'
   const toast = document.createElement('div')
   toast.innerHTML = `<i class="ti ${icon}" style="font-size:18px"></i><span>${pesan}</span>`
   toast.style.cssText = `position:fixed;top:20px;left:50%;transform:translateX(-50%);background:${warna};color:#fff;padding:11px 18px;border-radius:12px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;z-index:9999;white-space:nowrap;max-width:90vw;font-family:inherit;`
-  if (!document.getElementById('toast-anim')) {
-    const s = document.createElement('style')
-    s.id = 'toast-anim'
-    s.textContent = '@keyframes spin{to{transform:rotate(360deg)}}'
-    document.head.appendChild(s)
-  }
   document.body.appendChild(toast)
   setTimeout(() => { toast.style.opacity='0'; toast.style.transition='opacity .3s'; setTimeout(()=>toast.remove(),300) }, 2800)
 }
@@ -133,98 +129,144 @@ function filterKategori(el, kat) {
   loadProduk('', kat)
 }
 
+function gantiFotoIndex(idx) {
+  if (!fotoList.length) return
+  fotoIndex = (idx + fotoList.length) % fotoList.length
+  const utama = document.getElementById('foto-utama')
+  if (utama) utama.src = fotoList[fotoIndex]
+  document.querySelectorAll('.thumb-item').forEach((t,i) => {
+    t.style.border = i===fotoIndex ? '1.5px solid #9B7FD4' : '0.5px solid var(--color-border-tertiary)'
+  })
+  document.querySelectorAll('.foto-dot').forEach((d,i) => {
+    d.style.width = i===fotoIndex ? '12px' : '6px'
+    d.style.background = i===fotoIndex ? '#fff' : 'rgba(255,255,255,0.4)'
+  })
+}
+
+function initSwipe(el) {
+  let startX = 0
+  el.addEventListener('touchstart', e => { startX = e.touches[0].clientX }, {passive:true})
+  el.addEventListener('touchend', e => {
+    const diff = startX - e.changedTouches[0].clientX
+    if (Math.abs(diff) > 40) diff > 0 ? gantiFotoIndex(fotoIndex+1) : gantiFotoIndex(fotoIndex-1)
+  }, {passive:true})
+}
+
 async function lihatDetail(id) {
   const { data: p, error } = await db.from('products').select('*, users(nama, kota, foto_profil)').eq('id', id).single()
   if (error || !p) { showToast('Gagal memuat iklan', 'error'); return }
   produkAktif = p
-
-  const fotos = p.foto_urls?.length > 0 ? p.foto_urls : []
-  const fotoHtml = fotos.length > 0
-    ? `<img src="${fotos[0]}" id="foto-utama" alt="${p.nama}" style="width:100%;height:100%;object-fit:cover">`
-    : `<i class="ti ti-package" style="font-size:48px;color:#9B7FD4"></i>`
-
-  const thumbsHtml = fotos.map((f,i) => `
-    <div onclick="gantiGambar('${f}')" style="width:60px;height:52px;border-radius:8px;overflow:hidden;border:${i===0?'1.5px solid #9B7FD4':'0.5px solid var(--color-border-tertiary)'};cursor:pointer;flex-shrink:0">
-      <img src="${f}" style="width:100%;height:100%;object-fit:cover">
-    </div>`).join('')
-
-  const dotsHtml = fotos.length > 1 ? `<div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:4px">
-    ${fotos.map((_,i)=>`<div style="width:${i===0?'12px':'6px'};height:6px;border-radius:3px;background:${i===0?'#fff':'rgba(255,255,255,0.4)'}"></div>`).join('')}
-  </div>` : ''
-
-  const sellerAva = p.users?.foto_profil
-    ? `<img src="${p.users.foto_profil}" style="width:100%;height:100%;object-fit:cover">`
-    : (p.users?.nama||'?').split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase()
+  fotoList = p.foto_urls?.length > 0 ? p.foto_urls : []
+  fotoIndex = 0
 
   const waktu = new Date(p.created_at)
   const selisihJam = Math.floor((Date.now()-waktu)/3600000)
   const waktuLabel = selisihJam < 1 ? 'Baru saja' : selisihJam < 24 ? `${selisihJam} jam lalu` : `${Math.floor(selisihJam/24)} hari lalu`
+  const sellerAva = p.users?.foto_profil
+    ? `<img src="${p.users.foto_profil}" style="width:100%;height:100%;object-fit:cover">`
+    : (p.users?.nama||'?').split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase()
 
-  document.getElementById('detail-content').innerHTML = `
-    <div style="width:100%;aspect-ratio:4/3;background:#F3EEFB;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden">
-      ${fotoHtml}${dotsHtml}
-    </div>
-    ${thumbsHtml ? `<div style="display:flex;gap:6px;padding:8px 12px;overflow-x:auto;background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary)">${thumbsHtml}</div>` : ''}
-    <div style="padding:10px 12px;background:var(--color-background-primary);margin-bottom:6px">
+  const fotoUtamaHtml = fotoList.length > 0
+    ? `<img id="foto-utama" src="${fotoList[0]}" alt="${p.nama}" style="width:100%;height:100%;object-fit:contain">`
+    : `<i class="ti ti-package" style="font-size:48px;color:#9B7FD4"></i>`
+
+  const dotsHtml = fotoList.length > 1
+    ? `<div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:4px;pointer-events:none">
+        ${fotoList.map((_,i)=>`<div class="foto-dot" onclick="gantiFotoIndex(${i})" style="width:${i===0?'12px':'6px'};height:6px;border-radius:3px;background:${i===0?'#fff':'rgba(255,255,255,0.4)'};cursor:pointer;pointer-events:all;transition:all .2s"></div>`).join('')}
+      </div>` : ''
+
+  const thumbsHtml = fotoList.length > 1
+    ? `<div style="display:flex;gap:6px;padding:8px 12px;overflow-x:auto;background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary)">
+        ${fotoList.map((f,i)=>`<div class="thumb-item" onclick="gantiFotoIndex(${i})" style="width:60px;height:52px;border-radius:8px;overflow:hidden;border:${i===0?'1.5px solid #9B7FD4':'0.5px solid var(--color-border-tertiary)'};cursor:pointer;flex-shrink:0"><img src="${f}" style="width:100%;height:100%;object-fit:cover"></div>`).join('')}
+      </div>` : ''
+
+  const infoHtml = `
+    <div style="padding:10px 14px;background:var(--color-background-primary)">
       <span class="badge ${p.kondisi==='baru'?'b-baru':'b-preloved'}">${p.kondisi==='baru'?'Baru':'Preloved'}</span>
-      <div style="font-size:15px;font-weight:500;color:var(--color-text-primary);margin:4px 0 3px;line-height:1.3">${p.nama}</div>
-      <div style="font-size:20px;font-weight:500;color:#C4789A;margin-bottom:4px">Rp ${Number(p.harga).toLocaleString('id-ID')}</div>
-      <div style="font-size:11px;color:var(--color-text-tertiary);display:flex;align-items:center;gap:4px">
-        <i class="ti ti-map-pin" style="font-size:11px"></i>${p.users?.kota||'Lokal'}
-        <span>·</span>
-        <i class="ti ti-clock" style="font-size:11px"></i>${waktuLabel}
+      <div style="font-size:16px;font-weight:500;color:var(--color-text-primary);margin:5px 0 4px;line-height:1.3">${p.nama}</div>
+      <div style="font-size:22px;font-weight:500;color:#C4789A;margin-bottom:5px">Rp ${Number(p.harga).toLocaleString('id-ID')}</div>
+      <div style="font-size:11px;color:var(--color-text-tertiary);display:flex;align-items:center;gap:5px">
+        <i class="ti ti-map-pin" style="font-size:11px"></i>${p.users?.kota||'Lokal'}<span>·</span><i class="ti ti-clock" style="font-size:11px"></i>${waktuLabel}
       </div>
-      <div style="border-top:0.5px solid var(--color-border-tertiary);margin:8px 0"></div>
-      <div style="display:flex;align-items:center;gap:8px">
-        <div style="width:32px;height:32px;border-radius:50%;background:#FEF0F5;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:#9B3060;flex-shrink:0;overflow:hidden">${sellerAva}</div>
+      <div style="border-top:0.5px solid var(--color-border-tertiary);margin:9px 0"></div>
+      <div style="display:flex;align-items:center;gap:9px">
+        <div style="width:34px;height:34px;border-radius:50%;background:#FEF0F5;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#9B3060;flex-shrink:0;overflow:hidden">${sellerAva}</div>
         <div style="flex:1">
           <div style="font-size:13px;font-weight:500;color:var(--color-text-primary)">${p.users?.nama||'Penjual'}</div>
           <div style="font-size:10px;color:#9B7FD4;display:flex;align-items:center;gap:2px"><i class="ti ti-shield-check" style="font-size:10px"></i>Terverifikasi · ${p.users?.kota||'Lokal'}</div>
         </div>
       </div>
       ${p.deskripsi ? `
-      <div style="border-top:0.5px solid var(--color-border-tertiary);margin:8px 0"></div>
+      <div style="border-top:0.5px solid var(--color-border-tertiary);margin:9px 0"></div>
       <div id="desc-text" style="font-size:12px;color:var(--color-text-secondary);line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">${p.deskripsi}</div>
-      <div onclick="toggleDesc()" style="font-size:11px;color:#9B7FD4;font-weight:500;margin-top:3px;cursor:pointer" id="desc-toggle">Lihat selengkapnya</div>` : ''}
-    </div>
-    <div style="padding:0 12px 6px">
+      <div onclick="toggleDesc()" id="desc-toggle" style="font-size:11px;color:#9B7FD4;font-weight:500;margin-top:3px;cursor:pointer">Lihat selengkapnya</div>` : ''}
+    </div>`
+
+  const layananHtml = `
+    <div style="padding:10px 14px 6px">
       <div style="font-size:11px;font-weight:500;color:var(--color-text-secondary);margin-bottom:6px">Layanan tambahan (opsional)</div>
       <div style="display:flex;gap:6px;margin-bottom:10px">
-        <div id="card-cek" onclick="toggleLayanan('cek')" style="flex:1;background:var(--color-background-primary);border-radius:10px;border:0.5px solid var(--color-border-tertiary);padding:8px 10px;cursor:pointer">
+        <div id="card-cek" onclick="toggleLayanan('cek')" style="flex:1;background:var(--color-background-primary);border-radius:10px;border:0.5px solid var(--color-border-tertiary);padding:9px 10px;cursor:pointer">
           <span style="background:#F3EEFB;color:#6B3FA0;font-size:9px;padding:2px 6px;border-radius:6px;font-weight:500;display:inline-block;margin-bottom:3px">NitipCek</span>
-          <div style="font-size:11px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px">Verifikasi barang</div>
+          <div style="font-size:11px;font-weight:500;color:var(--color-text-primary);margin-bottom:5px">Verifikasi barang</div>
           <div style="display:flex;justify-content:space-between;align-items:center">
             <div style="font-size:11px;color:#C4789A;font-weight:500">Rp 10.000</div>
-            <div id="tog-cek" style="width:28px;height:15px;border-radius:8px;background:var(--color-border-secondary);position:relative;flex-shrink:0"><div style="position:absolute;top:2px;left:2px;width:11px;height:11px;background:#fff;border-radius:50%"></div></div>
+            <div id="tog-cek" style="width:28px;height:15px;border-radius:8px;background:var(--color-border-secondary);position:relative;transition:background .2s;flex-shrink:0"><div style="position:absolute;top:2px;left:2px;width:11px;height:11px;background:#fff;border-radius:50%;transition:left .2s"></div></div>
           </div>
         </div>
-        <div id="card-go" onclick="toggleLayanan('go')" style="flex:1;background:var(--color-background-primary);border-radius:10px;border:0.5px solid var(--color-border-tertiary);padding:8px 10px;cursor:pointer">
+        <div id="card-go" onclick="toggleLayanan('go')" style="flex:1;background:var(--color-background-primary);border-radius:10px;border:0.5px solid var(--color-border-tertiary);padding:9px 10px;cursor:pointer">
           <span style="background:#E3F2FD;color:#1565C0;font-size:9px;padding:2px 6px;border-radius:6px;font-weight:500;display:inline-block;margin-bottom:3px">NitiPGo</span>
-          <div style="font-size:11px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px">Antar ke rumahku</div>
+          <div style="font-size:11px;font-weight:500;color:var(--color-text-primary);margin-bottom:5px">Antar ke rumahku</div>
           <div style="display:flex;justify-content:space-between;align-items:center">
             <div style="font-size:11px;color:#C4789A;font-weight:500">Sesuai jarak</div>
-            <div id="tog-go" style="width:28px;height:15px;border-radius:8px;background:var(--color-border-secondary);position:relative;flex-shrink:0"><div style="position:absolute;top:2px;left:2px;width:11px;height:11px;background:#fff;border-radius:50%"></div></div>
+            <div id="tog-go" style="width:28px;height:15px;border-radius:8px;background:var(--color-border-secondary);position:relative;transition:background .2s;flex-shrink:0"><div style="position:absolute;top:2px;left:2px;width:11px;height:11px;background:#fff;border-radius:50%;transition:left .2s"></div></div>
           </div>
         </div>
       </div>
-      <button onclick="hubungiSeller()" style="width:100%;padding:12px;background:linear-gradient(90deg,#C4789A,#9B7FD4);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;font-family:inherit;margin-bottom:16px">
+      <button onclick="hubungiSeller()" style="width:100%;padding:13px;background:linear-gradient(90deg,#C4789A,#9B7FD4);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;font-family:inherit;margin-bottom:16px">
         <i class="ti ti-message"></i>Hubungi penjual
       </button>
-    </div>
-  `
-  showPage('page-detail')
-}
+    </div>`
 
-function gantiGambar(url) {
-  const el = document.getElementById('foto-utama')
-  if (el) el.src = url
+  const isDesktop = window.innerWidth >= 768
+
+  if (isDesktop) {
+    document.getElementById('detail-content').innerHTML = `
+      <div style="display:flex;gap:0;max-width:1100px;margin:0 auto;padding:20px;gap:20px;align-items:flex-start">
+        <div style="width:420px;flex-shrink:0">
+          <div style="width:100%;height:320px;background:#F3EEFB;display:flex;align-items:center;justify-content:center;border-radius:12px;overflow:hidden;position:relative;border:0.5px solid var(--color-border-tertiary)">
+            ${fotoUtamaHtml}
+            ${fotoList.length > 1 ? `
+            <button onclick="gantiFotoIndex(fotoIndex-1)" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.9);border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center"><i class="ti ti-chevron-left"></i></button>
+            <button onclick="gantiFotoIndex(fotoIndex+1)" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.9);border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center"><i class="ti ti-chevron-right"></i></button>` : ''}
+          </div>
+          ${fotoList.length > 1 ? `<div style="display:flex;gap:6px;margin-top:8px;overflow-x:auto">${fotoList.map((f,i)=>`<div class="thumb-item" onclick="gantiFotoIndex(${i})" style="width:64px;height:56px;border-radius:8px;overflow:hidden;border:${i===0?'1.5px solid #9B7FD4':'0.5px solid var(--color-border-tertiary)'};cursor:pointer;flex-shrink:0"><img src="${f}" style="width:100%;height:100%;object-fit:cover"></div>`).join('')}</div>` : ''}
+        </div>
+        <div style="flex:1;min-width:0">
+          ${infoHtml.replace('style="padding:10px 14px', 'style="padding:0')}
+          ${layananHtml.replace('style="padding:10px 14px 6px"', 'style="padding:10px 0 6px"')}
+        </div>
+      </div>`
+  } else {
+    document.getElementById('detail-content').innerHTML = `
+      <div style="width:100%;height:280px;background:#F3EEFB;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden">
+        ${fotoUtamaHtml}${dotsHtml}
+      </div>
+      ${thumbsHtml}
+      ${infoHtml}
+      ${layananHtml}`
+    const fotoWrap = document.querySelector('#detail-content > div:first-child')
+    if (fotoWrap) initSwipe(fotoWrap)
+  }
+
+  showPage('page-detail')
 }
 
 function toggleDesc() {
   const desc = document.getElementById('desc-text')
   const toggle = document.getElementById('desc-toggle')
   if (!desc) return
-  const collapsed = desc.style.webkitLineClamp === '3'
+  const collapsed = desc.style.webkitLineClamp !== 'unset'
   desc.style.webkitLineClamp = collapsed ? 'unset' : '3'
   desc.style.overflow = collapsed ? 'visible' : 'hidden'
   toggle.textContent = collapsed ? 'Sembunyikan' : 'Lihat selengkapnya'
@@ -234,9 +276,11 @@ function toggleLayanan(type) {
   const card = document.getElementById(`card-${type}`)
   const tog = document.getElementById(`tog-${type}`)
   if (!card || !tog) return
-  const isOn = tog.style.background === 'rgb(155, 127, 212)'
+  const dot = tog.querySelector('div')
+  const isOn = tog.dataset.on === '1'
+  tog.dataset.on = isOn ? '0' : '1'
   tog.style.background = isOn ? 'var(--color-border-secondary)' : '#9B7FD4'
-  tog.querySelector('div').style.left = isOn ? '2px' : '15px'
+  dot.style.left = isOn ? '2px' : '15px'
   card.style.border = isOn ? '0.5px solid var(--color-border-tertiary)' : '1.5px solid #9B7FD4'
   card.style.background = isOn ? 'var(--color-background-primary)' : '#FAF5FF'
 }
@@ -267,10 +311,7 @@ function renderFotoPreview() {
   row.innerHTML = previews + tambah
 }
 
-function hapusFoto(index) {
-  fotoFiles.splice(index, 1)
-  renderFotoPreview()
-}
+function hapusFoto(index) { fotoFiles.splice(index,1); renderFotoPreview() }
 
 async function kompresiFoto(file) {
   return new Promise(resolve => {
@@ -293,7 +334,7 @@ async function kompresiFoto(file) {
 
 async function postingProduk() {
   const { data: { session } } = await db.auth.getSession()
-  if (!session) return showToast('Kamu harus login dulu', 'error')
+  if (!session) return showToast('Kamu harus login dulu','error')
   const nama = document.getElementById('nama-produk').value.trim()
   const deskripsi = document.getElementById('deskripsi').value.trim()
   const harga = parseInt(document.getElementById('harga').value)
@@ -302,7 +343,7 @@ async function postingProduk() {
   const lokasi = document.getElementById('lokasi')?.value.trim()||'Gresik'
   if (!nama||!harga) return showToast('Nama produk dan harga wajib diisi','error')
   const btn = document.querySelector('#page-jual .btnp')
-  btn.innerHTML='<i class="ti ti-loader" style="animation:spin 1s linear infinite"></i> Memproses...'
+  btn.innerHTML='<i class="ti ti-loader"></i> Memproses...'
   btn.disabled=true
   let foto_urls=[]
   for (let i=0;i<fotoFiles.length;i++) {

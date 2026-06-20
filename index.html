@@ -3,99 +3,130 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>NitipJual — Marketplace Lokal</title>
+  <title>NitipJual — Platform Jual Beli</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
- <!-- LOGIN -->
-<div id="page-login" class="page active">
-  <div class="login-top">
-    <div class="login-logo-wrap">
-      <svg width="48" height="48" viewBox="0 0 56 56">
-        <path d="M14 14h16l12 14-12 14H14V14z" fill="none" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/>
-        <circle cx="34" cy="28" r="3" fill="#fff"/>
-        <text x="22" y="32" text-anchor="middle" font-size="12" font-weight="700" fill="#fff" font-family="sans-serif">NJ</text>
-      </svg>
+  <!-- LOGIN -->
+  <div id="page-login" class="page active">
+    <div class="login-top">
+      <div class="login-logo-wrap">
+        <svg width="48" height="48" viewBox="0 0 56 56">
+          <path d="M14 14h16l12 14-12 14H14V14z" fill="none" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/>
+          <circle cx="34" cy="28" r="3" fill="#fff"/>
+          <text x="22" y="32" text-anchor="middle" font-size="12" font-weight="700" fill="#fff" font-family="sans-serif">NJ</text>
+        </svg>
+      </div>
+      <h1 class="login-appname">Nitip<span>Jual</span></h1>
+      <p class="login-tagline">Setiap barangmu akan cari jalannya sendiri</p>
+      <p class="login-sub">Platform Jual Beli tanpa biaya layanan & batasan.</p>
     </div>
-    <h1 class="login-appname">Nitip<span>Jual</span></h1>
-    <p class="login-tagline">Jual beli lokal, lebih dekat</p>
-    <p class="login-sub">Marketplace lokal Gresik, Surabaya & Sidoarjo</p>
-  </div>
-  <div class="login-bot">
-    <div class="login-feats">
-      <div class="feat-item">
-        <i class="ti ti-map-pin"></i>Produk lokal dekat kamu
+    <div class="login-bot">
+      <div class="login-feats">
+        <div class="feat-item"><i class="ti ti-map-pin"></i>Produk lokal dekat kamu</div>
+        <div class="feat-item"><i class="ti ti-shield-check"></i>Penjual terverifikasi</div>
+        <div class="feat-item highlight">
+          <i class="ti ti-zoom-check"></i>
+          <span>Tersedia layanan verifikasi & cek barang</span>
+        </div>
       </div>
-      <div class="feat-item">
-        <i class="ti ti-shield-check"></i>Penjual terverifikasi
+      <hr class="login-divider">
+      <button class="btn-google" onclick="loginGoogle()">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
+          <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/>
+          <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+          <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+        </svg>
+        Masuk dengan Google
+      </button>
+      <p class="login-note">Dengan masuk, kamu menyetujui syarat & ketentuan NitipJual</p>
+      <div class="login-bibit">
+        <i class="ti ti-leaf"></i>
+        <span>Dana NitipBibit bulan ini: <strong>Rp 1.240.000</strong></span>
       </div>
-      <div class="feat-item highlight">
-        <i class="ti ti-zoom-check"></i>
-        <span>Tersedia layanan verifikasi & cek barang</span>
-      </div>
-    </div>
-    <hr class="login-divider">
-    <button class="btn-google" onclick="loginGoogle()">
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-        <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
-        <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/>
-        <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
-        <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
-      </svg>
-      Masuk dengan Google
-    </button>
-    <p class="login-note">Dengan masuk, kamu menyetujui syarat & ketentuan NitipJual</p>
-    <div class="login-bibit">
-      <i class="ti ti-leaf"></i>
-      <span>Dana NitipBibit bulan ini: <strong>Rp 1.240.000</strong></span>
     </div>
   </div>
-</div>
+
   <!-- HOME -->
   <div id="page-home" class="page">
+    <!-- DESKTOP TOPBAR -->
     <div class="topbar">
       <div class="topbar-left">
         <svg width="28" height="28" viewBox="0 0 56 56">
           <rect width="56" height="56" rx="10" fill="rgba(255,255,255,0.2)"/>
           <path d="M14 14h16l12 14-12 14H14V14z" fill="none" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/>
-          <circle cx="34" cy="28" r="2.5" fill="#fff"/>
-          <text x="22" y="32" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="sans-serif">NJ</text>
+          <circle cx="34" cy="28" r="3" fill="#fff"/>
+          <text x="22" y="32" text-anchor="middle" font-size="12" font-weight="700" fill="#fff" font-family="sans-serif">NJ</text>
         </svg>
         <span class="topbar-title">NitipJual</span>
       </div>
+      <input class="topbar-search" id="search-desktop" placeholder="Cari barang di Gresik, Surabaya, Sidoarjo..." oninput="cariProduk()">
       <div class="topbar-right">
         <i class="ti ti-bell"></i>
+        <i class="ti ti-message"></i>
         <div class="user-ava" id="user-ava">?</div>
       </div>
     </div>
-    <div class="content">
-      <div class="searchrow">
-        <input class="searchbox" id="search" placeholder="Cari barang di kotamu..." oninput="cariProduk()">
-        <button class="filterbtn"><i class="ti ti-adjustments-horizontal"></i></button>
+
+    <!-- DESKTOP BODY -->
+    <div class="home-body">
+      <!-- SIDEBAR -->
+      <div class="sidebar">
+        <div class="sb-section">Menu</div>
+        <div class="sb-item active" onclick="showPage('page-home')"><i class="ti ti-home"></i>Beranda</div>
+        <div class="sb-item" onclick="showPage('page-home')"><i class="ti ti-search"></i>Cari iklan</div>
+        <div class="sb-item" onclick="showPage('page-jual')"><i class="ti ti-speakerphone"></i>Pasang iklan</div>
+        <div class="sb-item" onclick="showPage('page-home')"><i class="ti ti-message"></i>Chat saya</div>
+        <div class="sb-item" onclick="showPage('page-profil')"><i class="ti ti-user"></i>Profil saya</div>
+        <div class="sb-section">Kategori</div>
+        <div class="sb-item" onclick="filterKategori(this,'elektronik')"><i class="ti ti-device-laptop"></i>Elektronik</div>
+        <div class="sb-item" onclick="filterKategori(this,'fashion')"><i class="ti ti-shirt"></i>Fashion</div>
+        <div class="sb-item" onclick="filterKategori(this,'kuliner')"><i class="ti ti-soup"></i>Kuliner</div>
+        <div class="sb-item" onclick="filterKategori(this,'rumah')"><i class="ti ti-sofa"></i>Rumah</div>
+        <div class="sb-item" onclick="filterKategori(this,'kendaraan')"><i class="ti ti-bike"></i>Kendaraan</div>
+        <div class="sb-item" onclick="filterKategori(this,'olahraga')"><i class="ti ti-run"></i>Olahraga</div>
+        <hr class="sb-divider">
+        <div class="sb-item menu-logout" onclick="logout()"><i class="ti ti-logout"></i>Keluar</div>
       </div>
-      <div class="banner">
-        <div class="banner-title">Jual beli lokal, lebih dekat 🛍️</div>
-        <div class="banner-sub">Tanpa perang diskon · Tanpa biaya iklan</div>
+
+      <!-- MAIN CONTENT -->
+      <div class="main-content">
+        <!-- MOBILE SEARCH -->
+        <div class="searchrow mobile-only">
+          <input class="searchbox" id="search" placeholder="Cari barang di kotamu..." oninput="cariProduk()">
+          <button class="filterbtn"><i class="ti ti-adjustments-horizontal"></i></button>
+        </div>
+        <div class="banner">
+          <div class="banner-text">
+            <div class="banner-title">Setiap barangmu akan cari jalannya sendiri 🛍️</div>
+            <div class="banner-sub">Platform Jual Beli tanpa biaya layanan & batasan.</div>
+          </div>
+          <button class="banner-btn" onclick="showPage('page-jual')">Pasang iklan →</button>
+        </div>
+        <div class="bibit-bar">
+          <i class="ti ti-leaf"></i>
+          <span>Dana NitipBibit bulan ini: <strong>Rp 1.240.000</strong></span>
+        </div>
+        <div class="chips">
+          <button class="chip active" onclick="filterKategori(this,'')">Semua</button>
+          <button class="chip" onclick="filterKategori(this,'elektronik')">Elektronik</button>
+          <button class="chip" onclick="filterKategori(this,'fashion')">Fashion</button>
+          <button class="chip" onclick="filterKategori(this,'kuliner')">Kuliner</button>
+          <button class="chip" onclick="filterKategori(this,'rumah')">Rumah</button>
+          <button class="chip" onclick="filterKategori(this,'kendaraan')">Kendaraan</button>
+          <button class="chip" onclick="filterKategori(this,'olahraga')">Olahraga</button>
+        </div>
+        <div class="slabel">Iklan terbaru di kotamu</div>
+        <div class="produk-grid" id="produk-list"></div>
       </div>
-      <div class="bibit-bar">
-        <i class="ti ti-leaf"></i>
-        <span>Dana NitipBibit bulan ini: <strong>Rp 1.240.000</strong></span>
-      </div>
-      <div class="chips">
-        <button class="chip active" onclick="filterKategori(this,'')">Semua</button>
-        <button class="chip" onclick="filterKategori(this,'elektronik')">Elektronik</button>
-        <button class="chip" onclick="filterKategori(this,'fashion')">Fashion</button>
-        <button class="chip" onclick="filterKategori(this,'kuliner')">Kuliner</button>
-        <button class="chip" onclick="filterKategori(this,'rumah')">Rumah</button>
-        <button class="chip" onclick="filterKategori(this,'kendaraan')">Kendaraan</button>
-      </div>
-      <div class="slabel">Iklan terbaru di kotamu</div>
-      <div class="produk-grid" id="produk-list"></div>
     </div>
-    <div class="bnav">
+
+    <!-- MOBILE BOTTOM NAV -->
+    <div class="bnav mobile-only">
       <button class="nb active" onclick="showPage('page-home')"><i class="ti ti-home"></i><span>Beranda</span></button>
       <button class="nb" onclick="showPage('page-home')"><i class="ti ti-search"></i><span>Cari</span></button>
       <button class="nb" onclick="showPage('page-jual')"><i class="ti ti-plus-circle"></i><span>Pasang</span></button>
@@ -107,8 +138,10 @@
   <!-- PASANG IKLAN -->
   <div id="page-jual" class="page">
     <div class="topbar">
-      <button class="back-btn" onclick="showPage('page-home')"><i class="ti ti-arrow-left"></i></button>
-      <span class="topbar-title">Pasang Iklan</span>
+      <div class="topbar-left">
+        <button class="back-btn" onclick="showPage('page-home')"><i class="ti ti-arrow-left"></i></button>
+        <span class="topbar-title">Pasang Iklan</span>
+      </div>
     </div>
     <div class="content">
       <div class="form-card">
@@ -166,12 +199,7 @@
   <div id="page-profil" class="page">
     <div class="topbar">
       <div class="topbar-left">
-        <svg width="28" height="28" viewBox="0 0 56 56">
-          <rect width="56" height="56" rx="10" fill="rgba(255,255,255,0.2)"/>
-          <path d="M14 14h16l12 14-12 14H14V14z" fill="none" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/>
-          <circle cx="34" cy="28" r="2.5" fill="#fff"/>
-          <text x="22" y="32" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="sans-serif">NJ</text>
-        </svg>
+        <button class="back-btn" onclick="showPage('page-home')"><i class="ti ti-arrow-left"></i></button>
         <span class="topbar-title">Profil</span>
       </div>
     </div>
@@ -183,33 +211,18 @@
       </div>
       <div class="menu-list">
         <div class="menu-item" onclick="showPage('page-jual')">
-          <i class="ti ti-speakerphone"></i>
-          <span>Iklan saya</span>
-          <i class="ti ti-chevron-right"></i>
+          <i class="ti ti-speakerphone"></i><span>Iklan saya</span><i class="ti ti-chevron-right"></i>
         </div>
         <div class="menu-item">
-          <i class="ti ti-message"></i>
-          <span>Chat saya</span>
-          <i class="ti ti-chevron-right"></i>
+          <i class="ti ti-message"></i><span>Chat saya</span><i class="ti ti-chevron-right"></i>
         </div>
         <div class="menu-item">
-          <i class="ti ti-leaf"></i>
-          <span>Kontribusi NitipBibit saya</span>
-          <i class="ti ti-chevron-right"></i>
+          <i class="ti ti-leaf"></i><span>Kontribusi NitipBibit saya</span><i class="ti ti-chevron-right"></i>
         </div>
         <div class="menu-item menu-logout" onclick="logout()">
-          <i class="ti ti-logout"></i>
-          <span>Keluar</span>
-          <i class="ti ti-chevron-right"></i>
+          <i class="ti ti-logout"></i><span>Keluar</span><i class="ti ti-chevron-right"></i>
         </div>
       </div>
-    </div>
-    <div class="bnav">
-      <button class="nb" onclick="showPage('page-home')"><i class="ti ti-home"></i><span>Beranda</span></button>
-      <button class="nb" onclick="showPage('page-home')"><i class="ti ti-search"></i><span>Cari</span></button>
-      <button class="nb" onclick="showPage('page-jual')"><i class="ti ti-plus-circle"></i><span>Pasang</span></button>
-      <button class="nb" onclick="showPage('page-home')"><i class="ti ti-message"></i><span>Chat</span></button>
-      <button class="nb active" onclick="showPage('page-profil')"><i class="ti ti-user"></i><span>Profil</span></button>
     </div>
   </div>
 

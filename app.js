@@ -7,13 +7,39 @@ const db = createClient(
 const BUCKET = 'foto produk'
 let fotoFiles = []
 
+function showToast(pesan, tipe = 'sukses') {
+  const warna = tipe === 'sukses' ? 'linear-gradient(90deg,#C4789A,#9B7FD4)' : '#e53935'
+  const icon = tipe === 'sukses' ? 'ti-circle-check' : 'ti-alert-circle'
+  const toast = document.createElement('div')
+  toast.innerHTML = `<i class="ti ${icon}" style="font-size:20px"></i><span>${pesan}</span>`
+  toast.style.cssText = `
+    position:fixed;top:20px;left:50%;transform:translateX(-50%);
+    background:${warna};color:#fff;
+    padding:12px 20px;border-radius:12px;
+    display:flex;align-items:center;gap:10px;
+    font-size:14px;font-weight:500;
+    z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.15);
+    animation:slideDown .3s ease;font-family:inherit;
+    white-space:nowrap;max-width:90vw;
+  `
+  if (!document.getElementById('toast-style')) {
+    const s = document.createElement('style')
+    s.id = 'toast-style'
+    s.textContent = `@keyframes slideDown{from{opacity:0;top:0px}to{opacity:1;top:20px}}
+    @keyframes slideUp{from{opacity:1;top:20px}to{opacity:0;top:0px}}`
+    document.head.appendChild(s)
+  }
+  document.body.appendChild(toast)
+  setTimeout(() => {
+    toast.style.animation = 'slideUp .3s ease forwards'
+    setTimeout(() => toast.remove(), 300)
+  }, 2800)
+}
+
 async function cekSession() {
   const { data: { session } } = await db.auth.getSession()
-  if (session) {
-    tampilHome(session.user)
-  } else {
-    showPage('page-login')
-  }
+  if (session) tampilHome(session.user)
+  else showPage('page-login')
 }
 
 function tampilHome(user) {
@@ -26,16 +52,13 @@ function tampilHome(user) {
     if (foto) avaEl.innerHTML = `<img src="${foto}" alt="${nama}">`
     else avaEl.textContent = inisial
   }
-
   const profilAva = document.getElementById('profil-ava')
   if (profilAva) {
     if (foto) profilAva.innerHTML = `<img src="${foto}" alt="${nama}">`
     else profilAva.textContent = inisial
   }
-
   const profilNama = document.getElementById('profil-nama')
   if (profilNama) profilNama.textContent = nama
-
   const profilEmail = document.getElementById('profil-email')
   if (profilEmail) profilEmail.textContent = user.email
 
@@ -48,7 +71,7 @@ async function loginGoogle() {
     provider: 'google',
     options: { redirectTo: window.location.origin }
   })
-  if (error) console.error('Login error:', error.message)
+  if (error) showToast('Gagal login, coba lagi', 'error')
 }
 
 async function logout() {
@@ -63,10 +86,7 @@ function showPage(id) {
   document.getElementById(id).classList.add('active')
   window.scrollTo(0, 0)
   if (id === 'page-jual') {
-    setTimeout(() => {
-      muatDraftIklan()
-      initFotoRow()
-    }, 50)
+    setTimeout(() => { muatDraftIklan(); initFotoRow() }, 50)
   }
 }
 
@@ -103,16 +123,12 @@ function muatDraftIklan() {
 function initFotoRow() {
   const row = document.getElementById('foto-row')
   if (!row) return
-  if (fotoFiles.length > 0) {
-    renderFotoPreview()
-  } else {
-    row.innerHTML = `
-      <label for="foto-input" class="photo-add" style="cursor:pointer">
-        <i class="ti ti-camera"></i><span>Tambah</span>
-      </label>
-      <input type="file" id="foto-input" accept="image/*" multiple style="display:none" onchange="handleFotoInput(event)">
-    `
-  }
+  if (fotoFiles.length > 0) renderFotoPreview()
+  else row.innerHTML = `
+    <label for="foto-input" class="photo-add" style="cursor:pointer">
+      <i class="ti ti-camera"></i><span>Tambah</span>
+    </label>
+    <input type="file" id="foto-input" accept="image/*" multiple style="display:none" onchange="handleFotoInput(event)">`
 }
 
 async function loadProduk(keyword = '', kategori = '') {
@@ -150,8 +166,7 @@ async function loadProduk(keyword = '', kategori = '') {
           <div class="pharga">Rp ${Number(p.harga).toLocaleString('id-ID')}</div>
           <div class="ploc"><i class="ti ti-map-pin" style="font-size:10px"></i> ${p.users?.kota || 'Lokal'}</div>
         </div>
-      </div>
-    `
+      </div>`
   }).join('')
 }
 
@@ -207,8 +222,7 @@ function renderFotoPreview() {
       <div style="position:relative;width:70px;height:70px;flex-shrink:0">
         <img src="${url}" style="width:70px;height:70px;object-fit:cover;border-radius:10px;border:0.5px solid var(--pkbr)">
         <button onclick="hapusFoto(${i})" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:#e53935;color:#fff;border:none;cursor:pointer;font-size:14px;line-height:1;padding:0">×</button>
-      </div>
-    `
+      </div>`
   }).join('')
   const tambahBtn = fotoFiles.length < 5
     ? `<label for="foto-input" class="photo-add" style="cursor:pointer">
@@ -226,7 +240,7 @@ function hapusFoto(index) {
 
 async function postingProduk() {
   const { data: { session } } = await db.auth.getSession()
-  if (!session) return alert('Kamu harus login dulu.')
+  if (!session) return showToast('Kamu harus login dulu', 'error')
 
   const nama = document.getElementById('nama-produk').value.trim()
   const deskripsi = document.getElementById('deskripsi').value.trim()
@@ -235,11 +249,18 @@ async function postingProduk() {
   const kategori = document.getElementById('kategori').value
   const lokasi = document.getElementById('lokasi')?.value.trim() || 'Gresik'
 
-  if (!nama || !harga) return alert('Nama produk dan harga wajib diisi.')
+  if (!nama || !harga) return showToast('Nama produk dan harga wajib diisi', 'error')
 
   const btnPosting = document.querySelector('#page-jual .btnp')
-  btnPosting.textContent = 'Memproses...'
+  btnPosting.innerHTML = '<i class="ti ti-loader" style="animation:spin 1s linear infinite"></i> Memproses...'
   btnPosting.disabled = true
+
+  if (!document.getElementById('spin-style')) {
+    const s = document.createElement('style')
+    s.id = 'spin-style'
+    s.textContent = '@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}'
+    document.head.appendChild(s)
+  }
 
   let foto_urls = []
   for (let i = 0; i < fotoFiles.length; i++) {
@@ -257,17 +278,17 @@ async function postingProduk() {
     nama, deskripsi, harga, kondisi, kategori, foto_urls, status: 'aktif'
   })
 
-  btnPosting.textContent = 'Pasang iklan sekarang'
+  btnPosting.innerHTML = '<i class="ti ti-speakerphone"></i> Pasang iklan sekarang'
   btnPosting.disabled = false
 
   if (error) {
-    alert('Gagal posting: ' + error.message)
+    showToast('Gagal memposting iklan', 'error')
     return
   }
 
   localStorage.removeItem('draft-iklan')
   fotoFiles = []
-  alert('Iklan berhasil dipasang!')
+  showToast('Iklan berhasil dipasang! 🎉')
   showPage('page-home')
   loadProduk()
 }
@@ -282,9 +303,7 @@ function setToggle(groupId, el) {
 db.auth.onAuthStateChange((event, session) => {
   if (event === 'SIGNED_IN' && session) {
     const halamanAktif = document.querySelector('.page.active')?.id
-    if (halamanAktif === 'page-login') {
-      tampilHome(session.user)
-    }
+    if (halamanAktif === 'page-login') tampilHome(session.user)
   } else if (event === 'SIGNED_OUT') {
     showPage('page-login')
   }

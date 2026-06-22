@@ -91,7 +91,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .produk-card:hover{border-color:var(--pk)}
 .pimg{width:100%;height:160px;background:var(--ps3);display:flex;align-items:center;justify-content:center;color:var(--p);border-bottom:0.5px solid var(--br);overflow:hidden}
 .pimg i{font-size:36px}
-.pimg img{width:100%;height:100%;object-fit:cover}
+.pimg img{width:100%;height:100%;object-fit:contain}
 .pinfo{padding:10px}
 .pname{font-size:13px;font-weight:500;color:var(--tx);margin-bottom:3px;line-height:1.3}
 .pharga{font-size:14px;font-weight:500;color:var(--pk);margin-bottom:3px}

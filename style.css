@@ -59,12 +59,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .sb-item.menu-logout{color:#e53935}
 .sb-item.menu-logout i{color:#e53935}
 
-.main-content{flex:1;padding:16px;overflow-y:auto}
-.content{flex:1;padding:12px 14px;max-width:800px;width:100%;margin:0 auto}
-
+.main-content{flex:1;padding:12px 14px;overflow-y:auto}
+.content{flex:1;padding:12px 14px}
 .mobile-only{display:flex}
 
-.searchrow{gap:8px;margin-bottom:12px}
+.searchrow{display:flex;gap:8px;margin-bottom:12px}
 .searchbox{flex:1;background:var(--bg);border:0.5px solid var(--br2);border-radius:22px;padding:10px 16px;font-size:13px;color:var(--tx);font-family:inherit;outline:none}
 .searchbox:focus{border-color:var(--p)}
 .filterbtn{background:var(--ps);border:none;border-radius:22px;padding:10px 14px;font-size:18px;color:var(--p);cursor:pointer}
@@ -92,7 +91,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .produk-card:hover{border-color:var(--pk)}
 .pimg{width:100%;height:160px;background:var(--ps3);display:flex;align-items:center;justify-content:center;color:var(--p);border-bottom:0.5px solid var(--br);overflow:hidden}
 .pimg i{font-size:36px}
-.pimg img{width:100%;height:100%;object-fit:contain}
+.pimg img{width:100%;height:100%;object-fit:cover}
 .pinfo{padding:10px}
 .pname{font-size:13px;font-weight:500;color:var(--tx);margin-bottom:3px;line-height:1.3}
 .pharga{font-size:14px;font-weight:500;color:var(--pk);margin-bottom:3px}
@@ -103,10 +102,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .b-baru{background:#E8F5E9;color:#2E7D32}
 .b-preloved{background:var(--ps);color:var(--p3)}
 
-.bnav{background:var(--bg);border-top:0.5px solid var(--br);display:flex;position:sticky;bottom:0;z-index:100}
+.bnav{background:var(--bg);border-top:0.5px solid var(--br);display:flex;align-items:flex-end;position:sticky;bottom:0;z-index:100}
 .nb{flex:1;padding:10px 4px 8px;text-align:center;border:none;background:transparent;color:var(--tx3);font-size:10px;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:2px;transition:color .15s}
 .nb i{font-size:21px}
 .nb.active{color:var(--pk)}
+.nb-plus{flex:1;display:flex;justify-content:center;align-items:flex-end;padding-bottom:6px;border:none;background:transparent;cursor:pointer}
+.plus-btn{width:50px;height:50px;border-radius:50%;background:var(--grad-h);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(196,120,154,0.45)}
+.plus-btn i{font-size:24px;color:#fff}
 
 .form-card{background:var(--bg);border-radius:16px;border:0.5px solid var(--br);padding:16px;margin-bottom:16px}
 .finput{width:100%;border:0.5px solid var(--br2);border-radius:10px;padding:10px 12px;font-size:13px;background:var(--bg);color:var(--tx);margin-bottom:12px;font-family:inherit;outline:none;display:block;transition:border-color .15s}
@@ -127,45 +129,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tg-btn.active{border-color:var(--pk);background:var(--ps2);color:var(--pk2);font-weight:500}
 .btnp{width:100%;padding:13px;background:var(--grad-h);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px}
 
-.profil-card{background:var(--bg);border-radius:16px;border:0.5px solid var(--br);padding:24px;text-align:center;margin-bottom:12px}
-.profil-ava{width:70px;height:70px;border-radius:50%;background:var(--ps2);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:500;color:var(--pk2);margin:0 auto 12px;overflow:hidden}
-.profil-ava img{width:100%;height:100%;object-fit:cover}
-.profil-nama{font-size:16px;font-weight:500;color:var(--tx);margin-bottom:4px}
-.profil-email{font-size:13px;color:var(--tx2)}
-.menu-list{background:var(--bg);border-radius:16px;border:0.5px solid var(--br);overflow:hidden;margin-bottom:16px}
-.menu-item{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;border-bottom:0.5px solid var(--br);font-size:14px;color:var(--tx);transition:background .15s}
-.menu-item:last-child{border-bottom:none}
-.menu-item:hover{background:var(--bg2)}
-.menu-item>i:first-child{font-size:18px;color:var(--p);width:22px}
-.menu-item>span{flex:1}
-.menu-item>i:last-child{font-size:16px;color:var(--tx3)}
-.menu-logout{color:#e53935}
-.menu-logout>i:first-child{color:#e53935}
-
-@media(min-width:768px){
-  body{max-width:none}
-  .topbar-search{display:block}
-  .sidebar{display:block}
-  .mobile-only{display:none!important}
-  .produk-grid{grid-template-columns:repeat(4,1fr)}
-  .main-content{padding:20px 24px}
-}
-@media(max-width:767px){
-  body{max-width:480px;margin:0 auto}
-  .topbar-search{display:none}
-  .sidebar{display:none}
-  .mobile-only{display:flex}
-  .produk-grid{grid-template-columns:repeat(2,1fr)}
-}
-
-.bnav{background:var(--bg);border-top:0.5px solid var(--br);display:flex;align-items:flex-end;position:sticky;bottom:0;z-index:100}
-.nb{flex:1;padding:10px 4px 8px;text-align:center;border:none;background:transparent;color:var(--tx3);font-size:10px;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:2px;transition:color .15s}
-.nb i{font-size:21px}
-.nb.active{color:var(--pk)}
-.nb-plus{flex:1;display:flex;justify-content:center;align-items:flex-end;padding-bottom:6px;border:none;background:transparent;cursor:pointer}
-.plus-btn{width:50px;height:50px;border-radius:50%;background:var(--grad-h);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(196,120,154,0.45)}
-.plus-btn i{font-size:24px;color:#fff}
-
 .profil-hero{background:var(--grad);padding:28px 20px 20px;display:flex;flex-direction:column;align-items:center;text-align:center}
 .profil-ava{width:68px;height:68px;border-radius:50%;background:rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:500;color:#fff;margin-bottom:10px;overflow:hidden;border:2px solid rgba(255,255,255,0.4)}
 .profil-ava img{width:100%;height:100%;object-fit:cover}
@@ -176,6 +139,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .profil-tab.active{color:var(--pk);border-bottom-color:var(--pk);font-weight:500}
 .tab-content{display:none}
 .tab-content.active{display:block}
+.menu-list{background:var(--bg);overflow:hidden;margin-bottom:16px}
+.menu-item{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;border-bottom:0.5px solid var(--br);font-size:14px;color:var(--tx);transition:background .15s}
+.menu-item:last-child{border-bottom:none}
+.menu-item:hover{background:var(--bg2)}
+.menu-item>i:first-child{font-size:18px;color:var(--p);width:22px}
+.menu-item>span{flex:1}
+.menu-item>i:last-child{font-size:16px;color:var(--tx3)}
+.menu-logout{color:#e53935}
+.menu-logout>i:first-child{color:#e53935}
 .filter-row{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
 .filter-btn{padding:5px 12px;border-radius:14px;font-size:12px;border:0.5px solid var(--br2);background:var(--bg);color:var(--tx2);cursor:pointer;font-family:inherit;transition:all .15s}
 .filter-btn.active{background:var(--grad-h);color:#fff;border-color:transparent}
@@ -193,3 +165,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .bibit-stat-card{background:var(--bg);border-radius:14px;border:0.5px solid var(--br);padding:20px;text-align:center;margin-bottom:10px}
 .bibit-global-card{background:var(--bg);border-radius:14px;border:0.5px solid var(--br);padding:14px;margin-bottom:10px}
 .bibit-info{background:var(--ps2);border-radius:10px;padding:12px;font-size:12px;color:var(--pk2);line-height:1.5;display:flex;align-items:flex-start;gap:8px;border:0.5px solid var(--pkbr)}
+
+#detail-content img{max-height:360px;object-fit:contain}
+#detail-content>div:first-child{max-height:360px}
+
+@media(min-width:768px){
+  body{max-width:none}
+  .topbar-search{display:block}
+  .sidebar{display:block}
+  .mobile-only{display:none!important}
+  .produk-grid{grid-template-columns:repeat(4,1fr)}
+  .pimg{height:140px}
+  .main-content{padding:20px 24px}
+}
+@media(max-width:767px){
+  body{max-width:480px;margin:0 auto}
+  .topbar-search{display:none}
+  .sidebar{display:none}
+  .mobile-only{display:flex}
+  .produk-grid{grid-template-columns:repeat(2,1fr)}
+}

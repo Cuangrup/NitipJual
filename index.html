@@ -294,6 +294,54 @@
     </div>
   </div>
 
+  <!-- EDIT IKLAN -->
+  <div id="page-edit" class="page">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="back-btn" onclick="showPage('page-profil')"><i class="ti ti-arrow-left"></i></button>
+        <span class="topbar-title">Edit Iklan</span>
+      </div>
+    </div>
+    <div class="content">
+      <div class="form-card">
+        <input type="hidden" id="edit-id">
+        <div class="slabel">Foto saat ini</div>
+        <div class="photo-row" id="edit-foto-existing"></div>
+        <div class="slabel">Judul iklan</div>
+        <input class="finput" id="edit-nama" placeholder="Judul iklan">
+        <div class="slabel">Harga</div>
+        <div class="harga-wrap">
+          <span class="harga-prefix">Rp</span>
+          <input class="finput harga-input" id="edit-harga" type="number" placeholder="0">
+        </div>
+        <div class="slabel">Kondisi barang</div>
+        <div class="toggle-group" id="edit-kondisi-group">
+          <button class="tg-btn active" onclick="setToggle('edit-kondisi-group',this)">Baru</button>
+          <button class="tg-btn" onclick="setToggle('edit-kondisi-group',this)">Preloved</button>
+        </div>
+        <div class="slabel">Kategori</div>
+        <div class="select-wrap">
+          <select class="finput" id="edit-kategori">
+            <option value="">Pilih kategori...</option>
+            <option value="elektronik">Elektronik</option>
+            <option value="fashion">Fashion</option>
+            <option value="kuliner">Kuliner & Makanan</option>
+            <option value="rumah">Rumah & Furnitur</option>
+            <option value="kendaraan">Kendaraan</option>
+            <option value="olahraga">Olahraga</option>
+            <option value="lainnya">Lainnya</option>
+          </select>
+          <i class="ti ti-chevron-down select-icon"></i>
+        </div>
+        <div class="slabel">Deskripsi</div>
+        <textarea class="finput ftextarea" id="edit-deskripsi" placeholder="Deskripsi produk..."></textarea>
+        <button class="btnp" id="btn-simpan-edit" onclick="simpanEdit()">
+          <i class="ti ti-check"></i> Simpan perubahan
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script src="app.js"></script>
 </body>
 </html>

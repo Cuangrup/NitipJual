@@ -313,7 +313,117 @@ function toggleLayanan(type) {
   card.style.background=isOn?'var(--color-background-primary)':'#FAF5FF'
 }
 
-function hubungiSeller() { showToast('Fitur chat segera hadir!') }
+async function hubungiSeller() {
+  if (!produkAktif) return
+  const { data: { session } } = await db.auth.getSession()
+  if (!session) return showToast('Kamu harus login dulu', 'error')
+
+  const p = produkAktif
+  const buyerId = session.user.id
+  const sellerId = p.seller_id
+
+  if (buyerId === sellerId) return showToast('Ini iklanmu sendiri', 'error')
+
+  // Cek order/chat sudah ada
+  let { data: order } = await db.from('orders')
+    .select('id')
+    .eq('product_id', p.id)
+    .eq('buyer_id', buyerId)
+    .maybeSingle()
+
+  if (!order) {
+    const kode = 'NTJ-' + Math.random().toString(36).substring(2,8).toUpperCase()
+    const { data: newOrder } = await db.from('orders').insert({
+      kode, buyer_id: buyerId, seller_id: sellerId,
+      product_id: p.id, status: 'negosiasi',
+      harga_deal: p.harga
+    }).select().single()
+    order = newOrder
+  }
+
+  if (!order) return showToast('Gagal membuka chat', 'error')
+  bukaChat(order.id, p)
+}
+
+let chatOrderId = null
+let chatSubscription = null
+
+async function bukaChat(orderId, produk) {
+  chatOrderId = orderId
+  const { data: { session } } = await db.auth.getSession()
+  const userId = session.user.id
+  const isBuyer = userId === produk.buyer_id || produk.seller_id !== userId
+
+  // Set header chat
+  const sellerNama = produk.users?.nama || 'Penjual'
+  document.getElementById('chat-nama').textContent = sellerNama
+  document.getElementById('chat-produk').textContent = produk.nama
+  const ava = document.getElementById('chat-ava')
+  ava.textContent = sellerNama.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase()
+
+  // Load pesan
+  await loadPesan(orderId, userId)
+
+  // Subscribe realtime
+  if (chatSubscription) chatSubscription.unsubscribe()
+  chatSubscription = db.channel('chat-' + orderId)
+    .on('postgres_changes', {
+      event: 'INSERT', schema: 'public', table: 'chats',
+      filter: `order_id=eq.${orderId}`
+    }, payload => {
+      tampilPesan(payload.new, userId)
+    })
+    .subscribe()
+
+  showPage('page-chat')
+}
+
+async function loadPesan(orderId, userId) {
+  const box = document.getElementById('chat-messages')
+  box.innerHTML = ''
+  const { data, error } = await db.from('chats')
+    .select('*')
+    .eq('order_id', orderId)
+    .order('created_at', { ascending: true })
+
+  if (error || !data) return
+  data.forEach(msg => tampilPesan(msg, userId))
+  box.scrollTop = box.scrollHeight
+}
+
+function tampilPesan(msg, userId) {
+  const box = document.getElementById('chat-messages')
+  const isMine = msg.sender_id === userId
+  const waktu = new Date(msg.created_at)
+  const jam = waktu.getHours() + ':' + String(waktu.getMinutes()).padStart(2,'0')
+
+  const div = document.createElement('div')
+  div.style.cssText = `display:flex;flex-direction:column;align-items:${isMine?'flex-end':'flex-start'}`
+  div.innerHTML = `
+    <div style="max-width:75%;padding:9px 12px;border-radius:${isMine?'12px 12px 3px 12px':'12px 12px 12px 3px'};background:${isMine?'linear-gradient(90deg,#C4789A,#9B7FD4)':'var(--color-background-primary)'};color:${isMine?'#fff':'var(--color-text-primary)'};font-size:13px;line-height:1.4;border:${isMine?'none':'0.5px solid var(--color-border-tertiary)'}">${msg.pesan}</div>
+    <div style="font-size:10px;color:var(--color-text-tertiary);margin-top:3px">${jam}</div>
+  `
+  box.appendChild(div)
+  box.scrollTop = box.scrollHeight
+}
+
+async function kirimPesan() {
+  const input = document.getElementById('chat-input')
+  const pesan = input.value.trim()
+  if (!pesan || !chatOrderId) return
+
+  const { data: { session } } = await db.auth.getSession()
+  if (!session) return
+
+  input.value = ''
+  const { error } = await db.from('chats').insert({
+    order_id: chatOrderId,
+    sender_id: session.user.id,
+    dari: 'buyer',
+    pesan
+  })
+  if (error) showToast('Gagal mengirim pesan', 'error')
+}
 
 function handleFotoInput(event) {
   const files=Array.from(event.target.files)

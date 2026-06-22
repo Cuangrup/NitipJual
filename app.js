@@ -59,6 +59,7 @@ function showPage(id) {
   document.getElementById(id).classList.add('active')
   window.scrollTo(0,0)
   if (id==='page-jual') setTimeout(()=>{ muatDraftIklan(); initFotoRow() }, 50)
+  if (id==='page-chat-list') loadChatList()
   if (id==='page-profil') loadIklanSaya()
 }
 
@@ -543,6 +544,55 @@ function setToggle(groupId, el) {
   document.querySelectorAll(`#${groupId} .tg-btn`).forEach(b=>b.classList.remove('active'))
   el.classList.add('active')
   simpanDraftIklan()
+}
+
+
+async function loadChatList() {
+  const { data: { session } } = await db.auth.getSession()
+  if (!session) return
+  const userId = session.user.id
+  const container = document.getElementById('chat-list-content')
+  if (!container) return
+  container.innerHTML = '<p class="empty">Memuat chat...</p>'
+
+  const { data, error } = await db.from('orders')
+    .select('id, kode, status, harga_deal, products(nama, foto_urls), users!orders_seller_id_fkey(nama, foto_profil), buyer:users!orders_buyer_id_fkey(nama, foto_profil)')
+    .or(`buyer_id.eq.${userId},seller_id.eq.${userId}`)
+    .order('created_at', { ascending: false })
+
+  if (error || !data || data.length === 0) {
+    container.innerHTML = '<p class="empty">Belum ada chat.</p>'
+    return
+  }
+
+  container.innerHTML = data.map(o => {
+    const isBuyer = o.users?.nama !== undefined
+    const lawanNama = isBuyer ? o.users?.nama : o.buyer?.nama || 'Pengguna'
+    const lawanAva = lawanNama?.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase()
+    const produkNama = o.products?.nama || 'Produk'
+    const foto = o.products?.foto_urls?.[0]
+
+    return `<div onclick="bukaOrder('${o.id}')" style="background:var(--color-background-primary);border-radius:12px;border:0.5px solid var(--color-border-tertiary);padding:12px;display:flex;gap:10px;margin-bottom:8px;cursor:pointer;align-items:center">
+      <div style="width:44px;height:44px;border-radius:50%;background:#FEF0F5;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;color:#9B3060;flex-shrink:0;overflow:hidden">
+        ${foto ? `<img src="${foto}" style="width:100%;height:100%;object-fit:cover">` : lawanAva}
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:2px">${lawanNama}</div>
+        <div style="font-size:11px;color:var(--color-text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${produkNama}</div>
+      </div>
+      <div style="font-size:12px;font-weight:500;color:#C4789A">Rp ${Number(o.harga_deal||0).toLocaleString('id-ID')}</div>
+    </div>`
+  }).join('')
+}
+
+async function bukaOrder(orderId) {
+  const { data: o } = await db.from('orders')
+    .select('*, products(nama, foto_urls, users(nama)), users!orders_seller_id_fkey(nama)')
+    .eq('id', orderId).single()
+  if (!o) return
+  const p = { ...o.products, seller_id: o.seller_id, users: o.products?.users }
+  produkAktif = p
+  bukaChat(orderId, p)
 }
 
 db.auth.onAuthStateChange((event,session)=>{

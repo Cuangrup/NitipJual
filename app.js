@@ -181,7 +181,7 @@ async function loadProduk(keyword='', kategori='') {
         <span class="badge ${p.kondisi==='baru'?'b-baru':'b-preloved'}">${p.kondisi==='baru'?'Baru':'Preloved'}</span>
         <div class="pname">${p.nama}</div>
         <div class="pharga">Rp ${Number(p.harga).toLocaleString('id-ID')}</div>
-        <div class="ploc"><i class="ti ti-map-pin" style="font-size:10px"></i> ${p.users?.kota||'Lokal'}</div>
+        <div class="ploc"><i class="ti ti-map-pin" style="font-size:10px"></i> ${p.kota||p.users?.kota||'Lokal'}</div>
       </div>
     </div>`
   }).join('')
@@ -232,7 +232,7 @@ async function lihatDetail(id) {
     <div style="font-size:16px;font-weight:500;color:var(--color-text-primary);margin:5px 0 4px;line-height:1.3">${p.nama}</div>
     <div style="font-size:22px;font-weight:500;color:#C4789A;margin-bottom:5px">Rp ${Number(p.harga).toLocaleString('id-ID')}</div>
     <div style="font-size:11px;color:var(--color-text-tertiary);display:flex;align-items:center;gap:5px">
-      <i class="ti ti-map-pin" style="font-size:11px"></i>${p.users?.kota||'Lokal'}<span>·</span><i class="ti ti-clock" style="font-size:11px"></i>${waktuLabel}
+      <i class="ti ti-map-pin" style="font-size:11px"></i>${p.kota||p.users?.kota||'Lokal'}<span>·</span><i class="ti ti-clock" style="font-size:11px"></i>${waktuLabel}
     </div>
     <div style="border-top:0.5px solid var(--color-border-tertiary);margin:9px 0"></div>
     <div style="display:flex;align-items:center;gap:9px">
@@ -532,7 +532,7 @@ async function postingProduk() {
     const {error:upErr}=await db.storage.from(BUCKET).upload(fileName,compressed,{contentType:'image/jpeg'})
     if (!upErr) { const {data:urlData}=db.storage.from(BUCKET).getPublicUrl(fileName); foto_urls.push(urlData.publicUrl) }
   }
-  const {error}=await db.from('products').insert({seller_id:session.user.id,nama,deskripsi,harga,kondisi,kategori,foto_urls,status:'aktif'})
+  const {error}=await db.from('products').insert({seller_id:session.user.id,nama,deskripsi,harga,kondisi,kategori,foto_urls,status:'aktif',kota:lokasi})
   btn.innerHTML='<i class="ti ti-speakerphone"></i> Pasang iklan sekarang'
   btn.disabled=false
   if (error) { showToast('Gagal memposting iklan','error'); return }

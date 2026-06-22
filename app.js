@@ -649,6 +649,18 @@ async function cekChatBaru() {
   })
 }
 
+
+function fokusSearch() {
+  showPage('page-home')
+  setTimeout(() => {
+    const search = document.getElementById('search')
+    if (search) {
+      search.focus()
+      search.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, 100)
+}
+
 function hapusBadgeChat() {
   localStorage.setItem('last-seen-chat', new Date().toISOString())
   const badges = ['badge-chat-topbar', 'badge-chat-sidebar', 'badge-chat-mobile']

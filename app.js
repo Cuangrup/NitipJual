@@ -5,6 +5,7 @@ const db = createClient(
 )
 
 const BUCKET = 'foto produk'
+let produkAktif = null
 let fotoFiles = []
 let fotoIndex = 0
 let fotoList = []
@@ -211,6 +212,7 @@ function initSwipe(el) {
 async function lihatDetail(id) {
   const { data:p, error } = await db.from('products').select('*, users(nama, kota, foto_profil)').eq('id',id).single()
   if (error||!p) { showToast('Gagal memuat iklan','error'); return }
+  produkAktif = p
   fotoList=p.foto_urls?.length>0?p.foto_urls:[]
   fotoIndex=0
   const waktu=new Date(p.created_at)
@@ -326,7 +328,7 @@ async function hubungiSeller() {
 
   // Cek order/chat sudah ada
   let { data: order } = await db.from('orders')
-    .select('id')
+    .select('id, buyer_id, seller_id')
     .eq('product_id', p.id)
     .eq('buyer_id', buyerId)
     .maybeSingle()
@@ -352,10 +354,9 @@ async function bukaChat(orderId, produk) {
   chatOrderId = orderId
   const { data: { session } } = await db.auth.getSession()
   const userId = session.user.id
-  const isBuyer = userId === produk.buyer_id || produk.seller_id !== userId
 
   // Set header chat
-  const sellerNama = produk.users?.nama || 'Penjual'
+  const sellerNama = produk.users?.nama || produk.nama_seller || 'Penjual'
   document.getElementById('chat-nama').textContent = sellerNama
   document.getElementById('chat-produk').textContent = produk.nama
   const ava = document.getElementById('chat-ava')

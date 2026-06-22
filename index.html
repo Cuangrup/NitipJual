@@ -53,7 +53,6 @@
 
   <!-- HOME -->
   <div id="page-home" class="page">
-    <!-- DESKTOP TOPBAR -->
     <div class="topbar">
       <div class="topbar-left">
         <svg width="28" height="28" viewBox="0 0 56 56">
@@ -71,10 +70,7 @@
         <div class="user-ava" id="user-ava">?</div>
       </div>
     </div>
-
-    <!-- DESKTOP BODY -->
     <div class="home-body">
-      <!-- SIDEBAR -->
       <div class="sidebar">
         <div class="sb-section">Menu</div>
         <div class="sb-item active" onclick="showPage('page-home')"><i class="ti ti-home"></i>Beranda</div>
@@ -92,10 +88,7 @@
         <hr class="sb-divider">
         <div class="sb-item menu-logout" onclick="logout()"><i class="ti ti-logout"></i>Keluar</div>
       </div>
-
-      <!-- MAIN CONTENT -->
       <div class="main-content">
-        <!-- MOBILE SEARCH -->
         <div class="searchrow mobile-only">
           <input class="searchbox" id="search" placeholder="Cari barang di kotamu..." oninput="cariProduk()">
           <button class="filterbtn"><i class="ti ti-adjustments-horizontal"></i></button>
@@ -124,14 +117,12 @@
         <div class="produk-grid" id="produk-list"></div>
       </div>
     </div>
-
-    <!-- MOBILE BOTTOM NAV -->
     <div class="bnav mobile-only">
-      <button class="nb active" onclick="showPage('page-home')"><i class="ti ti-home"></i><span>Beranda</span></button>
-      <button class="nb" onclick="showPage('page-home')"><i class="ti ti-search"></i><span>Cari</span></button>
-      <button class="nb" onclick="showPage('page-jual')"><i class="ti ti-plus-circle"></i><span>Pasang</span></button>
-      <button class="nb" onclick="showPage('page-home')"><i class="ti ti-message"></i><span>Chat</span></button>
-      <button class="nb" onclick="showPage('page-profil')"><i class="ti ti-user"></i><span>Profil</span></button>
+      <button class="nb active" onclick="setNav(this);showPage('page-home')"><i class="ti ti-home"></i><span>Beranda</span></button>
+      <button class="nb" onclick="setNav(this);showPage('page-home')"><i class="ti ti-search"></i><span>Cari</span></button>
+      <button class="nb-plus" onclick="showPage('page-jual')"><div class="plus-btn"><i class="ti ti-plus"></i></div></button>
+      <button class="nb" onclick="setNav(this);showPage('page-home')"><i class="ti ti-message"></i><span>Chat</span></button>
+      <button class="nb" onclick="setNav(this);showPage('page-profil')"><i class="ti ti-user"></i><span>Profil</span></button>
     </div>
   </div>
 
@@ -147,11 +138,11 @@
       <div class="form-card">
         <div class="slabel">Foto produk <span class="slabel-note">(max 5, otomatis dikompres)</span></div>
         <div class="photo-row" id="foto-row">
-  <label for="foto-input" class="photo-add" style="cursor:pointer">
-    <i class="ti ti-camera"></i><span>Tambah</span>
-  </label>
-  <input type="file" id="foto-input" accept="image/*" multiple style="display:none" onchange="handleFotoInput(event)">
-</div>
+          <label for="foto-input" class="photo-add" style="cursor:pointer">
+            <i class="ti ti-camera"></i><span>Tambah</span>
+          </label>
+          <input type="file" id="foto-input" accept="image/*" multiple style="display:none" onchange="handleFotoInput(event)">
+        </div>
         <div class="slabel">Judul iklan</div>
         <input class="finput" id="nama-produk" placeholder="Contoh: Laptop Asus Vivobook i5">
         <div class="slabel">Harga</div>
@@ -187,24 +178,24 @@
         <textarea class="finput ftextarea" id="deskripsi" placeholder="Jelaskan kondisi, kelengkapan, alasan jual..."></textarea>
         <div class="slabel">Lokasi</div>
         <div class="select-wrap">
-  <select class="finput" id="lokasi">
-    <option value="Gresik">Gresik</option>
-    <option value="Surabaya">Surabaya</option>
-    <option value="Sidoarjo">Sidoarjo</option>
-    <option value="Lamongan">Lamongan</option>
-    <option value="Mojokerto">Mojokerto</option>
-    <option value="Pasuruan">Pasuruan</option>
-    <option value="Malang">Malang</option>
-    <option value="Banyuwangi">Banyuwangi</option>
-    <option value="Jember">Jember</option>
-    <option value="Kediri">Kediri</option>
-    <option value="Madiun">Madiun</option>
-    <option value="Bojonegoro">Bojonegoro</option>
-    <option value="Tuban">Tuban</option>
-    <option value="Lainnya">Kota lainnya</option>
-  </select>
-  <i class="ti ti-chevron-down select-icon"></i>
-</div>
+          <select class="finput" id="lokasi">
+            <option value="Gresik">Gresik</option>
+            <option value="Surabaya">Surabaya</option>
+            <option value="Sidoarjo">Sidoarjo</option>
+            <option value="Lamongan">Lamongan</option>
+            <option value="Mojokerto">Mojokerto</option>
+            <option value="Pasuruan">Pasuruan</option>
+            <option value="Malang">Malang</option>
+            <option value="Banyuwangi">Banyuwangi</option>
+            <option value="Jember">Jember</option>
+            <option value="Kediri">Kediri</option>
+            <option value="Madiun">Madiun</option>
+            <option value="Bojonegoro">Bojonegoro</option>
+            <option value="Tuban">Tuban</option>
+            <option value="Lainnya">Kota lainnya</option>
+          </select>
+          <i class="ti ti-chevron-down select-icon"></i>
+        </div>
         <button class="btnp" onclick="postingProduk()">
           <i class="ti ti-speakerphone"></i> Pasang iklan sekarang
         </button>
@@ -216,50 +207,93 @@
     </div>
   </div>
 
+  <!-- DETAIL IKLAN -->
+  <div id="page-detail" class="page">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="back-btn" onclick="showPage('page-home')"><i class="ti ti-arrow-left"></i></button>
+        <span class="topbar-title">Detail iklan</span>
+      </div>
+      <div class="topbar-right">
+        <i class="ti ti-heart"></i>
+        <i class="ti ti-share"></i>
+      </div>
+    </div>
+    <div id="detail-content" style="flex:1;overflow-y:auto;background:#FAF5FF"></div>
+  </div>
+
   <!-- PROFIL -->
   <div id="page-profil" class="page">
     <div class="topbar">
       <div class="topbar-left">
-        <button class="back-btn" onclick="showPage('page-home')"><i class="ti ti-arrow-left"></i></button>
+        <svg width="28" height="28" viewBox="0 0 56 56">
+          <rect width="56" height="56" rx="10" fill="rgba(255,255,255,0.2)"/>
+          <path d="M14 14h16l12 14-12 14H14V14z" fill="none" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/>
+          <circle cx="34" cy="28" r="3" fill="#fff"/>
+          <text x="22" y="32" text-anchor="middle" font-size="12" font-weight="700" fill="#fff" font-family="sans-serif">NJ</text>
+        </svg>
         <span class="topbar-title">Profil</span>
       </div>
     </div>
-    <div class="content">
-      <div class="profil-card">
+    <div style="flex:1;overflow-y:auto;background:#FAF5FF">
+      <div class="profil-hero">
         <div class="profil-ava" id="profil-ava">?</div>
         <div class="profil-nama" id="profil-nama">-</div>
         <div class="profil-email" id="profil-email">-</div>
       </div>
-      <div class="menu-list">
-        <div class="menu-item" onclick="showPage('page-jual')">
-          <i class="ti ti-speakerphone"></i><span>Iklan saya</span><i class="ti ti-chevron-right"></i>
+      <div class="profil-tabs">
+        <button class="profil-tab active" onclick="switchTab(this,'tab-akun')">Akun</button>
+        <button class="profil-tab" onclick="switchTab(this,'tab-iklan')">Iklan Saya</button>
+        <button class="profil-tab" onclick="switchTab(this,'tab-bibit')">NitipBibit</button>
+      </div>
+      <div id="tab-akun" class="tab-content active">
+        <div class="menu-list">
+          <div class="menu-item"><i class="ti ti-user-edit"></i><span>Edit profil</span><i class="ti ti-chevron-right"></i></div>
+          <div class="menu-item"><i class="ti ti-message"></i><span>Chat saya</span><i class="ti ti-chevron-right"></i></div>
+          <div class="menu-item"><i class="ti ti-bell"></i><span>Notifikasi</span><i class="ti ti-chevron-right"></i></div>
+          <div class="menu-item menu-logout" onclick="logout()"><i class="ti ti-logout"></i><span>Keluar</span><i class="ti ti-chevron-right"></i></div>
         </div>
-        <div class="menu-item">
-          <i class="ti ti-message"></i><span>Chat saya</span><i class="ti ti-chevron-right"></i>
+      </div>
+      <div id="tab-iklan" class="tab-content">
+        <div style="padding:12px">
+          <div class="filter-row" id="filter-status">
+            <button class="filter-btn active" onclick="filterIklan(this,'')">Semua</button>
+            <button class="filter-btn" onclick="filterIklan(this,'aktif')">Aktif</button>
+            <button class="filter-btn" onclick="filterIklan(this,'terjual')">Terjual</button>
+            <button class="filter-btn" onclick="filterIklan(this,'dihapus')">Dihapus</button>
+          </div>
+          <div id="iklan-saya-list"><p class="empty">Memuat iklan...</p></div>
         </div>
-        <div class="menu-item">
-          <i class="ti ti-leaf"></i><span>Kontribusi NitipBibit saya</span><i class="ti ti-chevron-right"></i>
-        </div>
-        <div class="menu-item menu-logout" onclick="logout()">
-          <i class="ti ti-logout"></i><span>Keluar</span><i class="ti ti-chevron-right"></i>
+      </div>
+      <div id="tab-bibit" class="tab-content">
+        <div style="padding:12px">
+          <div class="bibit-stat-card">
+            <i class="ti ti-leaf" style="font-size:32px;color:#C4789A"></i>
+            <div style="font-size:12px;color:var(--color-text-secondary);margin-top:8px">Total kontribusimu</div>
+            <div style="font-size:24px;font-weight:500;color:#C4789A;margin-top:4px" id="total-kontribusi">Rp 0</div>
+            <div style="font-size:11px;color:var(--color-text-tertiary);margin-top:2px" id="total-transaksi">dari 0 transaksi layanan</div>
+          </div>
+          <div class="bibit-global-card">
+            <div style="font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px">Dana terkumpul bulan ini</div>
+            <div style="font-size:22px;font-weight:500;color:#9B7FD4">Rp 1.240.000</div>
+            <div style="font-size:11px;color:var(--color-text-tertiary);margin-top:2px">dari seluruh pengguna NitipJual</div>
+          </div>
+          <div class="bibit-info">
+            <i class="ti ti-heart" style="font-size:14px"></i>
+            Kontribusimu membantu program Bibit Cerdas, Bibit Sehat, Bibit Pangan & Bibit Mandiri.
+          </div>
         </div>
       </div>
     </div>
-  </div>
-<!-- DETAIL IKLAN -->
-<div id="page-detail" class="page">
-  <div class="topbar">
-    <div class="topbar-left">
-      <button class="back-btn" onclick="showPage('page-home')"><i class="ti ti-arrow-left"></i></button>
-      <span class="topbar-title">Detail iklan</span>
-    </div>
-    <div class="topbar-right">
-      <i class="ti ti-heart"></i>
-      <i class="ti ti-share"></i>
+    <div class="bnav mobile-only">
+      <button class="nb" onclick="setNav(this);showPage('page-home')"><i class="ti ti-home"></i><span>Beranda</span></button>
+      <button class="nb" onclick="setNav(this);showPage('page-home')"><i class="ti ti-search"></i><span>Cari</span></button>
+      <button class="nb-plus" onclick="showPage('page-jual')"><div class="plus-btn"><i class="ti ti-plus"></i></div></button>
+      <button class="nb" onclick="setNav(this);showPage('page-home')"><i class="ti ti-message"></i><span>Chat</span></button>
+      <button class="nb active" onclick="setNav(this);showPage('page-profil')"><i class="ti ti-user"></i><span>Profil</span></button>
     </div>
   </div>
-  <div id="detail-content" style="flex:1;overflow-y:auto;background:#FAF5FF"></div>
-</div>
+
   <script src="app.js"></script>
 </body>
 </html>

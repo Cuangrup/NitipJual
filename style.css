@@ -185,7 +185,3 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   .mobile-only{display:flex}
   .produk-grid{grid-template-columns:repeat(2,1fr)}
 }
-
-#page-chat{height:100svh;display:flex;flex-direction:column}
-#page-chat .topbar{flex-shrink:0}
-#chat-messages{flex:1;overflow-y:auto;min-height:0}

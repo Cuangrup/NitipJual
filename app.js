@@ -40,6 +40,7 @@ function tampilHome(user) {
   if (profilEmail) profilEmail.textContent = user.email
   showPage('page-home')
   loadProduk()
+  setTimeout(cekChatBaru, 1000)
 }
 
 async function loginGoogle() {
@@ -59,7 +60,7 @@ function showPage(id) {
   document.getElementById(id).classList.add('active')
   window.scrollTo(0,0)
   if (id==='page-jual') setTimeout(()=>{ muatDraftIklan(); initFotoRow() }, 50)
-  if (id==='page-chat-list') loadChatList()
+  if (id==='page-chat-list') { loadChatList(); hapusBadgeChat() }
   if (id==='page-profil') loadIklanSaya()
 }
 
@@ -537,6 +538,7 @@ async function postingProduk() {
   showToast('Iklan berhasil dipasang!')
   showPage('page-home')
   loadProduk()
+  setTimeout(cekChatBaru, 1000)
 }
 
 function setToggle(groupId, el) {
@@ -595,6 +597,44 @@ async function bukaOrder(orderId) {
   const p = { ...o.products, seller_id: o.seller_id, users: o.products?.users }
   produkAktif = p
   bukaChat(orderId, p)
+}
+
+
+async function cekChatBaru() {
+  const { data: { session } } = await db.auth.getSession()
+  if (!session) return
+  const userId = session.user.id
+
+  const { data: orders } = await db.from('orders')
+    .select('id')
+    .or(`buyer_id.eq.${userId},seller_id.eq.${userId}`)
+
+  if (!orders || orders.length === 0) return
+
+  const orderIds = orders.map(o => o.id)
+  const lastSeen = localStorage.getItem('last-seen-chat') || '1970-01-01'
+
+  const { data: newChats } = await db.from('chats')
+    .select('id')
+    .in('order_id', orderIds)
+    .neq('sender_id', userId)
+    .gt('created_at', lastSeen)
+
+  const ada = newChats && newChats.length > 0
+  const badges = ['badge-chat-topbar', 'badge-chat-sidebar', 'badge-chat-mobile']
+  badges.forEach(id => {
+    const el = document.getElementById(id)
+    if (el) el.style.display = ada ? 'block' : 'none'
+  })
+}
+
+function hapusBadgeChat() {
+  localStorage.setItem('last-seen-chat', new Date().toISOString())
+  const badges = ['badge-chat-topbar', 'badge-chat-sidebar', 'badge-chat-mobile']
+  badges.forEach(id => {
+    const el = document.getElementById(id)
+    if (el) el.style.display = 'none'
+  })
 }
 
 db.auth.onAuthStateChange((event,session)=>{

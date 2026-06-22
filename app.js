@@ -40,7 +40,10 @@ function tampilHome(user) {
   if (profilEmail) profilEmail.textContent = user.email
   showPage('page-home')
   loadProduk()
+  const userId = user.id
   setTimeout(cekChatBaru, 1000)
+  setInterval(cekChatBaru, 30000)
+  subscribeChatBadge(userId)
 }
 
 async function loginGoogle() {
@@ -538,7 +541,10 @@ async function postingProduk() {
   showToast('Iklan berhasil dipasang!')
   showPage('page-home')
   loadProduk()
+  const userId = user.id
   setTimeout(cekChatBaru, 1000)
+  setInterval(cekChatBaru, 30000)
+  subscribeChatBadge(userId)
 }
 
 function setToggle(groupId, el) {
@@ -599,6 +605,21 @@ async function bukaOrder(orderId) {
   bukaChat(orderId, p)
 }
 
+
+
+function subscribeChatBadge(userId) {
+  db.channel('badge-chat')
+    .on('postgres_changes', {
+      event: 'INSERT',
+      schema: 'public',
+      table: 'chats'
+    }, payload => {
+      if (payload.new.sender_id !== userId) {
+        cekChatBaru()
+      }
+    })
+    .subscribe()
+}
 
 async function cekChatBaru() {
   const { data: { session } } = await db.auth.getSession()

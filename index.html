@@ -66,7 +66,7 @@
       <input class="topbar-search" id="search-desktop" placeholder="Cari barang di Gresik, Surabaya, Sidoarjo..." oninput="cariProduk()">
       <div class="topbar-right">
         <i class="ti ti-bell"></i>
-        <i class="ti ti-message" onclick="showPage('page-chat-list')" style="cursor:pointer"></i>
+        <div style="position:relative;cursor:pointer" onclick="showPage('page-chat-list')"><i class="ti ti-message" style="font-size:20px;opacity:0.9"></i><span id="badge-chat-topbar" style="display:none;position:absolute;top:-4px;right:-4px;width:8px;height:8px;border-radius:50%;background:#e53935;border:1.5px solid #9B7FD4"></span></div>
         <div class="user-ava" onclick="showPage('page-profil')" style="cursor:pointer" id="user-ava">?</div>
       </div>
     </div>
@@ -76,7 +76,7 @@
         <div class="sb-item active" onclick="showPage('page-home')"><i class="ti ti-home"></i>Beranda</div>
         <div class="sb-item" onclick="showPage('page-home')"><i class="ti ti-search"></i>Cari iklan</div>
         <div class="sb-item" onclick="showPage('page-jual')"><i class="ti ti-speakerphone"></i>Pasang iklan</div>
-        <div class="sb-item" onclick="showPage('page-chat-list')"><i class="ti ti-message"></i>Chat saya</div>
+        <div class="sb-item" onclick="showPage('page-chat-list')"><i class="ti ti-message"></i>Chat saya<span id="badge-chat-sidebar" style="display:none;width:8px;height:8px;border-radius:50%;background:#e53935;margin-left:auto"></span></div>
         <div class="sb-item" onclick="showPage('page-profil')"><i class="ti ti-user"></i>Profil saya</div>
         <div class="sb-section">Kategori</div>
         <div class="sb-item" onclick="filterKategori(this,'elektronik')"><i class="ti ti-device-laptop"></i>Elektronik</div>
@@ -121,7 +121,7 @@
       <button class="nb active" onclick="setNav(this);showPage('page-home')"><i class="ti ti-home"></i><span>Beranda</span></button>
       <button class="nb" onclick="setNav(this);showPage('page-home')"><i class="ti ti-search"></i><span>Cari</span></button>
       <button class="nb-plus" onclick="showPage('page-jual')"><div class="plus-btn"><i class="ti ti-plus"></i></div></button>
-      <button class="nb" onclick="setNav(this);showPage('page-home')"><i class="ti ti-message"></i><span>Chat</span></button>
+      <button class="nb" onclick="setNav(this);showPage('page-chat-list')"><i class="ti ti-message"></i><span>Chat</span><span id="badge-chat-mobile" style="display:none;position:absolute;top:6px;right:calc(50% - 18px);width:8px;height:8px;border-radius:50%;background:#e53935"></span></button>
       <button class="nb" onclick="setNav(this);showPage('page-profil')"><i class="ti ti-user"></i><span>Profil</span></button>
     </div>
   </div>
@@ -290,7 +290,7 @@
       <button class="nb" onclick="setNav(this);showPage('page-home')"><i class="ti ti-home"></i><span>Beranda</span></button>
       <button class="nb" onclick="setNav(this);showPage('page-home')"><i class="ti ti-search"></i><span>Cari</span></button>
       <button class="nb-plus" onclick="showPage('page-jual')"><div class="plus-btn"><i class="ti ti-plus"></i></div></button>
-      <button class="nb" onclick="setNav(this);showPage('page-home')"><i class="ti ti-message"></i><span>Chat</span></button>
+      <button class="nb" onclick="setNav(this);showPage('page-chat-list')"><i class="ti ti-message"></i><span>Chat</span><span id="badge-chat-mobile" style="display:none;position:absolute;top:6px;right:calc(50% - 18px);width:8px;height:8px;border-radius:50%;background:#e53935"></span></button>
       <button class="nb active" onclick="setNav(this);showPage('page-profil')"><i class="ti ti-user"></i><span>Profil</span></button>
     </div>
   </div>

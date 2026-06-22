@@ -66,8 +66,8 @@
       <input class="topbar-search" id="search-desktop" placeholder="Cari barang di Gresik, Surabaya, Sidoarjo..." oninput="cariProduk()">
       <div class="topbar-right">
         <i class="ti ti-bell"></i>
-        <i class="ti ti-message"></i>
-        <div class="user-ava" id="user-ava">?</div>
+        <i class="ti ti-message" onclick="showPage('page-chat-list')" style="cursor:pointer"></i>
+        <div class="user-ava" onclick="showPage('page-profil')" style="cursor:pointer" id="user-ava">?</div>
       </div>
     </div>
     <div class="home-body">
@@ -76,7 +76,7 @@
         <div class="sb-item active" onclick="showPage('page-home')"><i class="ti ti-home"></i>Beranda</div>
         <div class="sb-item" onclick="showPage('page-home')"><i class="ti ti-search"></i>Cari iklan</div>
         <div class="sb-item" onclick="showPage('page-jual')"><i class="ti ti-speakerphone"></i>Pasang iklan</div>
-        <div class="sb-item" onclick="showPage('page-home')"><i class="ti ti-message"></i>Chat saya</div>
+        <div class="sb-item" onclick="showPage('page-chat-list')"><i class="ti ti-message"></i>Chat saya</div>
         <div class="sb-item" onclick="showPage('page-profil')"><i class="ti ti-user"></i>Profil saya</div>
         <div class="sb-section">Kategori</div>
         <div class="sb-item" onclick="filterKategori(this,'elektronik')"><i class="ti ti-device-laptop"></i>Elektronik</div>
@@ -361,6 +361,19 @@
       <button onclick="kirimPesan()" style="width:40px;height:40px;border-radius:50%;background:linear-gradient(90deg,#C4789A,#9B7FD4);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">
         <i class="ti ti-send" style="font-size:16px;color:#fff"></i>
       </button>
+    </div>
+  </div>
+
+  <!-- CHAT LIST -->
+  <div id="page-chat-list" class="page">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="back-btn" onclick="showPage('page-home')"><i class="ti ti-arrow-left"></i></button>
+        <span class="topbar-title">Chat Saya</span>
+      </div>
+    </div>
+    <div style="flex:1;overflow-y:auto;background:#FAF5FF;padding:12px" id="chat-list-content">
+      <p class="empty">Memuat chat...</p>
     </div>
   </div>
 

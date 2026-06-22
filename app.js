@@ -126,9 +126,7 @@ async function hapusIklan(id) {
   loadIklanSaya()
 }
 
-function editIklan(id) {
-  showToast('Fitur edit iklan segera hadir!')
-}
+
 
 function simpanDraftIklan() {
   const nama = document.getElementById('nama-produk')?.value||''
@@ -332,6 +330,49 @@ function renderFotoPreview() {
   }).join('')
   const tambah=fotoFiles.length<5?`<label for="foto-input" class="photo-add" style="cursor:pointer"><i class="ti ti-camera"></i><span>Tambah</span></label><input type="file" id="foto-input" accept="image/*" multiple style="display:none" onchange="handleFotoInput(event)">`:''
   row.innerHTML=previews+tambah
+}
+
+async function editIklan(id) {
+  const { data: p, error } = await db.from("products").select("*").eq("id", id).single()
+  if (error || !p) { showToast("Gagal memuat iklan", "error"); return }
+  document.getElementById("edit-id").value = p.id
+  document.getElementById("edit-nama").value = p.nama || ""
+  document.getElementById("edit-harga").value = p.harga || ""
+  document.getElementById("edit-deskripsi").value = p.deskripsi || ""
+  document.getElementById("edit-kategori").value = p.kategori || ""
+  document.querySelectorAll("#edit-kondisi-group .tg-btn").forEach(btn => btn.classList.toggle("active", btn.textContent.trim().toLowerCase() === p.kondisi))
+  const fotoWrap = document.getElementById("edit-foto-existing")
+  fotoWrap.innerHTML = p.foto_urls?.map((f, i) => `<div style="position:relative;width:70px;height:70px;flex-shrink:0"><img src="${f}" style="width:70px;height:70px;object-fit:cover;border-radius:10px;border:0.5px solid var(--pkbr)"><button onclick="hapusFotoExisting(${i},'${id}')" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:#e53935;color:#fff;border:none;cursor:pointer;font-size:14px;line-height:1;padding:0">×</button></div>`).join("") || ""
+  showPage("page-edit")
+}
+
+async function simpanEdit() {
+  const id = document.getElementById("edit-id").value
+  const nama = document.getElementById("edit-nama").value.trim()
+  const harga = parseInt(document.getElementById("edit-harga").value)
+  const deskripsi = document.getElementById("edit-deskripsi").value.trim()
+  const kategori = document.getElementById("edit-kategori").value
+  const kondisi = document.querySelector("#edit-kondisi-group .tg-btn.active")?.textContent.trim().toLowerCase() === "preloved" ? "preloved" : "baru"
+  if (!nama || !harga) return showToast("Nama dan harga wajib diisi", "error")
+  const btn = document.getElementById("btn-simpan-edit")
+  btn.innerHTML = "<i class=\"ti ti-loader\"></i> Menyimpan..."
+  btn.disabled = true
+  const { error } = await db.from("products").update({ nama, harga, deskripsi, kategori, kondisi }).eq("id", id)
+  btn.innerHTML = "<i class=\"ti ti-check\"></i> Simpan perubahan"
+  btn.disabled = false
+  if (error) { showToast("Gagal menyimpan", "error"); return }
+  showToast("Iklan berhasil diperbarui!")
+  showPage("page-profil")
+  loadIklanSaya()
+}
+
+async function hapusFotoExisting(index, id) {
+  const { data: p } = await db.from("products").select("foto_urls").eq("id", id).single()
+  if (!p) return
+  const urls = [...(p.foto_urls || [])]
+  urls.splice(index, 1)
+  await db.from("products").update({ foto_urls: urls }).eq("id", id)
+  editIklan(id)
 }
 
 function hapusFoto(index) { fotoFiles.splice(index,1); renderFotoPreview() }

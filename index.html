@@ -99,7 +99,10 @@
       </div>
       <div class="topbar-right">
         <button id="topbar-login-btn" onclick="showPage('page-login')" style="display:none;background:rgba(255,255,255,0.2);border:none;border-radius:16px;padding:6px 14px;color:#fff;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;white-space:nowrap">Login/daftar</button>
-        <i class="ti ti-bell"></i>
+        <div style="position:relative;cursor:pointer" onclick="bukaNotifikasi()">
+          <i class="ti ti-bell" style="font-size:20px;opacity:0.9"></i>
+          <span id="badge-notif-topbar" style="display:none;position:absolute;top:-4px;right:-4px;width:8px;height:8px;border-radius:50%;background:#e53935;border:1.5px solid #9B7FD4"></span>
+        </div>
         <div style="position:relative;cursor:pointer" onclick="showPage('page-chat-list')">
           <i class="ti ti-message" style="font-size:20px;opacity:0.9"></i>
           <span id="badge-chat-topbar" style="display:none;position:absolute;top:-4px;right:-4px;width:8px;height:8px;border-radius:50%;background:#e53935;border:1.5px solid #9B7FD4"></span>
@@ -467,7 +470,7 @@
         <div class="menu-list">
           <div class="menu-item" onclick="bukaEditProfil()"><i class="ti ti-user-edit"></i><span>Edit profil</span><i class="ti ti-chevron-right"></i></div>
           <div class="menu-item" onclick="showPage('page-chat-list')"><i class="ti ti-message"></i><span>Chat saya</span><i class="ti ti-chevron-right"></i></div>
-          <div class="menu-item"><i class="ti ti-bell"></i><span>Notifikasi</span><i class="ti ti-chevron-right"></i></div>
+          <div class="menu-item" onclick="bukaNotifikasi()"><i class="ti ti-bell"></i><span>Notifikasi</span><i class="ti ti-chevron-right"></i></div>
           <div class="menu-item" onclick="bukaHalamanLegal('page-bantuan')"><i class="ti ti-headset"></i><span>Bantuan and FAQ</span><i class="ti ti-chevron-right"></i></div>
           <div class="menu-item menu-logout" onclick="logout()"><i class="ti ti-logout"></i><span>Keluar</span><i class="ti ti-chevron-right"></i></div>
         </div>
@@ -1086,6 +1089,18 @@
       <div id="modal-pilih-pembeli-content"></div>
     </div>
   </div>
+  <div id="page-notifikasi" class="page">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="back-btn" onclick="showPage('page-home')"><i class="ti ti-arrow-left"></i></button>
+        <span class="topbar-title">Notifikasi</span>
+      </div>
+    </div>
+    <div class="content" style="max-width:560px;margin:0 auto;padding:12px 12px 40px">
+      <div id="notif-list"><p class="empty">Memuat notifikasi...</p></div>
+    </div>
+  </div>
+
   <div id="modal-layanan" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;padding:20px">
     <div style="background:var(--bg);border-radius:16px;width:100%;max-width:400px;max-height:85vh;display:flex;flex-direction:column;overflow:hidden">
       <div id="modal-layanan-head" style="background:var(--grad-h);padding:14px 18px;color:#fff;flex-shrink:0">

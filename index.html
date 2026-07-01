@@ -173,20 +173,19 @@
           <button class="tg-btn" onclick="setToggle('sort-group',this)" data-val="harga_asc">Harga ↑</button>
           <button class="tg-btn" onclick="setToggle('sort-group',this)" data-val="harga_desc">Harga ↓</button>
         </div>
-        <div class="slabel">Kota / Wilayah</div>
-        <div class="select-wrap">
-          <select class="finput" id="filter-kota">
-            <option value="">Semua kota</option>
-            <option value="Gresik">Gresik</option>
-            <option value="Surabaya">Surabaya</option>
-            <option value="Sidoarjo">Sidoarjo</option>
-            <option value="Lamongan">Lamongan</option>
-            <option value="Mojokerto">Mojokerto</option>
-            <option value="Pasuruan">Pasuruan</option>
-            <option value="Malang">Malang</option>
-            <option value="Lainnya">Kota lainnya</option>
-          </select>
-          <i class="ti ti-chevron-down select-icon"></i>
+        <div class="slabel">Kota</div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px" id="filter-kota-chips">
+          <button class="tg-btn active" onclick="pilihKotaFilter(this,'')" style="flex:none;padding:5px 10px;font-size:11px">Semua</button>
+          <button class="tg-btn" onclick="pilihKotaFilter(this,'Jakarta')" style="flex:none;padding:5px 10px;font-size:11px">Jakarta</button>
+          <button class="tg-btn" onclick="pilihKotaFilter(this,'Surabaya')" style="flex:none;padding:5px 10px;font-size:11px">Surabaya</button>
+          <button class="tg-btn" onclick="pilihKotaFilter(this,'Bandung')" style="flex:none;padding:5px 10px;font-size:11px">Bandung</button>
+          <button class="tg-btn" onclick="pilihKotaFilter(this,'Medan')" style="flex:none;padding:5px 10px;font-size:11px">Medan</button>
+          <button class="tg-btn" onclick="pilihKotaFilter(this,'Makassar')" style="flex:none;padding:5px 10px;font-size:11px">Makassar</button>
+          <button class="tg-btn" onclick="pilihKotaFilter(this,'Semarang')" style="flex:none;padding:5px 10px;font-size:11px">Semarang</button>
+          <button class="tg-btn" onclick="pilihKotaFilter(this,'Palembang')" style="flex:none;padding:5px 10px;font-size:11px">Palembang</button>
+          <button class="tg-btn" onclick="pilihKotaFilter(this,'Tangerang')" style="flex:none;padding:5px 10px;font-size:11px">Tangerang</button>
+          <button class="tg-btn" onclick="pilihKotaFilter(this,'Depok')" style="flex:none;padding:5px 10px;font-size:11px">Depok</button>
+          <button class="tg-btn" onclick="pilihKotaFilter(this,'Bekasi')" style="flex:none;padding:5px 10px;font-size:11px">Bekasi</button>
         </div>
         <div class="slabel">Kondisi</div>
         <div class="toggle-group" id="kondisi-filter-group">
@@ -270,23 +269,16 @@
         </div>
         <div class="slabel">Deskripsi</div>
         <textarea class="finput ftextarea" id="deskripsi" placeholder="Jelaskan kondisi, kelengkapan, alasan jual..."></textarea>
-        <div class="slabel">Lokasi</div>
+        <div class="slabel">Lokasi iklan</div>
+        <div class="select-wrap" style="margin-bottom:8px">
+          <select class="finput" id="lokasi-provinsi" onchange="updateKota(this.value)" style="margin-bottom:0">
+            <option value="">Pilih Lokasi Iklan (Provinsi)</option>
+          </select>
+          <i class="ti ti-chevron-down select-icon"></i>
+        </div>
         <div class="select-wrap">
-          <select class="finput" id="lokasi">
-            <option value="Gresik">Gresik</option>
-            <option value="Surabaya">Surabaya</option>
-            <option value="Sidoarjo">Sidoarjo</option>
-            <option value="Lamongan">Lamongan</option>
-            <option value="Mojokerto">Mojokerto</option>
-            <option value="Pasuruan">Pasuruan</option>
-            <option value="Malang">Malang</option>
-            <option value="Banyuwangi">Banyuwangi</option>
-            <option value="Jember">Jember</option>
-            <option value="Kediri">Kediri</option>
-            <option value="Madiun">Madiun</option>
-            <option value="Bojonegoro">Bojonegoro</option>
-            <option value="Tuban">Tuban</option>
-            <option value="Lainnya">Kota lainnya</option>
+          <select class="finput" id="lokasi" disabled style="margin-bottom:0;opacity:0.5">
+            <option value="">Pilih kota / kabupaten...</option>
           </select>
           <i class="ti ti-chevron-down select-icon"></i>
         </div>
@@ -500,6 +492,7 @@
     </div>
   </div>
 
+  <script src="lokasi.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

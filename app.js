@@ -22,7 +22,56 @@ function showToast(pesan, tipe='sukses') {
 }
 
 let sesiAktif = null
+let favoritSet = new Set()
 const HALAMAN_WAJIB_LOGIN = ['page-jual', 'page-profil', 'page-chat-list', 'page-chat']
+
+async function muatFavoritSaya(userId) {
+  favoritSet = new Set()
+  const { data } = await db.from('favorites').select('product_id').eq('user_id', userId)
+  if (data) data.forEach(f => favoritSet.add(f.product_id))
+}
+
+async function toggleFavorit(productId) {
+  if (!sesiAktif) {
+    showToast('Login dulu untuk menyimpan ke favorit', 'error')
+    showPage('page-login')
+    return
+  }
+  const userId = sesiAktif.user.id
+  const sudah = favoritSet.has(productId)
+  if (sudah) {
+    await db.from('favorites').delete().eq('user_id', userId).eq('product_id', productId)
+    favoritSet.delete(productId)
+  } else {
+    await db.from('favorites').insert({ user_id: userId, product_id: productId })
+    favoritSet.add(productId)
+  }
+  document.querySelectorAll(`.card-heart[data-pid="${productId}"]`).forEach(b => b.classList.toggle('on', favoritSet.has(productId)))
+  showToast(favoritSet.has(productId) ? 'Ditambahkan ke favorit' : 'Dihapus dari favorit')
+  if (document.getElementById('tab-favorit')?.classList.contains('active')) loadFavoritTab()
+}
+
+async function loadFavoritTab() {
+  const list = document.getElementById('favorit-list')
+  if (!list) return
+  if (!sesiAktif) { list.innerHTML = '<p class="empty">Login dulu untuk lihat favorit.</p>'; return }
+  list.innerHTML = '<p class="empty">Memuat favorit...</p>'
+  const { data, error } = await db.from('favorites').select('product_id, products(*)').eq('user_id', sesiAktif.user.id).order('created_at', { ascending: false })
+  if (error || !data || data.filter(f => f.products).length === 0) { list.innerHTML = '<p class="empty">Belum ada produk favorit.</p>'; return }
+  list.innerHTML = data.filter(f => f.products).map(f => {
+    const p = f.products
+    const foto = p.foto_urls?.length > 0 ? `<img src="${p.foto_urls[0]}" alt="${p.nama}" style="width:100%;height:100%;object-fit:cover">` : `<i class="ti ti-package"></i>`
+    return `<div class="produk-card" onclick="lihatDetail('${p.id}')">
+      <div class="pimg">${foto}</div>
+      <button class="card-heart on" data-pid="${p.id}" onclick="event.stopPropagation();toggleFavorit('${p.id}')"><i class="ti ti-heart"></i></button>
+      <div class="pinfo">
+        <span class="badge ${p.kondisi==='baru'?'b-baru':'b-preloved'}">${p.kondisi==='baru'?'Baru':'Preloved'}</span>
+        <div class="pname">${p.nama}</div>
+        <div class="pharga">Rp ${Number(p.harga).toLocaleString('id-ID')}</div>
+      </div>
+    </div>`
+  }).join('')
+}
 
 async function cekSession() {
   const { data: { session } } = await db.auth.getSession()
@@ -32,6 +81,7 @@ async function cekSession() {
 }
 
 function tampilHomeGuest() {
+  favoritSet = new Set()
   const avaEl = document.getElementById('user-ava')
   if (avaEl) avaEl.innerHTML = '<i class="ti ti-user" style="font-size:16px"></i>'
   const loginBtn = document.getElementById('topbar-login-btn')
@@ -55,6 +105,7 @@ async function tampilHome(user) {
   const profilEmail = document.getElementById('profil-email')
   if (profilEmail) profilEmail.textContent = user.email
   showPage('page-home')
+  await muatFavoritSaya(user.id)
   loadProduk()
   const userId = user.id
   setTimeout(cekChatBaru, 1000)
@@ -116,6 +167,7 @@ function switchTab(el, tabId) {
   el.classList.add('active')
   document.getElementById(tabId).classList.add('active')
   if (tabId==='tab-iklan') loadIklanSaya()
+  if (tabId==='tab-favorit') loadFavoritTab()
 }
 
 function filterIklan(el, status) {
@@ -306,6 +358,7 @@ async function loadProduk(keyword='', kategori='') {
     const foto=p.foto_urls?.length>0?`<img src="${p.foto_urls[0]}" alt="${p.nama}" style="width:100%;height:100%;object-fit:cover">`:`<i class="ti ti-package"></i>`
     return `<div class="produk-card" onclick="lihatDetail('${p.id}')">
       <div class="pimg">${foto}</div>
+      <button class="card-heart ${favoritSet.has(p.id)?'on':''}" data-pid="${p.id}" onclick="event.stopPropagation();toggleFavorit('${p.id}')"><i class="ti ti-heart"></i></button>
       <div class="pinfo">
         <span class="badge ${p.kondisi==='baru'?'b-baru':'b-preloved'}">${p.kondisi==='baru'?'Baru':'Preloved'}</span>
         <div class="pname">${p.nama}</div>

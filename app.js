@@ -93,7 +93,9 @@ function tampilHomeGuest() {
 async function tampilHome(user) {
   const nama = user.user_metadata?.full_name || user.email
   const inisial = nama.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase()
-  const foto = user.user_metadata?.avatar_url
+  const userId = user.id
+  const { data: userData } = await db.from('users').select('no_hp, foto_profil').eq('id', userId).single()
+  const foto = userData?.foto_profil || user.user_metadata?.avatar_url
   const avaEl = document.getElementById('user-ava')
   if (avaEl) avaEl.innerHTML = foto ? `<img src="${foto}" alt="${nama}" style="width:100%;height:100%;object-fit:cover">` : inisial
   const loginBtn = document.getElementById('topbar-login-btn')
@@ -107,12 +109,9 @@ async function tampilHome(user) {
   showPage('page-home')
   await muatFavoritSaya(user.id)
   loadProduk()
-  const userId = user.id
   setTimeout(cekChatBaru, 1000)
   setInterval(cekChatBaru, 30000)
   subscribeChatBadge(userId)
-  // Cek apakah no_hp sudah diisi
-  const { data: userData } = await db.from('users').select('no_hp').eq('id', userId).single()
   if (!userData?.no_hp) {
     const popup = document.getElementById('popup-nohp')
     if (popup) popup.style.display = 'flex'
@@ -208,7 +207,56 @@ async function loadIklanSaya(status='') {
 }
 
 async function tandaiTerjual(id) {
-  const { error } = await db.from('products').update({status:'terjual'}).eq('id',id)
+  const { data: orders } = await db.from('orders').select('id, buyer_id, users!orders_buyer_id_fkey(nama)').eq('product_id', id)
+  const modal = document.getElementById('modal-pilih-pembeli')
+  const content = document.getElementById('modal-pilih-pembeli-content')
+  if (!orders || orders.length === 0) {
+    if (!confirm('Belum ada yang chat soal produk ini. Tandai terjual tanpa pilih pembeli?')) return
+    await simpanTerjual(id, null)
+    return
+  }
+  let dipilih = null
+  const renderList = () => `
+    <div style="font-size:15px;font-weight:500;margin-bottom:4px">Siapa pembelinya?</div>
+    <div style="font-size:12px;color:var(--tx2);margin-bottom:12px">Pilih dari yang pernah chat soal produk ini. Cuma orang yang dipilih yang nanti bisa kasih rating.</div>
+    ${orders.map(o => `
+      <div onclick="pilihPembeliSementara('${o.id}')" id="buyer-row-${o.id}" style="display:flex;align-items:center;gap:8px;padding:9px;border-radius:10px;cursor:pointer;border:1.5px solid ${dipilih===o.id?'#C4789A':'transparent'};background:${dipilih===o.id?'#FEF0F5':'transparent'};margin-bottom:4px">
+        <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(90deg,#C4789A,#9B7FD4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:500;flex-shrink:0">${(o.users?.nama||'?').split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase()}</div>
+        <span style="font-size:13px">${o.users?.nama||'Pembeli'}</span>
+      </div>`).join('')}
+    <button id="btn-konfirmasi-pembeli" onclick="konfirmasiPembeli('${id}')" disabled style="width:100%;margin-top:10px;padding:11px;background:linear-gradient(90deg,#C4789A,#9B7FD4);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:500;cursor:pointer;opacity:0.5">Konfirmasi</button>
+    <button onclick="tutupModalPembeli()" style="width:100%;margin-top:6px;padding:11px;background:transparent;color:var(--tx2);border:none;font-size:12px;cursor:pointer">Batal</button>`
+  window._pembeliOrders = orders
+  window._pembeliDipilih = null
+  content.innerHTML = renderList()
+  modal.style.display = 'flex'
+}
+
+function pilihPembeliSementara(orderId) {
+  window._pembeliDipilih = orderId
+  document.querySelectorAll('[id^="buyer-row-"]').forEach(el => {
+    el.style.borderColor = 'transparent'
+    el.style.background = 'transparent'
+  })
+  const row = document.getElementById(`buyer-row-${orderId}`)
+  if (row) { row.style.borderColor = '#C4789A'; row.style.background = '#FEF0F5' }
+  const btn = document.getElementById('btn-konfirmasi-pembeli')
+  if (btn) { btn.disabled = false; btn.style.opacity = '1' }
+}
+
+function tutupModalPembeli() {
+  document.getElementById('modal-pilih-pembeli').style.display = 'none'
+}
+
+async function konfirmasiPembeli(productId) {
+  if (!window._pembeliDipilih) return
+  await simpanTerjual(productId, window._pembeliDipilih)
+}
+
+async function simpanTerjual(productId, orderId) {
+  const { error } = await db.from('products').update({ status:'terjual' }).eq('id', productId)
+  if (orderId) await db.from('orders').update({ status:'selesai' }).eq('id', orderId)
+  tutupModalPembeli()
   if (error) { showToast('Gagal mengupdate status','error'); return }
   showToast('Iklan ditandai terjual!')
   loadIklanSaya()
@@ -268,12 +316,15 @@ async function hapusFotoExisting(index, id) {
   editIklan(id)
 }
 
+let fotoProfilBaru = null
+
 async function bukaEditProfil() {
+  fotoProfilBaru = null
   const { data: { session } } = await db.auth.getSession()
   if (!session) return
   const { data: u } = await db.from('users').select('*').eq('id', session.user.id).single()
   const nama = u?.nama || session.user.user_metadata?.full_name || ''
-  const foto = session.user.user_metadata?.avatar_url
+  const foto = u?.foto_profil || session.user.user_metadata?.avatar_url
   const inisial = nama.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase()
   const ava = document.getElementById('edit-profil-ava')
   if (ava) ava.innerHTML = foto ? `<img src="${foto}" style="width:100%;height:100%;object-fit:cover">` : inisial
@@ -283,14 +334,51 @@ async function bukaEditProfil() {
   showPage('page-edit-profil')
 }
 
+function pilihFotoProfil(event) {
+  const file = event.target.files[0]
+  if (!file) return
+  fotoProfilBaru = file
+  const reader = new FileReader()
+  reader.onload = e => {
+    const ava = document.getElementById('edit-profil-ava')
+    if (ava) ava.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover">`
+  }
+  reader.readAsDataURL(file)
+}
+
 async function simpanEditProfil() {
   const nama = document.getElementById('ep-nama').value.trim()
   const hp = document.getElementById('ep-hp').value.trim()
   if (!hp) return showToast('No. HP wajib diisi','error')
   const { data: { session } } = await db.auth.getSession()
   if (!session) return
-  const { error } = await db.from('users').update({ nama, no_hp: hp }).eq('id', session.user.id)
+  const btn = document.querySelector('#page-edit-profil .btnp')
+  const btnHtmlAsli = btn.innerHTML
+  btn.innerHTML = '<i class="ti ti-loader"></i> Menyimpan...'
+  btn.disabled = true
+  const updateData = { nama, no_hp: hp }
+  if (fotoProfilBaru) {
+    const compressed = await kompresiFoto(fotoProfilBaru)
+    const fileName = `profil/${session.user.id}_${Date.now()}.jpg`
+    const { error: upErr } = await db.storage.from(BUCKET).upload(fileName, compressed, { contentType:'image/jpeg' })
+    if (!upErr) {
+      const { data: urlData } = db.storage.from(BUCKET).getPublicUrl(fileName)
+      updateData.foto_profil = urlData.publicUrl
+    }
+  }
+  const { error } = await db.from('users').update(updateData).eq('id', session.user.id)
+  btn.innerHTML = btnHtmlAsli
+  btn.disabled = false
   if (error) { showToast('Gagal menyimpan','error'); return }
+  fotoProfilBaru = null
+  if (updateData.foto_profil) {
+    const avaEl = document.getElementById('user-ava')
+    const profilAva = document.getElementById('profil-ava')
+    if (avaEl) avaEl.innerHTML = `<img src="${updateData.foto_profil}" style="width:100%;height:100%;object-fit:cover">`
+    if (profilAva) profilAva.innerHTML = `<img src="${updateData.foto_profil}" style="width:100%;height:100%;object-fit:cover">`
+  }
+  const profilNama = document.getElementById('profil-nama')
+  if (profilNama) profilNama.textContent = nama
   showToast('Profil berhasil diperbarui!')
   showPage('page-profil')
 }
@@ -466,6 +554,12 @@ async function lihatDetail(id) {
   const selisihJam=Math.floor((Date.now()-waktu)/3600000)
   const waktuLabel=selisihJam<1?'Baru saja':selisihJam<24?`${selisihJam} jam lalu`:`${Math.floor(selisihJam/24)} hari lalu`
   const sellerAva=p.users?.foto_profil?`<img src="${p.users.foto_profil}" style="width:100%;height:100%;object-fit:cover">`:(p.users?.nama||'?').split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase()
+  const { data: ratingData } = await db.from('ratings').select('rating').eq('seller_id', p.seller_id)
+  const ratingCount = ratingData?.length || 0
+  const ratingAvg = ratingCount>0 ? (ratingData.reduce((s,r)=>s+r.rating,0)/ratingCount).toFixed(1) : null
+  const ratingHtml = ratingCount>0
+    ? `<div style="font-size:10px;color:#F2A623;display:flex;align-items:center;gap:2px"><i class="ti ti-star-filled" style="font-size:10px"></i>${ratingAvg} (${ratingCount} ulasan)</div>`
+    : `<div style="font-size:10px;color:var(--color-text-tertiary)">Belum ada ulasan</div>`
   const noHp = p.users?.no_hp
   const waHtml = noHp ? `
     <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#25D366;margin-bottom:8px">
@@ -490,6 +584,7 @@ async function lihatDetail(id) {
       <div style="flex:1">
         <div style="font-size:13px;font-weight:500;color:var(--color-text-primary)">${p.users?.nama||'Penjual'}</div>
         <div style="font-size:10px;color:#9B7FD4;display:flex;align-items:center;gap:2px"><i class="ti ti-shield-check" style="font-size:10px"></i>Terverifikasi · ${p.kota||p.users?.kota||'Lokal'}</div>
+        ${ratingHtml}
       </div>
     </div>
     ${waHtml}
@@ -609,6 +704,47 @@ async function bukaChat(orderId, produk) {
     .subscribe()
   showPage('page-chat')
   initChatKeyboardFix()
+  cekBannerRating(orderId, userId)
+}
+
+async function cekBannerRating(orderId, userId) {
+  const banner = document.getElementById('chat-rating-banner')
+  banner.style.display = 'none'
+  const { data: order } = await db.from('orders').select('status, buyer_id, seller_id').eq('id', orderId).single()
+  if (!order || order.status !== 'selesai' || order.buyer_id !== userId) return
+  const { data: existing } = await db.from('ratings').select('rating').eq('order_id', orderId).maybeSingle()
+  if (existing) {
+    banner.innerHTML = `<div style="background:#FEF0F5;padding:10px 14px;font-size:12px;color:#9B3060;display:flex;align-items:center;gap:6px"><i class="ti ti-star-filled" style="color:#F2A623"></i>Kamu udah kasih rating ${existing.rating} bintang buat transaksi ini</div>`
+    banner.style.display = 'block'
+    return
+  }
+  window._ratingSementara = 0
+  banner.innerHTML = `
+    <div style="background:#FEF0F5;padding:12px 14px;border-bottom:0.5px solid #F5C0D5">
+      <div style="font-size:12px;font-weight:500;color:#9B3060;margin-bottom:6px">Transaksi ini ditandai selesai. Beri rating buat sellernya?</div>
+      <div id="rating-stars" style="display:flex;gap:4px;margin-bottom:6px"></div>
+      <textarea id="rating-komentar" placeholder="Ceritain pengalaman chat/nego sama sellernya..." style="width:100%;border:0.5px solid #F5C0D5;border-radius:8px;padding:7px;font-size:12px;font-family:inherit;height:44px;resize:none;margin-bottom:6px"></textarea>
+      <button onclick="kirimRating('${orderId}','${order.seller_id}','${userId}')" style="width:100%;padding:8px;background:linear-gradient(90deg,#C4789A,#9B7FD4);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer">Kirim rating</button>
+    </div>`
+  renderRatingStars(0)
+  banner.style.display = 'block'
+}
+
+function renderRatingStars(n) {
+  window._ratingSementara = n
+  const el = document.getElementById('rating-stars')
+  if (!el) return
+  el.innerHTML = [1,2,3,4,5].map(i => `<i class="ti ${i<=n?'ti-star-filled':'ti-star'}" onclick="renderRatingStars(${i})" style="font-size:22px;color:${i<=n?'#F2A623':'#E7E1F2'};cursor:pointer"></i>`).join('')
+}
+
+async function kirimRating(orderId, sellerId, buyerId) {
+  const rating = window._ratingSementara || 0
+  if (!rating) { showToast('Pilih bintangnya dulu','error'); return }
+  const komentar = document.getElementById('rating-komentar')?.value.trim() || ''
+  const { error } = await db.from('ratings').insert({ order_id: orderId, seller_id: sellerId, buyer_id: buyerId, rating, komentar })
+  if (error) { showToast('Gagal mengirim rating','error'); return }
+  showToast('Terima kasih atas ratingnya!')
+  cekBannerRating(orderId, buyerId)
 }
 
 function scrollChatKeBawah() {

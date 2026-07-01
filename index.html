@@ -110,7 +110,7 @@
     <div class="home-body">
       <div class="sidebar">
         <div class="sb-section">Menu</div>
-        <div class="sb-item active" onclick="showPage('page-home')"><i class="ti ti-home"></i>Beranda</div>
+        <div class="sb-item active" data-nav="beranda" onclick="kembaliBeranda()"><i class="ti ti-home"></i>Beranda</div>
         <div class="sb-item" onclick="fokusSearch()"><i class="ti ti-search"></i>Cari iklan</div>
         <div class="sb-item" onclick="showPage('page-jual')"><i class="ti ti-speakerphone"></i>Pasang iklan</div>
         <div class="sb-item" onclick="showPage('page-chat-list')"><i class="ti ti-message"></i>Chat saya<span id="badge-chat-sidebar" style="display:none;width:8px;height:8px;border-radius:50%;background:#e53935;margin-left:auto"></span></div>
@@ -190,7 +190,7 @@
       </div>
     </div>
     <div class="bnav mobile-only">
-      <button class="nb active" onclick="setNav(this);showPage('page-home')"><i class="ti ti-home"></i><span>Beranda</span></button>
+      <button class="nb active" onclick="setNav(this);kembaliBeranda()"><i class="ti ti-home"></i><span>Beranda</span></button>
       <button class="nb" onclick="setNav(this);fokusSearch()"><i class="ti ti-search"></i><span>Cari</span></button>
       <button class="nb-plus" onclick="showPage('page-jual')"><div class="plus-btn"><i class="ti ti-plus"></i></div></button>
       <button class="nb" style="position:relative" onclick="setNav(this);showPage('page-chat-list')"><i class="ti ti-message"></i><span>Chat</span><span id="badge-chat-mobile" style="display:none;position:absolute;top:6px;left:50%;margin-left:4px;width:8px;height:8px;border-radius:50%;background:#e53935"></span></button>
@@ -495,7 +495,7 @@
       </div>
     </div>
     <div class="bnav mobile-only">
-      <button class="nb" onclick="setNav(this);showPage('page-home')"><i class="ti ti-home"></i><span>Beranda</span></button>
+      <button class="nb" onclick="setNav(this);kembaliBeranda()"><i class="ti ti-home"></i><span>Beranda</span></button>
       <button class="nb" onclick="setNav(this);fokusSearch()"><i class="ti ti-search"></i><span>Cari</span></button>
       <button class="nb-plus" onclick="showPage('page-jual')"><div class="plus-btn"><i class="ti ti-plus"></i></div></button>
       <button class="nb" style="position:relative" onclick="setNav(this);showPage('page-chat-list')"><i class="ti ti-message"></i><span>Chat</span></button>

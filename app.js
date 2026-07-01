@@ -247,6 +247,19 @@ function muatDraftIklan() {
   document.querySelectorAll('#tipe-group .tg-btn').forEach(btn=>btn.classList.toggle('active',btn.textContent.trim()===d.tipe))
 }
 
+function bersihkanForm() {
+  localStorage.removeItem('draft-iklan')
+  fotoFiles = []
+  const fields = ['nama-produk','harga','deskripsi']
+  fields.forEach(id => { const el=document.getElementById(id); if(el) el.value='' })
+  const kat = document.getElementById('kategori'); if(kat) kat.value=''
+  const prov = document.getElementById('lokasi-provinsi'); if(prov) { prov.value=''; updateKota('') }
+  const tg1 = document.querySelector('#kondisi-group .tg-btn'); if(tg1) setToggle('kondisi-group',tg1)
+  const tg2 = document.querySelector('#tipe-group .tg-btn'); if(tg2) setToggle('tipe-group',tg2)
+  initFotoRow()
+  showToast('Form dibersihkan')
+}
+
 function initFotoRow() {
   const row = document.getElementById('foto-row')
   if (!row) return

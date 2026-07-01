@@ -315,6 +315,18 @@ function resetFilter() {
   showToast('Filter direset')
 }
 
+
+function toggleSidebarKat(el) {
+  const more = document.getElementById('sb-kat-more')
+  const icon = el.querySelector('i')
+  const label = el.querySelector('span')
+  if (!more) return
+  const isOpen = more.style.display === 'block'
+  more.style.display = isOpen ? 'none' : 'block'
+  icon.className = isOpen ? 'ti ti-chevron-down' : 'ti ti-chevron-up'
+  label.textContent = isOpen ? 'Lihat semua kategori' : 'Sembunyikan'
+}
+
 function fokusSearch() {
   showPage('page-home')
   setTimeout(() => {
@@ -590,6 +602,18 @@ function hapusBadgeChat() {
   localStorage.setItem('last-seen-chat', new Date().toISOString())
   const badges = ['badge-chat-topbar','badge-chat-sidebar','badge-chat-mobile']
   badges.forEach(id => { const el=document.getElementById(id); if(el) el.style.display='none' })
+}
+
+
+function toggleSidebarKat(el) {
+  const more = document.getElementById('sb-kat-more')
+  const icon = el.querySelector('i')
+  const label = el.querySelector('span')
+  if (!more) return
+  const isOpen = more.style.display === 'block'
+  more.style.display = isOpen ? 'none' : 'block'
+  icon.className = isOpen ? 'ti ti-chevron-down' : 'ti ti-chevron-up'
+  label.textContent = isOpen ? 'Lihat semua kategori' : 'Sembunyikan'
 }
 
 function fokusSearch() {

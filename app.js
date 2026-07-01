@@ -330,27 +330,6 @@ function resetFilter() {
 
 
 
-function toggleLokasiDesktop() {
-  const dd = document.getElementById('lokasi-desktop-dropdown')
-  if (!dd) return
-  dd.style.display = dd.style.display === 'none' ? 'block' : 'none'
-}
-
-function pilihLokasiDesktop(kota, label) {
-  const lbl = document.getElementById('lokasi-desktop-label')
-  if (lbl) lbl.textContent = label
-  filterState.kota = kota
-  document.getElementById('lokasi-desktop-dropdown').style.display = 'none'
-  loadProduk(document.getElementById('search-desktop')?.value || '')
-}
-
-document.addEventListener('click', function(e) {
-  const wrap = document.getElementById('lokasi-desktop-wrap')
-  if (wrap && !wrap.contains(e.target)) {
-    const dd = document.getElementById('lokasi-desktop-dropdown')
-    if (dd) dd.style.display = 'none'
-  }
-})
 
 function toggleSidebarKat(el) {
   const more = document.getElementById('sb-kat-more')
@@ -768,6 +747,7 @@ function tandaiSudahBaca() {
 
 
 
+
 function toggleLokasiDesktop() {
   const dd = document.getElementById('lokasi-desktop-dropdown')
   if (!dd) return
@@ -778,17 +758,10 @@ function pilihLokasiDesktop(kota, label) {
   const lbl = document.getElementById('lokasi-desktop-label')
   if (lbl) lbl.textContent = label
   filterState.kota = kota
-  document.getElementById('lokasi-desktop-dropdown').style.display = 'none'
+  const dd = document.getElementById('lokasi-desktop-dropdown')
+  if (dd) dd.style.display = 'none'
   loadProduk(document.getElementById('search-desktop')?.value || '')
 }
-
-document.addEventListener('click', function(e) {
-  const wrap = document.getElementById('lokasi-desktop-wrap')
-  if (wrap && !wrap.contains(e.target)) {
-    const dd = document.getElementById('lokasi-desktop-dropdown')
-    if (dd) dd.style.display = 'none'
-  }
-})
 
 function toggleSidebarKat(el) {
   const more = document.getElementById('sb-kat-more')
@@ -894,10 +867,26 @@ db.auth.onAuthStateChange((event,session)=>{
 })
 
 
+document.addEventListener('click', function(e) {
+  const wrap = document.getElementById('lokasi-desktop-wrap')
+  if (wrap && !wrap.contains(e.target)) {
+    const dd = document.getElementById('lokasi-desktop-dropdown')
+    if (dd) dd.style.display = 'none'
+  }
+})
+
 document.addEventListener('click', function initAudio() {
   getAudioCtx()
   document.removeEventListener('click', initAudio)
 }, { once: true })
+
+document.addEventListener('click', function(e) {
+  const wrap = document.getElementById('lokasi-desktop-wrap')
+  if (wrap && !wrap.contains(e.target)) {
+    const dd = document.getElementById('lokasi-desktop-dropdown')
+    if (dd) dd.style.display = 'none'
+  }
+})
 
 document.addEventListener('click', function initAudio() {
   getAudioCtx()

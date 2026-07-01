@@ -808,8 +808,30 @@ function lanjutKePembayaran() {
   renderModalLayanan()
 }
 
-function kirimLayanan() {
-  showToast('Layanan ini masih dalam tahap pengembangan bersama NitiPGo, belum bisa diproses otomatis')
+async function kirimLayanan() {
+  const p = produkAktif
+  const { jenis } = layananState
+  const alamat = document.getElementById('ml-alamat')?.value.trim() || ''
+  const payload = {
+    jenis,
+    buyer_id: sesiAktif.user.id,
+    product_id: p.id,
+    seller_nama: p.users?.nama || '',
+    seller_hp: p.users?.no_hp || '',
+    alamat_jemput: alamat,
+    rekening_refund: document.getElementById('ml-rekening-refund')?.value.trim() || ''
+  }
+  if (jenis === 'cek') {
+    payload.buyer_hp = document.getElementById('ml-buyer-hp')?.value.trim() || ''
+    payload.catatan = document.getElementById('ml-catatan')?.value.trim() || ''
+  } else {
+    payload.nama_penerima = document.getElementById('ml-nama-penerima')?.value.trim() || ''
+    payload.hp_penerima = document.getElementById('ml-hp-penerima')?.value.trim() || ''
+    payload.alamat_penerima = document.getElementById('ml-alamat-penerima')?.value.trim() || ''
+  }
+  const { error } = await db.from('layanan_manual').insert(payload)
+  if (error) { showToast('Gagal mengirim permintaan','error'); return }
+  showToast('Permintaan terkirim! Tim kami proses manual dalam waktu dekat.')
   tutupModalLayanan()
 }
 
@@ -1381,6 +1403,7 @@ async function bukaAdmin() {
   showPage('page-admin')
   adminGantiTab('dashboard')
   subscribeBantuanRealtime()
+  subscribeLayananRealtime()
 }
 
 let bantuanSubscription = null
@@ -1410,6 +1433,8 @@ function adminGantiTab(tab) {
   if (tab==='dashboard') adminMuatDashboard()
   if (tab==='user') adminMuatUser()
   if (tab==='iklan') adminMuatIklan()
+  if (tab==='nitipcek') adminMuatLayanan('cek')
+  if (tab==='nitipkirim') adminMuatLayanan('go')
   if (tab==='bantuan') adminMuatBantuan()
 }
 
@@ -1510,6 +1535,67 @@ async function adminHapusIklan(id) {
   await db.from('products').update({ status:'dihapus' }).eq('id', id)
   showToast('Iklan dihapus')
   adminMuatIklan()
+}
+
+async function adminMuatLayanan(jenis) {
+  const { data } = await db.from('layanan_manual').select('*, users!layanan_manual_buyer_id_fkey(nama), products(nama)').eq('jenis', jenis).order('created_at',{ascending:false})
+  const listId = jenis==='cek' ? 'admin-nitipcek-list' : 'admin-nitipkirim-list'
+  const badgeId = jenis==='cek' ? 'admin-badge-nitipcek' : 'admin-badge-nitipkirim'
+  const list = document.getElementById(listId)
+  const belum = (data||[]).filter(x=>x.status==='baru').length
+  const badge = document.getElementById(badgeId)
+  if (badge) { badge.style.display = belum>0 ? 'inline-block' : 'none'; badge.textContent = belum }
+  window[`_admin${jenis}Data`] = data || []
+  if (!data || !data.length) { list.innerHTML = '<p class="empty">Belum ada permintaan.</p>'; return }
+  list.innerHTML = data.map(x=>{
+    const baru = x.status==='baru'
+    const warnaStatus = x.status==='baru' ? {bg:'#F5C0D5',tx:'#9B3060',label:'Baru'} : x.status==='diproses' ? {bg:'#FAEEDA',tx:'#854F0B',label:'Diproses'} : {bg:'#EAF3DE',tx:'#3B6D11',label:'Selesai'}
+    return `<div style="background:${baru?'#FEF0F5':'transparent'};border:${baru?'0.5px solid #F5C0D5':'0.5px solid var(--br)'};border-radius:10px;padding:12px;margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+        <div>
+          <div style="font-weight:${baru?700:500};color:var(--tx);font-size:13px">${x.products?.nama||'Produk'}</div>
+          <div style="font-size:11px;color:var(--tx3)">dari ${x.users?.nama||'Buyer'}</div>
+        </div>
+        <span style="font-size:9px;padding:2px 8px;border-radius:8px;background:${warnaStatus.bg};color:${warnaStatus.tx};flex-shrink:0">${warnaStatus.label}</span>
+      </div>
+      <div style="font-size:11px;color:var(--tx2);line-height:1.7">
+        <div><b style="color:var(--tx)">Penjual:</b> ${x.seller_nama||'-'} · ${x.seller_hp||'-'}</div>
+        <div><b style="color:var(--tx)">Alamat jemput:</b> ${x.alamat_jemput||'-'}</div>
+        ${jenis==='cek' ? `
+          <div><b style="color:var(--tx)">Kontak buyer:</b> ${x.buyer_hp||'-'}</div>
+          ${x.catatan ? `<div><b style="color:var(--tx)">Catatan:</b> ${x.catatan}</div>` : ''}
+        ` : `
+          <div><b style="color:var(--tx)">Penerima:</b> ${x.nama_penerima||'-'} · ${x.hp_penerima||'-'}</div>
+          <div><b style="color:var(--tx)">Alamat tujuan:</b> ${x.alamat_penerima||'-'}</div>
+        `}
+        ${x.rekening_refund ? `<div><b style="color:var(--tx)">Rekening refund:</b> ${x.rekening_refund}</div>` : ''}
+      </div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        ${x.status!=='diproses' ? `<button class="admin-btn-sm" style="background:#FAEEDA;color:#854F0B" onclick="adminUbahStatusLayanan('${x.id}','diproses','${jenis}')">Tandai diproses</button>` : ''}
+        ${x.status!=='selesai' ? `<button class="admin-btn-sm" style="background:#EAF3DE;color:#3B6D11" onclick="adminUbahStatusLayanan('${x.id}','selesai','${jenis}')">Tandai selesai</button>` : ''}
+      </div>
+    </div>`
+  }).join('')
+}
+
+async function adminUbahStatusLayanan(id, statusBaru, jenis) {
+  await db.from('layanan_manual').update({ status: statusBaru }).eq('id', id)
+  showToast(`Ditandai ${statusBaru}`)
+  adminMuatLayanan(jenis)
+}
+
+let layananSubscription = null
+function subscribeLayananRealtime() {
+  if (layananSubscription) return
+  layananSubscription = db.channel('layanan-admin')
+    .on('postgres_changes', { event:'INSERT', schema:'public', table:'layanan_manual' }, payload => {
+      bunyiNotifikasi()
+      showToast(`Permintaan ${payload.new.jenis==='cek'?'NitipCek':'NitipKirim'} baru masuk!`)
+      const aktifTab = document.querySelector('.admin-nav-item[data-tab].active')?.dataset.tab
+      if (aktifTab === 'nitipcek' || aktifTab === 'nitipkirim') adminMuatLayanan(payload.new.jenis)
+      else adminMuatLayanan(payload.new.jenis)
+    })
+    .subscribe()
 }
 
 async function adminMuatBantuan() {

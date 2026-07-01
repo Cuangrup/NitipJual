@@ -456,6 +456,7 @@
         <button class="profil-tab active" onclick="switchTab(this,'tab-akun')">Akun</button>
         <button class="profil-tab" onclick="switchTab(this,'tab-iklan')">Iklan Saya</button>
         <button class="profil-tab" onclick="switchTab(this,'tab-favorit')">Favorit</button>
+        <button class="profil-tab" onclick="switchTab(this,'tab-ulasan')">Ulasan</button>
       </div>
       <div id="tab-akun" class="tab-content active">
         <div class="menu-list">
@@ -479,6 +480,15 @@
       <div id="tab-favorit" class="tab-content">
         <div style="padding:12px">
           <div class="produk-grid" id="favorit-list"><p class="empty">Memuat favorit...</p></div>
+        </div>
+      </div>
+      <div id="tab-ulasan" class="tab-content">
+        <div style="padding:12px">
+          <div style="background:var(--bg);border-radius:14px;border:0.5px solid var(--br);padding:14px;text-align:center;margin-bottom:12px">
+            <div id="ulasan-ringkasan" style="font-size:22px;font-weight:500;color:#F2A623">–</div>
+            <div style="font-size:11px;color:var(--tx3)">dari 0 ulasan</div>
+          </div>
+          <div id="ulasan-list"><p class="empty">Memuat ulasan...</p></div>
         </div>
       </div>
       <div id="tab-bibit" class="tab-content" style="display:none!important">

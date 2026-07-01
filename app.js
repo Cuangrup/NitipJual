@@ -517,6 +517,37 @@ async function bukaChat(orderId, produk) {
     .on('postgres_changes',{ event:'INSERT', schema:'public', table:'chats', filter:`order_id=eq.${orderId}` }, payload => { tampilPesan(payload.new, userId) })
     .subscribe()
   showPage('page-chat')
+  initChatKeyboardFix()
+}
+
+function scrollChatKeBawah() {
+  const box = document.getElementById('chat-messages')
+  if (box) box.scrollTop = box.scrollHeight
+}
+
+let chatKeyboardFixReady = false
+function initChatKeyboardFix() {
+  const input = document.getElementById('chat-input')
+  if (!input) return
+
+  // Saat input di-tap, keyboard mulai muncul (animasi ~250-350ms) baru scroll ulang
+  input.addEventListener('focus', () => {
+    setTimeout(scrollChatKeBawah, 100)
+    setTimeout(scrollChatKeBawah, 350)
+  })
+
+  // Jaring pengaman: sebagian browser mobile (terutama Chrome Android) resize
+  // visualViewport saat keyboard buka/tutup, tapi tidak trigger event lain.
+  // Pasang sekali saja walau bukaChat dipanggil berkali-kali.
+  if (!chatKeyboardFixReady && window.visualViewport) {
+    window.visualViewport.addEventListener('resize', () => {
+      const chatPage = document.getElementById('page-chat')
+      if (chatPage && chatPage.classList.contains('active')) {
+        scrollChatKeBawah()
+      }
+    })
+    chatKeyboardFixReady = true
+  }
 }
 
 async function loadPesan(orderId, userId) {

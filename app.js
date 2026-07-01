@@ -80,7 +80,7 @@ function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'))
   document.getElementById(id).classList.add('active')
   window.scrollTo(0,0)
-  if (id==='page-jual') setTimeout(()=>{ muatDraftIklan(); initFotoRow() }, 50)
+  if (id==='page-jual') setTimeout(()=>{ muatDraftIklan(); initFotoRow(); initProvinsiDropdown() }, 50)
   if (id==='page-chat-list') { loadChatList(); hapusBadgeChat() }
   if (id==='page-profil') loadIklanSaya()
 }
@@ -670,8 +670,9 @@ async function postingProduk() {
   const harga=parseInt(document.getElementById('harga').value)
   const kondisi=document.querySelector('#kondisi-group .tg-btn.active')?.textContent.trim().toLowerCase()==='preloved'?'preloved':'baru'
   const kategori=document.getElementById('kategori').value
-  const lokasi=document.getElementById('lokasi')?.value.trim()||'Gresik'
+  const lokasi=document.getElementById('lokasi')?.value.trim()||document.getElementById('lokasi-provinsi')?.value.trim()||''
   if (!nama||!harga) return showToast('Nama produk dan harga wajib diisi','error')
+  if (!lokasi) return showToast('Pilih lokasi iklan dulu','error')
   const btn=document.querySelector('#page-jual .btnp')
   btn.innerHTML='<i class="ti ti-loader"></i> Memproses...'
   btn.disabled=true

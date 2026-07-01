@@ -1184,7 +1184,7 @@ function bunyiNotifikasi() {
       osc2.start(t2)
       osc2.stop(t2 + 0.2)
     }, 150)
-  } catch(e) { console.log('Audio not supported') }
+  } catch(e) { console.error('Audio not supported:', e) }
 }
 
 let chatBadgeChannel = null
@@ -1374,10 +1374,14 @@ document.addEventListener('click', function(e) {
   }
 })
 
-document.addEventListener('click', function initAudio() {
-  getAudioCtx()
-  document.removeEventListener('click', initAudio)
-}, { once: true })
+// Browser suka nge-suspend AudioContext kalau tab lagi di background.
+// Ini bikin dia otomatis "bangun" lagi begitu tab aktif lagi, biar notifikasi
+// tetap bisa bunyi walau sempat pindah tab pas ada permintaan masuk.
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && audioCtx && audioCtx.state === 'suspended') {
+    audioCtx.resume()
+  }
+})
 
 // ===================== BANTUAN & FAQ =====================
 const FAQ_LIST = [

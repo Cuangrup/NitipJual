@@ -170,6 +170,7 @@ function switchTab(el, tabId) {
   if (tabId==='tab-iklan') loadIklanSaya()
   if (tabId==='tab-favorit') loadFavoritTab()
   if (tabId==='tab-ulasan') loadUlasanSaya()
+  if (tabId==='tab-layanan') loadLayananSaya()
 }
 
 async function loadUlasanSaya() {
@@ -492,7 +493,7 @@ function bukaHalamanLegal(id) {
   const aktif = document.querySelector('.page.active')?.id
   if (aktif && aktif !== 'page-syarat' && aktif !== 'page-privasi' && aktif !== 'page-bantuan') _halamanSebelumLegal = aktif
   showPage(id)
-  if (id === 'page-bantuan') renderFaqList()
+  if (id === 'page-bantuan') { renderFaqList(); loadRiwayatBantuan() }
 }
 function tutupHalamanLegal() {
   showPage(_halamanSebelumLegal)
@@ -908,7 +909,7 @@ async function loadNotifikasi() {
     const waktu = new Date(n.created_at)
     const selisihJam = Math.floor((Date.now()-waktu)/3600000)
     const waktuTxt = selisihJam < 1 ? 'Baru saja' : selisihJam < 24 ? `${selisihJam} jam lalu` : `${Math.floor(selisihJam/24)} hari lalu`
-    return `<div onclick="bacaNotifikasi('${n.id}','${n.produk_id||''}')" style="display:flex;gap:10px;padding:12px;border-radius:12px;background:${belumBaca?'#FEF0F5':'var(--bg)'};border:0.5px solid ${belumBaca?'#F5C0D5':'var(--br)'};margin-bottom:8px;cursor:pointer">
+    return `<div onclick="bacaNotifikasi('${n.id}','${n.produk_id||''}','${n.jenis}')" style="display:flex;gap:10px;padding:12px;border-radius:12px;background:${belumBaca?'#FEF0F5':'var(--bg)'};border:0.5px solid ${belumBaca?'#F5C0D5':'var(--br)'};margin-bottom:8px;cursor:pointer">
       <div style="width:34px;height:34px;border-radius:50%;background:${belumBaca?NOTIF_WARNA[n.jenis]+'22':'var(--bg2)'};display:flex;align-items:center;justify-content:center;flex-shrink:0">
         <i class="ti ${NOTIF_ICON[n.jenis]||'ti-bell'}" style="font-size:16px;color:${NOTIF_WARNA[n.jenis]||'var(--tx3)'}"></i>
       </div>
@@ -923,9 +924,11 @@ async function loadNotifikasi() {
   cekBadgeNotif()
 }
 
-async function bacaNotifikasi(id, produkId) {
+async function bacaNotifikasi(id, produkId, jenis) {
   await db.from('notifikasi').update({ dibaca:true }).eq('id', id)
   loadNotifikasi()
+  if (jenis === 'bantuan') { bukaHalamanLegal('page-bantuan'); return }
+  if (jenis === 'layanan_status') { showPage('page-profil'); const tabBtn = document.querySelector('.profil-tab[onclick*="tab-layanan"]'); if (tabBtn) switchTab(tabBtn, 'tab-layanan'); return }
   if (produkId) lihatDetail(produkId)
 }
 
@@ -1477,6 +1480,52 @@ const FAQ_LIST = [
   {q:'Kenapa harus isi nomor HP?', a:'Supaya pembeli bisa langsung menghubungi kamu via WhatsApp dari halaman produk.'}
 ]
 
+async function loadRiwayatBantuan() {
+  const el = document.getElementById('riwayat-bantuan-list')
+  if (!el) return
+  if (!sesiAktif) { el.innerHTML = '<p class="empty">Login dulu buat lihat riwayat.</p>'; return }
+  el.innerHTML = '<p class="empty">Memuat...</p>'
+  const { data } = await db.from('bantuan_pesan').select('*').eq('user_id', sesiAktif.user.id).order('created_at',{ascending:false})
+  if (!data || !data.length) { el.innerHTML = '<p class="empty">Belum pernah kirim pesan.</p>'; return }
+  el.innerHTML = data.map(p => `
+    <div style="border-bottom:0.5px solid var(--br);padding:10px 0">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
+        <span style="font-size:12px;font-weight:500;color:var(--tx)">${p.judul}</span>
+        <span style="font-size:9px;padding:2px 7px;border-radius:8px;background:${p.status==='baru'?'#F5C0D5':'#EAF3DE'};color:${p.status==='baru'?'#9B3060':'#3B6D11'}">${p.status==='baru'?'Menunggu':'Selesai'}</span>
+      </div>
+      <div style="font-size:11px;color:var(--tx2);margin-bottom:4px">${p.pesan}</div>
+      ${p.balasan ? `<div style="background:var(--ps2);border-radius:8px;padding:8px 10px;margin-top:4px">
+        <div style="font-size:9px;font-weight:500;color:var(--pk2);margin-bottom:2px">Balasan admin:</div>
+        <div style="font-size:11px;color:var(--tx2)">${p.balasan}</div>
+      </div>` : `<div style="font-size:10px;color:var(--tx3)">Belum dibalas</div>`}
+    </div>`).join('')
+}
+
+async function loadLayananSaya() {
+  const el = document.getElementById('layanan-saya-list')
+  if (!el || !sesiAktif) return
+  el.innerHTML = '<p class="empty">Memuat...</p>'
+  const { data } = await db.from('layanan_manual').select('*, products(nama)').eq('buyer_id', sesiAktif.user.id).order('created_at',{ascending:false})
+  if (!data || !data.length) { el.innerHTML = '<p class="empty">Belum pernah pakai NitipCek/NitipKirim.</p>'; return }
+  const warnaStatus = s => s==='baru' ? {bg:'#F5C0D5',tx:'#9B3060',label:'Baru'} : s==='diproses' ? {bg:'#FAEEDA',tx:'#854F0B',label:'Diproses'} : {bg:'#EAF3DE',tx:'#3B6D11',label:'Selesai'}
+  el.innerHTML = data.map(x => {
+    const w = warnaStatus(x.status)
+    return `<div style="background:var(--bg);border-radius:12px;border:0.5px solid var(--br);padding:12px;margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+        <div>
+          <span style="font-size:9px;background:${x.jenis==='cek'?'#F3EEFB':'#E3F2FD'};color:${x.jenis==='cek'?'#6B3FA0':'#1565C0'};padding:2px 6px;border-radius:6px;font-weight:500">${x.jenis==='cek'?'NitipCek':'NitipKirim'}</span>
+          <div style="font-size:13px;font-weight:500;color:var(--tx);margin-top:3px">${x.products?.nama||'Produk'}</div>
+        </div>
+        <span style="font-size:9px;padding:2px 8px;border-radius:8px;background:${w.bg};color:${w.tx}">${w.label}</span>
+      </div>
+      ${x.balasan_admin ? `<div style="background:var(--ps2);border-radius:8px;padding:8px 10px;margin-top:6px">
+        <div style="font-size:9px;font-weight:500;color:var(--pk2);margin-bottom:2px">Info dari admin:</div>
+        <div style="font-size:11px;color:var(--tx2)">${x.balasan_admin}</div>
+      </div>` : `<div style="font-size:10px;color:var(--tx3);margin-top:4px">Belum ada info tambahan dari admin</div>`}
+    </div>`
+  }).join('')
+}
+
 function renderFaqList() {
   const el = document.getElementById('faq-list')
   if (!el) return
@@ -1507,6 +1556,7 @@ async function kirimPesanBantuan() {
   document.getElementById('bantuan-judul').value = ''
   document.getElementById('bantuan-pesan').value = ''
   showToast('Pesan terkirim! Kami akan segera membantu.')
+  loadRiwayatBantuan()
 }
 
 // ===================== ADMIN =====================
@@ -1693,13 +1743,32 @@ async function adminMuatLayanan(jenis) {
         ${x.nominal_total ? `<div><b style="color:var(--tx)">Nominal transfer:</b> Rp ${Number(x.nominal_total).toLocaleString('id-ID')} <span style="color:var(--pk2)">(kode unik ${x.kode_unik})</span></div>` : ''}
         ${x.bukti_transfer_url ? `<div><b style="color:var(--tx)">Bukti transfer:</b> <a href="${x.bukti_transfer_url}" target="_blank" style="color:var(--pk2)">Lihat foto</a></div>` : ''}
       </div>
-      <div style="display:flex;gap:6px;margin-top:8px">
+      ${x.balasan_admin ? `<div style="background:var(--ps2);border-radius:8px;padding:8px 10px;margin-top:8px">
+        <div style="font-size:9px;font-weight:500;color:var(--pk2);margin-bottom:2px">Info yang udah dikirim ke buyer:</div>
+        <div style="font-size:11px;color:var(--tx2)">${x.balasan_admin}</div>
+      </div>` : ''}
+      <textarea id="admin-info-${x.id}" placeholder="${jenis==='go' ? 'Info tarif buat buyer, misal: Tarif Rp15.000, transfer ke BCA 1300295441' : 'Info tambahan buat buyer...'}" style="width:100%;border:0.5px solid var(--br);border-radius:8px;padding:6px 8px;font-size:11px;font-family:inherit;height:36px;resize:none;margin-top:8px">${x.balasan_admin||''}</textarea>
+      <div style="display:flex;gap:6px;margin-top:6px">
+        <button class="admin-btn-sm" style="background:#F3EEFB;color:#7A5AAA" onclick="adminKirimInfoLayanan('${x.id}','${jenis}')"><i class="ti ti-send" style="font-size:10px"></i> Kirim info ke buyer</button>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:6px">
         ${x.status!=='diproses' ? `<button class="admin-btn-sm" style="background:#FAEEDA;color:#854F0B" onclick="adminUbahStatusLayanan('${x.id}','diproses','${jenis}')">Tandai diproses</button>` : ''}
         ${x.status!=='selesai' ? `<button class="admin-btn-sm" style="background:#EAF3DE;color:#3B6D11" onclick="adminUbahStatusLayanan('${x.id}','selesai','${jenis}')">Tandai selesai</button>` : ''}
         <button class="admin-btn-sm" style="background:#FCEBEB;color:#A32D2D" onclick="adminHapusLayanan('${x.id}','${jenis}')">Hapus</button>
       </div>
     </div>`
   }).join('')
+}
+
+async function adminKirimInfoLayanan(id, jenis) {
+  const info = document.getElementById(`admin-info-${id}`)?.value.trim()
+  if (!info) return showToast('Tulis info-nya dulu ya','error')
+  await db.from('layanan_manual').update({ balasan_admin: info }).eq('id', id)
+  const cache = window[`_admin${jenis}Data`] || []
+  const row = cache.find(x=>x.id===id)
+  if (row) kirimNotifikasi(row.buyer_id, 'layanan_status', `Info buat permintaan ${jenis==='cek'?'NitipCek':'NitipKirim'}`, info, row.product_id)
+  showToast('Info terkirim ke buyer')
+  adminMuatLayanan(jenis)
 }
 
 async function adminUbahStatusLayanan(id, statusBaru, jenis) {
@@ -1760,11 +1829,27 @@ function adminLihatPesan(id) {
     <div style="font-size:13px;font-weight:500;color:var(--tx);margin-bottom:2px">${p.judul}</div>
     <div style="font-size:11px;color:var(--tx3);margin-bottom:10px">dari ${p.users?.nama||'User'}</div>
     <div style="font-size:12px;color:var(--tx2);line-height:1.6;margin-bottom:14px">${p.pesan}</div>
+    ${p.balasan ? `<div style="background:var(--ps2);border-radius:8px;padding:10px;margin-bottom:12px">
+      <div style="font-size:10px;font-weight:500;color:var(--pk2);margin-bottom:2px">Balasan kamu:</div>
+      <div style="font-size:12px;color:var(--tx2)">${p.balasan}</div>
+    </div>` : ''}
+    <textarea id="admin-balasan-input" class="finput ftextarea" placeholder="Tulis balasan buat user ini...">${p.balasan||''}</textarea>
     <div style="display:flex;gap:8px">
-      ${p.status==='baru' ? `<button class="btnp" style="flex:1" onclick="adminTandaiSelesai('${p.id}')">Tandai selesai</button>` : `<div style="flex:1;text-align:center;font-size:11px;color:var(--tx3);align-self:center">Sudah selesai</div>`}
+      <button class="btnp" style="flex:1" onclick="adminBalasBantuan('${p.id}')">${p.balasan ? 'Update balasan' : 'Kirim balasan'}</button>
       <button onclick="adminHapusPesan('${p.id}')" style="background:#FCEBEB;color:#A32D2D;border:none;border-radius:12px;padding:0 16px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit">Hapus</button>
     </div>`
   document.getElementById('admin-modal-pesan').style.display = 'flex'
+}
+
+async function adminBalasBantuan(id) {
+  const balasan = document.getElementById('admin-balasan-input')?.value.trim()
+  if (!balasan) return showToast('Tulis balasannya dulu ya','error')
+  await db.from('bantuan_pesan').update({ balasan, status:'selesai' }).eq('id', id)
+  const p = (window._adminBantuanData||[]).find(x=>x.id===id)
+  if (p) kirimNotifikasi(p.user_id, 'bantuan', 'Ada balasan buat pertanyaanmu', balasan)
+  document.getElementById('admin-modal-pesan').style.display = 'none'
+  showToast('Balasan terkirim!')
+  adminMuatBantuan()
 }
 
 async function adminHapusPesan(id) {
@@ -1772,15 +1857,6 @@ async function adminHapusPesan(id) {
   await db.from('bantuan_pesan').delete().eq('id', id)
   document.getElementById('admin-modal-pesan').style.display = 'none'
   showToast('Pesan dihapus')
-  adminMuatBantuan()
-}
-
-async function adminTandaiSelesai(id) {
-  await db.from('bantuan_pesan').update({ status:'selesai' }).eq('id', id)
-  const p = (window._adminBantuanData||[]).find(x=>x.id===id)
-  if (p) kirimNotifikasi(p.user_id, 'bantuan', 'Pertanyaanmu udah dijawab', p.judul)
-  document.getElementById('admin-modal-pesan').style.display = 'none'
-  showToast('Ditandai selesai')
   adminMuatBantuan()
 }
 

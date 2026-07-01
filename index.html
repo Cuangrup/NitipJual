@@ -465,6 +465,7 @@
         <button class="profil-tab" onclick="switchTab(this,'tab-iklan')">Iklan Saya</button>
         <button class="profil-tab" onclick="switchTab(this,'tab-favorit')">Favorit</button>
         <button class="profil-tab" onclick="switchTab(this,'tab-ulasan')">Ulasan</button>
+        <button class="profil-tab" onclick="switchTab(this,'tab-layanan')">Layanan Saya</button>
       </div>
       <div id="tab-akun" class="tab-content active">
         <div class="menu-list">
@@ -498,6 +499,11 @@
             <div style="font-size:11px;color:var(--tx3)">dari 0 ulasan</div>
           </div>
           <div id="ulasan-list"><p class="empty">Memuat ulasan...</p></div>
+        </div>
+      </div>
+      <div id="tab-layanan" class="tab-content">
+        <div style="padding:12px">
+          <div id="layanan-saya-list"><p class="empty">Memuat...</p></div>
         </div>
       </div>
       <div id="tab-bibit" class="tab-content" style="display:none!important">
@@ -966,6 +972,10 @@
       <input id="bantuan-judul" class="finput" placeholder="Judul singkat, misal: Gagal upload foto">
       <textarea id="bantuan-pesan" class="finput ftextarea" placeholder="Ceritain kendalanya di sini..."></textarea>
       <button class="btnp" onclick="kirimPesanBantuan()"><i class="ti ti-send"></i> Kirim pesan ke admin</button>
+    </div>
+    <div class="form-card">
+      <div style="font-size:13px;font-weight:500;color:var(--tx);margin-bottom:8px">Riwayat pertanyaanmu</div>
+      <div id="riwayat-bantuan-list"><p class="empty">Login dulu buat lihat riwayat.</p></div>
     </div>
   </div>
 </div>

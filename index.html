@@ -448,6 +448,7 @@
       <div class="profil-tabs">
         <button class="profil-tab active" onclick="switchTab(this,'tab-akun')">Akun</button>
         <button class="profil-tab" onclick="switchTab(this,'tab-iklan')">Iklan Saya</button>
+        <button class="profil-tab" onclick="switchTab(this,'tab-favorit')">Favorit</button>
       </div>
       <div id="tab-akun" class="tab-content active">
         <div class="menu-list">
@@ -466,6 +467,11 @@
             <button class="filter-btn" onclick="filterIklan(this,'dihapus')">Dihapus</button>
           </div>
           <div id="iklan-saya-list"><p class="empty">Memuat iklan...</p></div>
+        </div>
+      </div>
+      <div id="tab-favorit" class="tab-content">
+        <div style="padding:12px">
+          <div class="produk-grid" id="favorit-list"><p class="empty">Memuat favorit...</p></div>
         </div>
       </div>
       <div id="tab-bibit" class="tab-content" style="display:none!important">

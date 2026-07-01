@@ -74,7 +74,7 @@
         </svg>
         <span class="topbar-title">NitipJual</span>
       </div>
-      <input class="topbar-search" id="search-desktop" placeholder="Cari barang di Gresik, Surabaya, Sidoarjo..." oninput="cariProduk()">
+      <input class="topbar-search" id="search-desktop" placeholder="Cari barang incaranmu..." oninput="cariProduk()">
       <div class="topbar-right">
         <i class="ti ti-bell"></i>
         <div style="position:relative;cursor:pointer" onclick="showPage('page-chat-list')">
@@ -101,19 +101,22 @@
         <div class="sb-item" onclick="filterKategori(this,'rumah')"><i class="ti ti-sofa"></i>Rumah & Furnitur</div>
         <div class="sb-item" onclick="filterKategori(this,'kuliner')"><i class="ti ti-soup"></i>Kuliner & Makanan</div>
         <div class="sb-item" onclick="filterKategori(this,'kesehatan')"><i class="ti ti-heart-rate-monitor"></i>Kesehatan</div>
-        <div class="sb-item" onclick="filterKategori(this,'kecantikan')"><i class="ti ti-sparkles"></i>Kecantikan</div>
-        <div class="sb-item" onclick="filterKategori(this,'olahraga')"><i class="ti ti-run"></i>Olahraga</div>
-        <div class="sb-item" onclick="filterKategori(this,'hobi')"><i class="ti ti-palette"></i>Hobi & Koleksi</div>
-        <div class="sb-item" onclick="filterKategori(this,'bayi')"><i class="ti ti-baby-carriage"></i>Bayi & Anak</div>
-        <div class="sb-item" onclick="filterKategori(this,'hewan')"><i class="ti ti-paw"></i>Hewan Peliharaan</div>
-        <div class="sb-item" onclick="filterKategori(this,'pertanian')"><i class="ti ti-plant"></i>Pertanian</div>
-        <div class="sb-item" onclick="filterKategori(this,'lainnya')"><i class="ti ti-dots"></i>Lainnya</div>
+        <div id="sb-kat-more" style="display:none">
+          <div class="sb-item" onclick="filterKategori(this,'kecantikan')"><i class="ti ti-sparkles"></i>Kecantikan</div>
+          <div class="sb-item" onclick="filterKategori(this,'olahraga')"><i class="ti ti-run"></i>Olahraga</div>
+          <div class="sb-item" onclick="filterKategori(this,'hobi')"><i class="ti ti-palette"></i>Hobi & Koleksi</div>
+          <div class="sb-item" onclick="filterKategori(this,'bayi')"><i class="ti ti-baby-carriage"></i>Bayi & Anak</div>
+          <div class="sb-item" onclick="filterKategori(this,'hewan')"><i class="ti ti-paw"></i>Hewan Peliharaan</div>
+          <div class="sb-item" onclick="filterKategori(this,'pertanian')"><i class="ti ti-plant"></i>Produk Pertanian & Peternakan</div>
+          <div class="sb-item" onclick="filterKategori(this,'lainnya')"><i class="ti ti-dots"></i>Lainnya</div>
+        </div>
+        <div class="sb-item" onclick="toggleSidebarKat(this)" style="color:var(--pk);font-size:12px"><i class="ti ti-chevron-down"></i><span>Lihat semua kategori</span></div>
         <hr class="sb-divider">
         <div class="sb-item menu-logout" onclick="logout()"><i class="ti ti-logout"></i>Keluar</div>
       </div>
       <div class="main-content">
         <div class="searchrow mobile-only">
-          <input class="searchbox" id="search" placeholder="Cari barang di kotamu..." oninput="cariProduk()">
+          <input class="searchbox" id="search" placeholder="Cari barang incaranmu..." oninput="cariProduk()">
           <button class="filterbtn" onclick="showPage('page-filter')"><i class="ti ti-adjustments-horizontal"></i></button>
         </div>
         <div class="banner">
@@ -142,7 +145,7 @@
           <button class="chip" onclick="filterKategori(this,'hobi')">Hobi & Koleksi</button>
           <button class="chip" onclick="filterKategori(this,'bayi')">Bayi & Anak</button>
           <button class="chip" onclick="filterKategori(this,'hewan')">Hewan Peliharaan</button>
-          <button class="chip" onclick="filterKategori(this,'pertanian')">Pertanian</button>
+          <button class="chip" onclick="filterKategori(this,'pertanian')">Produk Pertanian & Peternakan</button>
           <button class="chip" onclick="filterKategori(this,'lainnya')">Lainnya</button>
         </div>
         <div class="slabel">Iklan terbaru di kotamu</div>
@@ -265,7 +268,7 @@
             <option value="hobi">Hobi & Koleksi</option>
             <option value="bayi">Bayi & Anak</option>
             <option value="hewan">Hewan Peliharaan</option>
-            <option value="pertanian">Pertanian & Perkebunan</option>
+            <option value="pertanian">Produk Pertanian & Peternakan</option>
             <option value="lainnya">Lainnya</option>
           </select>
           <i class="ti ti-chevron-down select-icon"></i>
@@ -358,7 +361,7 @@
             <option value="hobi">Hobi & Koleksi</option>
             <option value="bayi">Bayi & Anak</option>
             <option value="hewan">Hewan Peliharaan</option>
-            <option value="pertanian">Pertanian & Perkebunan</option>
+            <option value="pertanian">Produk Pertanian & Peternakan</option>
             <option value="lainnya">Lainnya</option>
           </select>
           <i class="ti ti-chevron-down select-icon"></i>

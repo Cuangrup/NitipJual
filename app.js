@@ -485,6 +485,16 @@ function bukaFavoritSaya() {
   if (tabBtn) switchTab(tabBtn, 'tab-favorit')
 }
 
+let _halamanSebelumLegal = 'page-login'
+function bukaHalamanLegal(id) {
+  const aktif = document.querySelector('.page.active')?.id
+  if (aktif && aktif !== 'page-syarat' && aktif !== 'page-privasi') _halamanSebelumLegal = aktif
+  showPage(id)
+}
+function tutupHalamanLegal() {
+  showPage(_halamanSebelumLegal)
+}
+
 function kembaliBeranda() {
   filterState = { sort:'terbaru', kota:'', kondisi:'', minHarga:'', maxHarga:'' }
   document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'))

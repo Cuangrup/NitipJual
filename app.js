@@ -777,22 +777,36 @@ function renderModalLayanan() {
   }
 
   if (step === 2) {
+    if (!layananState.kodeUnik) layananState.kodeUnik = Math.floor(Math.random()*899)+100
+    const tarifDasar = jenis==='cek' ? 20000 : null
+    const nominalTampil = tarifDasar ? `Rp ${(tarifDasar+layananState.kodeUnik).toLocaleString('id-ID')}` : 'Sesuai jarak'
+    layananState.nominalTotal = tarifDasar ? tarifDasar+layananState.kodeUnik : null
     body.innerHTML = `
       <div style="background:var(--ps2);border-radius:10px;padding:12px;margin-bottom:10px;text-align:center">
         <div style="font-size:11px;color:var(--pk2)">Tarif layanan</div>
-        <div style="font-size:20px;font-weight:500;color:var(--pk2);margin-top:2px">${jenis==='cek'?'Rp 20.000':'Sesuai jarak'}</div>
+        <div style="font-size:20px;font-weight:500;color:var(--pk2);margin-top:2px">${nominalTampil}</div>
+        ${tarifDasar ? `<div style="font-size:10px;color:var(--pk2);margin-top:2px">Termasuk kode unik ${layananState.kodeUnik} — transfer PAS sesuai nominal ini biar gampang dicek admin</div>` : `<div style="font-size:10px;color:var(--pk2);margin-top:2px">Tarif & kode unik pembayaran diinfokan admin lewat WA setelah jarak dihitung</div>`}
       </div>
       <div style="font-size:11px;font-weight:500;color:var(--tx3);text-transform:uppercase;letter-spacing:0.03em;margin-bottom:4px">Transfer ke rekening</div>
-      <div style="font-size:13px;font-weight:500;color:var(--tx);margin-bottom:10px">BCA 1234567890 a.n. NitipGo</div>
+      <div style="font-size:13px;font-weight:500;color:var(--tx);margin-bottom:10px">BCA 1300295441 a.n. Mohammad Rusdianto</div>
       <div style="font-size:11px;font-weight:500;color:var(--tx3);text-transform:uppercase;letter-spacing:0.03em;margin-bottom:4px">Untuk keperluan refund (jika perlu)</div>
       <input id="ml-rekening-refund" class="finput" placeholder="Nomor rekening/e-wallet kamu">
-      <div style="border:1.5px dashed var(--pkbr);border-radius:10px;padding:16px;text-align:center;color:var(--pk);margin-bottom:12px">
+      <div id="ml-upload-box" onclick="document.getElementById('ml-bukti-file').click()" style="border:1.5px dashed var(--pkbr);border-radius:10px;padding:16px;text-align:center;color:var(--pk);margin-bottom:12px;cursor:pointer">
         <i class="ti ti-upload" style="font-size:20px"></i>
-        <div style="font-size:12px;margin-top:6px">Upload bukti transfer</div>
+        <div id="ml-upload-label" style="font-size:12px;margin-top:6px">Upload bukti transfer</div>
       </div>
+      <input type="file" id="ml-bukti-file" accept="image/*" style="display:none" onchange="pilihBuktiTransfer(event)">
       <button class="btnp" onclick="kirimLayanan()">Kirim dan tunggu konfirmasi</button>
       <button onclick="layananState.step=1;renderModalLayanan()" style="width:100%;padding:9px;background:transparent;color:var(--tx2);border:none;font-size:12px;cursor:pointer;font-family:inherit;margin-top:4px">Kembali ke form order</button>`
   }
+}
+
+function pilihBuktiTransfer(event) {
+  const file = event.target.files[0]
+  if (!file) return
+  layananState.buktiFile = file
+  const label = document.getElementById('ml-upload-label')
+  if (label) label.textContent = `✓ ${file.name}`
 }
 
 function lanjutKePembayaran() {
@@ -818,6 +832,9 @@ function lanjutKePembayaran() {
 async function kirimLayanan() {
   const p = produkAktif
   const { jenis } = layananState
+  const btn = document.querySelector('#modal-layanan-body .btnp')
+  const btnAsli = btn?.innerHTML
+  if (btn) { btn.innerHTML = 'Mengirim...'; btn.disabled = true }
   const payload = {
     jenis,
     buyer_id: sesiAktif.user.id,
@@ -825,7 +842,9 @@ async function kirimLayanan() {
     seller_nama: p.users?.nama || '',
     seller_hp: p.users?.no_hp || '',
     alamat_jemput: layananState.alamat || '',
-    rekening_refund: document.getElementById('ml-rekening-refund')?.value.trim() || ''
+    rekening_refund: document.getElementById('ml-rekening-refund')?.value.trim() || '',
+    kode_unik: layananState.kodeUnik || null,
+    nominal_total: layananState.nominalTotal || null
   }
   if (jenis === 'cek') {
     payload.buyer_hp = layananState.buyerHp || ''
@@ -835,7 +854,17 @@ async function kirimLayanan() {
     payload.hp_penerima = layananState.hpPenerima || ''
     payload.alamat_penerima = layananState.alamatPenerima || ''
   }
+  if (layananState.buktiFile) {
+    const compressed = await kompresiFoto(layananState.buktiFile)
+    const fileName = `bukti-transfer/${sesiAktif.user.id}_${Date.now()}.jpg`
+    const { error: upErr } = await db.storage.from(BUCKET).upload(fileName, compressed, { contentType:'image/jpeg' })
+    if (!upErr) {
+      const { data: urlData } = db.storage.from(BUCKET).getPublicUrl(fileName)
+      payload.bukti_transfer_url = urlData.publicUrl
+    }
+  }
   const { error } = await db.from('layanan_manual').insert(payload)
+  if (btn) { btn.innerHTML = btnAsli; btn.disabled = false }
   if (error) { showToast('Gagal mengirim permintaan','error'); return }
   showToast('Permintaan terkirim! Tim kami proses manual dalam waktu dekat.')
   tutupModalLayanan()
@@ -1575,6 +1604,8 @@ async function adminMuatLayanan(jenis) {
           <div><b style="color:var(--tx)">Alamat tujuan:</b> ${x.alamat_penerima||'-'}</div>
         `}
         ${x.rekening_refund ? `<div><b style="color:var(--tx)">Rekening refund:</b> ${x.rekening_refund}</div>` : ''}
+        ${x.nominal_total ? `<div><b style="color:var(--tx)">Nominal transfer:</b> Rp ${Number(x.nominal_total).toLocaleString('id-ID')} <span style="color:var(--pk2)">(kode unik ${x.kode_unik})</span></div>` : ''}
+        ${x.bukti_transfer_url ? `<div><b style="color:var(--tx)">Bukti transfer:</b> <a href="${x.bukti_transfer_url}" target="_blank" style="color:var(--pk2)">Lihat foto</a></div>` : ''}
       </div>
       <div style="display:flex;gap:6px;margin-top:8px">
         ${x.status!=='diproses' ? `<button class="admin-btn-sm" style="background:#FAEEDA;color:#854F0B" onclick="adminUbahStatusLayanan('${x.id}','diproses','${jenis}')">Tandai diproses</button>` : ''}

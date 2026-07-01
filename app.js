@@ -21,7 +21,13 @@ function showToast(pesan, tipe='sukses') {
   setTimeout(() => { toast.style.opacity='0'; toast.style.transition='opacity .3s'; setTimeout(()=>toast.remove(),300) }, 2800)
 }
 
-async function cekSession() {
+async function 
+document.addEventListener('click', function initAudio() {
+  getAudioCtx()
+  document.removeEventListener('click', initAudio)
+}, { once: true })
+
+cekSession() {
   const { data: { session } } = await db.auth.getSession()
   if (session) tampilHome(session.user)
   else showPage('page-login')
@@ -662,48 +668,61 @@ async function bukaOrder(orderId) {
 }
 
 
+let audioCtx = null
+
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+  if (audioCtx.state === 'suspended') audioCtx.resume()
+  return audioCtx
+}
+
 function bunyiNotifikasi() {
   try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)()
+    const ctx = getAudioCtx()
+    const t = ctx.currentTime
     const osc = ctx.createOscillator()
     const gain = ctx.createGain()
     osc.connect(gain)
     gain.connect(ctx.destination)
     osc.type = 'sine'
-    gain.gain.setValueAtTime(0, ctx.currentTime)
-    gain.gain.linearRampToValueAtTime(0.8, ctx.currentTime + 0.01)
-    gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.15)
-    osc.frequency.setValueAtTime(880, ctx.currentTime)
-    osc.frequency.setValueAtTime(1100, ctx.currentTime + 0.08)
-    osc.start(ctx.currentTime)
-    osc.stop(ctx.currentTime + 0.15)
+    gain.gain.setValueAtTime(0, t)
+    gain.gain.linearRampToValueAtTime(0.8, t + 0.01)
+    gain.gain.linearRampToValueAtTime(0, t + 0.15)
+    osc.frequency.setValueAtTime(880, t)
+    osc.frequency.setValueAtTime(1100, t + 0.08)
+    osc.start(t)
+    osc.stop(t + 0.15)
     setTimeout(() => {
+      const t2 = ctx.currentTime
       const osc2 = ctx.createOscillator()
       const gain2 = ctx.createGain()
       osc2.connect(gain2)
       gain2.connect(ctx.destination)
       osc2.type = 'sine'
-      gain2.gain.setValueAtTime(0, ctx.currentTime)
-      gain2.gain.linearRampToValueAtTime(0.6, ctx.currentTime + 0.01)
-      gain2.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.2)
-      osc2.frequency.setValueAtTime(1320, ctx.currentTime)
-      osc2.start(ctx.currentTime)
-      osc2.stop(ctx.currentTime + 0.2)
+      gain2.gain.setValueAtTime(0, t2)
+      gain2.gain.linearRampToValueAtTime(0.6, t2 + 0.01)
+      gain2.gain.linearRampToValueAtTime(0, t2 + 0.2)
+      osc2.frequency.setValueAtTime(1320, t2)
+      osc2.start(t2)
+      osc2.stop(t2 + 0.2)
     }, 150)
   } catch(e) { console.log('Audio not supported') }
 }
 
+let chatBadgeChannel = null
+
 function subscribeChatBadge(userId) {
-  db.channel('badge-chat')
-    .on('postgres_changes',{ event:'INSERT', schema:'public', table:'chats' }, payload => {
-      if (payload.new.sender_id !== userId) {
-        cekChatBaru()
-        bunyiNotifikasi()
-        if (document.getElementById('page-chat-list')?.classList.contains('active')) {
-          loadChatList()
-        }
+  if (chatBadgeChannel) { chatBadgeChannel.unsubscribe(); chatBadgeChannel = null }
+  chatBadgeChannel = db.channel('badge-chat-' + userId)
+  chatBadgeChannel.on('postgres_changes',{ event:'INSERT', schema:'public', table:'chats' }, payload => {
+    if (payload.new.sender_id !== userId) {
+      cekChatBaru()
+      bunyiNotifikasi()
+      if (document.getElementById('page-chat-list')?.classList.contains('active')) {
+        loadChatList()
       }
-    }).subscribe()
+    }
+  }).subscribe()
 }
 
 async function cekChatBaru() {
@@ -829,5 +848,11 @@ db.auth.onAuthStateChange((event,session)=>{
     if (aktif==='page-login') tampilHome(session.user)
   } else if (event==='SIGNED_OUT') showPage('page-login')
 })
+
+
+document.addEventListener('click', function initAudio() {
+  getAudioCtx()
+  document.removeEventListener('click', initAudio)
+}, { once: true })
 
 cekSession()

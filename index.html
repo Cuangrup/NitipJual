@@ -71,10 +71,30 @@
         </svg>
         <span class="topbar-title">NitipJual</span>
       </div>
-      <div style="flex:1;max-width:440px;display:flex;gap:6px;margin:0 20px">
-        <input class="topbar-search" id="search-desktop" placeholder="Mau cari apa hari ini?" oninput="cariProduk()" style="flex:1;margin:0;max-width:none">
-        <button onclick="showPage('page-filter')" style="background:rgba(255,255,255,0.2);border:none;border-radius:20px;padding:0 14px;color:#fff;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:5px;white-space:nowrap;font-family:inherit">
-          <i class="ti ti-adjustments-horizontal" style="font-size:16px"></i> Filter
+      <div style="flex:1;max-width:600px;display:flex;gap:0;margin:0 16px;background:#fff;border-radius:24px;overflow:hidden;border:2px solid rgba(255,255,255,0.4)">
+        <div style="position:relative;flex-shrink:0" id="lokasi-desktop-wrap">
+          <button onclick="toggleLokasiDesktop()" style="display:flex;align-items:center;gap:6px;padding:0 14px;background:transparent;border:none;border-right:1px solid #eee;cursor:pointer;height:38px;color:#555;font-size:13px;font-family:inherit;white-space:nowrap">
+            <i class="ti ti-map-pin" style="font-size:14px;color:#C4789A"></i>
+            <span id="lokasi-desktop-label">Semua Kota</span>
+            <i class="ti ti-chevron-down" style="font-size:12px"></i>
+          </button>
+          <div id="lokasi-desktop-dropdown" style="display:none;position:absolute;top:42px;left:0;background:#fff;border:0.5px solid #eee;border-radius:10px;padding:6px;min-width:180px;z-index:500;box-shadow:0 4px 16px rgba(0,0,0,0.1)">
+            <div onclick="pilihLokasiDesktop('','Semua Kota')" style="padding:8px 12px;cursor:pointer;font-size:13px;border-radius:6px;color:#555" onmouseover="this.style.background='#FAF5FF'" onmouseout="this.style.background=''">Semua Kota</div>
+            <div onclick="pilihLokasiDesktop('Jakarta','Jakarta')" style="padding:8px 12px;cursor:pointer;font-size:13px;border-radius:6px;color:#555" onmouseover="this.style.background='#FAF5FF'" onmouseout="this.style.background=''">Jakarta</div>
+            <div onclick="pilihLokasiDesktop('Surabaya','Surabaya')" style="padding:8px 12px;cursor:pointer;font-size:13px;border-radius:6px;color:#555" onmouseover="this.style.background='#FAF5FF'" onmouseout="this.style.background=''">Surabaya</div>
+            <div onclick="pilihLokasiDesktop('Bandung','Bandung')" style="padding:8px 12px;cursor:pointer;font-size:13px;border-radius:6px;color:#555" onmouseover="this.style.background='#FAF5FF'" onmouseout="this.style.background=''">Bandung</div>
+            <div onclick="pilihLokasiDesktop('Medan','Medan')" style="padding:8px 12px;cursor:pointer;font-size:13px;border-radius:6px;color:#555" onmouseover="this.style.background='#FAF5FF'" onmouseout="this.style.background=''">Medan</div>
+            <div onclick="pilihLokasiDesktop('Makassar','Makassar')" style="padding:8px 12px;cursor:pointer;font-size:13px;border-radius:6px;color:#555" onmouseover="this.style.background='#FAF5FF'" onmouseout="this.style.background=''">Makassar</div>
+            <div onclick="pilihLokasiDesktop('Semarang','Semarang')" style="padding:8px 12px;cursor:pointer;font-size:13px;border-radius:6px;color:#555" onmouseover="this.style.background='#FAF5FF'" onmouseout="this.style.background=''">Semarang</div>
+            <div onclick="pilihLokasiDesktop('Palembang','Palembang')" style="padding:8px 12px;cursor:pointer;font-size:13px;border-radius:6px;color:#555" onmouseover="this.style.background='#FAF5FF'" onmouseout="this.style.background=''">Palembang</div>
+            <div onclick="pilihLokasiDesktop('Tangerang','Tangerang')" style="padding:8px 12px;cursor:pointer;font-size:13px;border-radius:6px;color:#555" onmouseover="this.style.background='#FAF5FF'" onmouseout="this.style.background=''">Tangerang</div>
+            <div onclick="pilihLokasiDesktop('Depok','Depok')" style="padding:8px 12px;cursor:pointer;font-size:13px;border-radius:6px;color:#555" onmouseover="this.style.background='#FAF5FF'" onmouseout="this.style.background=''">Depok</div>
+            <div onclick="pilihLokasiDesktop('Bekasi','Bekasi')" style="padding:8px 12px;cursor:pointer;font-size:13px;border-radius:6px;color:#555" onmouseover="this.style.background='#FAF5FF'" onmouseout="this.style.background=''">Bekasi</div>
+          </div>
+        </div>
+        <input id="search-desktop" placeholder="Temukan barang incaranmu..." oninput="cariProduk()" style="flex:1;border:none;outline:none;padding:0 14px;font-size:13px;color:#333;background:transparent;font-family:inherit">
+        <button onclick="cariProduk()" style="background:linear-gradient(90deg,#C4789A,#9B7FD4);border:none;padding:0 16px;cursor:pointer;display:flex;align-items:center">
+          <i class="ti ti-search" style="font-size:17px;color:#fff"></i>
         </button>
       </div>
       <div class="topbar-right">

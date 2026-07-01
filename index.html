@@ -93,12 +93,21 @@
         <div class="sb-item" onclick="showPage('page-chat-list')"><i class="ti ti-message"></i>Chat saya<span id="badge-chat-sidebar" style="display:none;width:8px;height:8px;border-radius:50%;background:#e53935;margin-left:auto"></span></div>
         <div class="sb-item" onclick="showPage('page-profil')"><i class="ti ti-user"></i>Profil saya</div>
         <div class="sb-section">Kategori</div>
+        <div class="sb-item" onclick="filterKategori(this,'handphone')"><i class="ti ti-device-mobile"></i>Handphone & Gadget</div>
         <div class="sb-item" onclick="filterKategori(this,'elektronik')"><i class="ti ti-device-laptop"></i>Elektronik</div>
+        <div class="sb-item" onclick="filterKategori(this,'kendaraan')"><i class="ti ti-car"></i>Kendaraan</div>
+        <div class="sb-item" onclick="filterKategori(this,'properti')"><i class="ti ti-building"></i>Properti</div>
         <div class="sb-item" onclick="filterKategori(this,'fashion')"><i class="ti ti-shirt"></i>Fashion</div>
-        <div class="sb-item" onclick="filterKategori(this,'kuliner')"><i class="ti ti-soup"></i>Kuliner</div>
-        <div class="sb-item" onclick="filterKategori(this,'rumah')"><i class="ti ti-sofa"></i>Rumah</div>
-        <div class="sb-item" onclick="filterKategori(this,'kendaraan')"><i class="ti ti-bike"></i>Kendaraan</div>
+        <div class="sb-item" onclick="filterKategori(this,'rumah')"><i class="ti ti-sofa"></i>Rumah & Furnitur</div>
+        <div class="sb-item" onclick="filterKategori(this,'kuliner')"><i class="ti ti-soup"></i>Kuliner & Makanan</div>
+        <div class="sb-item" onclick="filterKategori(this,'kesehatan')"><i class="ti ti-heart-rate-monitor"></i>Kesehatan</div>
+        <div class="sb-item" onclick="filterKategori(this,'kecantikan')"><i class="ti ti-sparkles"></i>Kecantikan</div>
         <div class="sb-item" onclick="filterKategori(this,'olahraga')"><i class="ti ti-run"></i>Olahraga</div>
+        <div class="sb-item" onclick="filterKategori(this,'hobi')"><i class="ti ti-palette"></i>Hobi & Koleksi</div>
+        <div class="sb-item" onclick="filterKategori(this,'bayi')"><i class="ti ti-baby-carriage"></i>Bayi & Anak</div>
+        <div class="sb-item" onclick="filterKategori(this,'hewan')"><i class="ti ti-paw"></i>Hewan Peliharaan</div>
+        <div class="sb-item" onclick="filterKategori(this,'pertanian')"><i class="ti ti-plant"></i>Pertanian</div>
+        <div class="sb-item" onclick="filterKategori(this,'lainnya')"><i class="ti ti-dots"></i>Lainnya</div>
         <hr class="sb-divider">
         <div class="sb-item menu-logout" onclick="logout()"><i class="ti ti-logout"></i>Keluar</div>
       </div>
@@ -120,12 +129,21 @@
         </div>
         <div class="chips">
           <button class="chip active" onclick="filterKategori(this,'')">Semua</button>
+          <button class="chip" onclick="filterKategori(this,'handphone')">Handphone</button>
           <button class="chip" onclick="filterKategori(this,'elektronik')">Elektronik</button>
           <button class="chip" onclick="filterKategori(this,'fashion')">Fashion</button>
-          <button class="chip" onclick="filterKategori(this,'kuliner')">Kuliner</button>
-          <button class="chip" onclick="filterKategori(this,'rumah')">Rumah</button>
           <button class="chip" onclick="filterKategori(this,'kendaraan')">Kendaraan</button>
+          <button class="chip" onclick="filterKategori(this,'properti')">Properti</button>
+          <button class="chip" onclick="filterKategori(this,'rumah')">Rumah & Furnitur</button>
+          <button class="chip" onclick="filterKategori(this,'kuliner')">Kuliner</button>
+          <button class="chip" onclick="filterKategori(this,'kesehatan')">Kesehatan</button>
+          <button class="chip" onclick="filterKategori(this,'kecantikan')">Kecantikan</button>
           <button class="chip" onclick="filterKategori(this,'olahraga')">Olahraga</button>
+          <button class="chip" onclick="filterKategori(this,'hobi')">Hobi & Koleksi</button>
+          <button class="chip" onclick="filterKategori(this,'bayi')">Bayi & Anak</button>
+          <button class="chip" onclick="filterKategori(this,'hewan')">Hewan Peliharaan</button>
+          <button class="chip" onclick="filterKategori(this,'pertanian')">Pertanian</button>
+          <button class="chip" onclick="filterKategori(this,'lainnya')">Lainnya</button>
         </div>
         <div class="slabel">Iklan terbaru di kotamu</div>
         <div class="produk-grid" id="produk-list"></div>
@@ -234,12 +252,20 @@
         <div class="select-wrap">
           <select class="finput" id="kategori">
             <option value="">Pilih kategori...</option>
+            <option value="handphone">Handphone & Gadget</option>
             <option value="elektronik">Elektronik</option>
-            <option value="fashion">Fashion</option>
-            <option value="kuliner">Kuliner & Makanan</option>
-            <option value="rumah">Rumah & Furnitur</option>
             <option value="kendaraan">Kendaraan</option>
-            <option value="olahraga">Olahraga</option>
+            <option value="properti">Properti</option>
+            <option value="fashion">Fashion & Pakaian</option>
+            <option value="rumah">Rumah & Furnitur</option>
+            <option value="kuliner">Kuliner & Makanan</option>
+            <option value="kesehatan">Kesehatan & Medis</option>
+            <option value="kecantikan">Kecantikan & Perawatan</option>
+            <option value="olahraga">Olahraga & Outdoor</option>
+            <option value="hobi">Hobi & Koleksi</option>
+            <option value="bayi">Bayi & Anak</option>
+            <option value="hewan">Hewan Peliharaan</option>
+            <option value="pertanian">Pertanian & Perkebunan</option>
             <option value="lainnya">Lainnya</option>
           </select>
           <i class="ti ti-chevron-down select-icon"></i>
@@ -319,12 +345,20 @@
         <div class="select-wrap">
           <select class="finput" id="edit-kategori">
             <option value="">Pilih kategori...</option>
+            <option value="handphone">Handphone & Gadget</option>
             <option value="elektronik">Elektronik</option>
-            <option value="fashion">Fashion</option>
-            <option value="kuliner">Kuliner & Makanan</option>
-            <option value="rumah">Rumah & Furnitur</option>
             <option value="kendaraan">Kendaraan</option>
-            <option value="olahraga">Olahraga</option>
+            <option value="properti">Properti</option>
+            <option value="fashion">Fashion & Pakaian</option>
+            <option value="rumah">Rumah & Furnitur</option>
+            <option value="kuliner">Kuliner & Makanan</option>
+            <option value="kesehatan">Kesehatan & Medis</option>
+            <option value="kecantikan">Kecantikan & Perawatan</option>
+            <option value="olahraga">Olahraga & Outdoor</option>
+            <option value="hobi">Hobi & Koleksi</option>
+            <option value="bayi">Bayi & Anak</option>
+            <option value="hewan">Hewan Peliharaan</option>
+            <option value="pertanian">Pertanian & Perkebunan</option>
             <option value="lainnya">Lainnya</option>
           </select>
           <i class="ti ti-chevron-down select-icon"></i>

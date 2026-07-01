@@ -509,6 +509,7 @@ async function bukaChat(orderId, produk) {
   const ava = document.getElementById('chat-ava')
   ava.textContent = sellerNama.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase()
   await loadPesan(orderId, userId)
+  tandaiSudahBaca()
   if (chatSubscription) chatSubscription.unsubscribe()
   chatSubscription = db.channel('chat-'+orderId)
     .on('postgres_changes',{ event:'INSERT', schema:'public', table:'chats', filter:`order_id=eq.${orderId}` }, payload => { tampilPesan(payload.new, userId) })
@@ -734,9 +735,12 @@ async function cekChatBaru() {
 }
 
 function hapusBadgeChat() {
-  localStorage.setItem('last-seen-chat', new Date().toISOString())
   const badges = ['badge-chat-topbar','badge-chat-sidebar','badge-chat-mobile']
   badges.forEach(id => { const el=document.getElementById(id); if(el) el.style.display='none' })
+}
+
+function tandaiSudahBaca() {
+  localStorage.setItem('last-seen-chat', new Date().toISOString())
 }
 
 

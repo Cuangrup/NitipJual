@@ -1610,6 +1610,7 @@ async function adminMuatLayanan(jenis) {
       <div style="display:flex;gap:6px;margin-top:8px">
         ${x.status!=='diproses' ? `<button class="admin-btn-sm" style="background:#FAEEDA;color:#854F0B" onclick="adminUbahStatusLayanan('${x.id}','diproses','${jenis}')">Tandai diproses</button>` : ''}
         ${x.status!=='selesai' ? `<button class="admin-btn-sm" style="background:#EAF3DE;color:#3B6D11" onclick="adminUbahStatusLayanan('${x.id}','selesai','${jenis}')">Tandai selesai</button>` : ''}
+        <button class="admin-btn-sm" style="background:#FCEBEB;color:#A32D2D" onclick="adminHapusLayanan('${x.id}','${jenis}')">Hapus</button>
       </div>
     </div>`
   }).join('')
@@ -1618,6 +1619,13 @@ async function adminMuatLayanan(jenis) {
 async function adminUbahStatusLayanan(id, statusBaru, jenis) {
   await db.from('layanan_manual').update({ status: statusBaru }).eq('id', id)
   showToast(`Ditandai ${statusBaru}`)
+  adminMuatLayanan(jenis)
+}
+
+async function adminHapusLayanan(id, jenis) {
+  if (!confirm('Hapus permintaan ini?')) return
+  await db.from('layanan_manual').delete().eq('id', id)
+  showToast('Permintaan dihapus')
   adminMuatLayanan(jenis)
 }
 

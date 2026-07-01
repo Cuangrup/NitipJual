@@ -374,6 +374,18 @@ function cariProduk() {
   loadProduk(kw)
 }
 
+function kembaliBeranda() {
+  filterState = { sort:'terbaru', kota:'', kondisi:'', minHarga:'', maxHarga:'' }
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'))
+  document.querySelectorAll('.sb-item').forEach(c=>c.classList.remove('active'))
+  const beranda = document.querySelector('.sb-item[data-nav="beranda"]')
+  if (beranda) beranda.classList.add('active')
+  const sd = document.getElementById('search-desktop'); if (sd) sd.value=''
+  const sm = document.getElementById('search'); if (sm) sm.value=''
+  showPage('page-home')
+  loadProduk()
+}
+
 function filterKategori(el, kat) {
   document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'))
   document.querySelectorAll('.sb-item').forEach(c=>c.classList.remove('active'))

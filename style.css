@@ -38,7 +38,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .topbar{background:var(--grad-h);color:#fff;padding:0 20px;height:54px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100}
 .topbar-left{display:flex;align-items:center;gap:10px}
 .topbar-title{font-size:15px;font-weight:500;color:#fff}
-.topbar-search{flex:1;max-width:400px;background:rgba(255,255,255,0.15);border:none;border-radius:20px;padding:8px 16px;font-size:13px;color:#fff;margin:0 20px;outline:none;display:none}
+.topbar-search{flex:1;background:rgba(255,255,255,0.15);border:none;border-radius:20px;padding:8px 16px;font-size:13px;color:#fff;outline:none;display:none}
 .topbar-search::placeholder{color:rgba(255,255,255,0.7)}
 .topbar-right{display:flex;align-items:center;gap:12px}
 .topbar-right i{font-size:20px;cursor:pointer;opacity:0.9}

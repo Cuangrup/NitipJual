@@ -40,7 +40,7 @@
         </svg>
         Masuk dengan Google
       </button>
-      <p class="login-note">Dengan masuk, kamu menyetujui syarat & ketentuan NitipJual</p>
+      <p class="login-note">Dengan masuk, kamu menyetujui <span onclick="bukaHalamanLegal('page-syarat')" style="color:var(--p);text-decoration:underline;cursor:pointer">Syarat and Ketentuan</span> dan <span onclick="bukaHalamanLegal('page-privasi')" style="color:var(--p);text-decoration:underline;cursor:pointer">Kebijakan Privasi</span> NitipJual</p>
 
     </div>
   </div>
@@ -186,6 +186,10 @@
             </div>
           </div>
           <hr class="footer-divider">
+          <div style="display:flex;justify-content:center;gap:12px;margin-bottom:8px">
+            <span onclick="bukaHalamanLegal('page-syarat')" style="font-size:11px;color:rgba(255,255,255,0.85);cursor:pointer;text-decoration:underline">Syarat and Ketentuan</span>
+            <span onclick="bukaHalamanLegal('page-privasi')" style="font-size:11px;color:rgba(255,255,255,0.85);cursor:pointer;text-decoration:underline">Kebijakan Privasi</span>
+          </div>
           <div class="footer-bottom">© 2026 NitipJual</div>
         </div>
       </div>
@@ -554,6 +558,390 @@
       </button>
     </div>
   </div>
+
+
+<div id="page-syarat" class="page">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="back-btn" onclick="tutupHalamanLegal()"><i class="ti ti-arrow-left"></i></button>
+      <span class="topbar-title">Syarat and Ketentuan</span>
+    </div>
+  </div>
+  <div class="content" style="max-width:720px;margin:0 auto;padding:20px 16px 60px;font-size:13px;line-height:1.7;color:var(--tx2)">
+    <h2 style="font-size:17px;font-weight:500;color:var(--tx);margin-bottom:2px">Perjanjian Penggunaan Layanan NitipJual</h2>
+    <p style="font-size:11px;color:var(--tx3);margin-bottom:16px">Versi 1.0 &middot; Terakhir diperbarui: Juli 2026</p>
+
+    <p>Selamat datang di NitipJual. NitipJual adalah platform digital yang mempertemukan penjual dan pembeli untuk melakukan transaksi jual beli barang secara langsung antar sesama pengguna.</p>
+    <p>Mohon luangkan waktu untuk membaca Perjanjian Penggunaan Layanan ini dengan saksama sebelum menggunakan NitipJual.</p>
+    <p>Dengan membuat akun, mengakses, atau menggunakan layanan NitipJual, Anda menyatakan telah membaca, memahami, dan menyetujui seluruh ketentuan dalam dokumen ini. Apabila Anda tidak menyetujui sebagian atau seluruh ketentuan tersebut, Anda tidak diperkenankan menggunakan layanan NitipJual.</p>
+    <p>Perjanjian ini merupakan perjanjian yang mengikat antara Pengguna dengan Pengelola Platform mengenai penggunaan seluruh layanan NitipJual.</p>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB I &mdash; Definisi</h3>
+    <p>Dalam Perjanjian ini, istilah berikut memiliki arti sebagai berikut:</p>
+    <ol style="padding-left:18px;margin:6px 0">
+      <li>Pengelola Platform adalah pihak yang memiliki, mengembangkan, mengoperasikan, mengelola, dan menyediakan layanan NitipJual beserta seluruh fitur pendukungnya.</li>
+      <li>NitipJual adalah platform digital berbasis aplikasi dan/atau situs web yang mempertemukan penjual dan pembeli melalui sistem iklan baris (classified marketplace).</li>
+      <li>Pengguna adalah setiap orang yang mengakses, mengunjungi, mendaftar, atau menggunakan layanan NitipJual.</li>
+      <li>Penjual adalah Pengguna yang menawarkan barang melalui NitipJual.</li>
+      <li>Pembeli adalah Pengguna yang berminat membeli barang yang ditawarkan melalui NitipJual.</li>
+      <li>Mitra adalah pihak yang bekerja sama dengan Pengelola Platform untuk memberikan layanan tertentu, termasuk namun tidak terbatas pada layanan NitipKirim dan NitipCek.</li>
+      <li>Akun adalah identitas digital Pengguna yang digunakan untuk mengakses layanan NitipJual.</li>
+      <li>Iklan adalah informasi mengenai barang yang dipublikasikan oleh Penjual melalui NitipJual.</li>
+      <li>Barang adalah benda bergerak maupun tidak bergerak yang diperbolehkan untuk diperdagangkan sesuai ketentuan hukum dan kebijakan NitipJual.</li>
+      <li>Konten adalah seluruh informasi yang diunggah oleh Pengguna, termasuk foto, video, deskripsi, judul, lokasi, harga, komentar, ulasan, maupun informasi lainnya.</li>
+      <li>Layanan Tambahan adalah layanan pendukung yang disediakan oleh Pengelola Platform, termasuk namun tidak terbatas pada NitipCek, NitipKirim, dan layanan lain yang dapat ditambahkan di kemudian hari.</li>
+    </ol>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB II &mdash; Kedudukan NitipJual</h3>
+    <ol style="padding-left:18px;margin:6px 0">
+      <li>NitipJual merupakan platform iklan baris (classified marketplace) yang mempertemukan Penjual dan Pembeli.</li>
+      <li>Pengelola Platform bukan merupakan pihak dalam perjanjian jual beli yang dilakukan antar Pengguna.</li>
+      <li>Seluruh kesepakatan mengenai harga, kondisi barang, metode pembayaran, garansi, lokasi transaksi, penyerahan barang, maupun syarat lainnya merupakan kesepakatan langsung antara Penjual dan Pembeli.</li>
+      <li>Pengelola Platform tidak memiliki, menguasai, menyimpan, atau menjual barang yang diiklankan oleh Pengguna.</li>
+      <li>Pengelola Platform tidak bertindak sebagai agen, distributor, reseller, importir, maupun perwakilan dari Penjual atau Pembeli.</li>
+      <li>Penggunaan layanan NitipCek, NitipKirim, atau layanan pendukung lainnya tidak mengubah kedudukan Pengelola Platform sebagai penyedia layanan digital yang memfasilitasi pertemuan antar Pengguna.</li>
+      <li>Kecuali dinyatakan secara tegas dalam ketentuan layanan tertentu, Pengelola Platform tidak menerima, menahan, mengelola, atau menjamin dana transaksi antar Pengguna.</li>
+    </ol>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB III &mdash; Persyaratan Pengguna</h3>
+    <p>Untuk menggunakan NitipJual, Pengguna wajib memenuhi persyaratan berikut:</p>
+    <ol style="padding-left:18px;margin:6px 0">
+      <li>Berusia paling sedikit 18 (delapan belas) tahun pada saat mendaftar dan menggunakan layanan NitipJual.</li>
+      <li>NitipJual tidak ditujukan untuk digunakan oleh individu yang belum berusia 18 (delapan belas) tahun. Pengelola Platform berhak menolak pendaftaran, membatasi akses, atau menghentikan Akun yang diketahui atau patut diduga dimiliki oleh individu yang belum memenuhi syarat usia ini.</li>
+      <li>Memberikan informasi yang benar, lengkap, akurat, dan tidak menyesatkan.</li>
+      <li>Bersedia memperbarui informasi apabila terjadi perubahan.</li>
+      <li>Menggunakan layanan dengan itikad baik.</li>
+      <li>Mematuhi seluruh ketentuan dalam Perjanjian ini serta peraturan perundang-undangan yang berlaku.</li>
+      <li>Bertanggung jawab penuh atas seluruh aktivitas yang dilakukan menggunakan Akunnya.</li>
+    </ol>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB IV &mdash; Akun Pengguna</h3>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 1 &mdash; Pendaftaran Akun</p>
+    <ol style="padding-left:18px;margin:6px 0">
+      <li>Pengguna wajib memiliki Akun untuk menggunakan fitur tertentu dalam NitipJual.</li>
+      <li>Pendaftaran dapat dilakukan menggunakan metode autentikasi yang disediakan oleh Pengelola Platform.</li>
+      <li>Pengguna hanya diperkenankan memiliki satu Akun utama, kecuali memperoleh persetujuan dari Pengelola Platform.</li>
+      <li>Pengguna dilarang membuat Akun menggunakan identitas palsu, identitas milik orang lain tanpa izin, atau informasi yang menyesatkan.</li>
+    </ol>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 2 &mdash; Keamanan Akun</p>
+    <p>Pengguna bertanggung jawab menjaga keamanan:</p>
+    <ul style="padding-left:18px;margin:6px 0">
+      <li>alamat email;</li>
+      <li>nomor telepon;</li>
+      <li>perangkat yang digunakan;</li>
+      <li>akun Google atau metode autentikasi lainnya yang digunakan untuk masuk ke NitipJual;</li>
+      <li>seluruh informasi yang berkaitan dengan akses ke Akun.</li>
+    </ul>
+    <p>Segala aktivitas yang dilakukan melalui Akun dianggap dilakukan oleh pemilik Akun, kecuali Pengguna dapat membuktikan adanya penyalahgunaan oleh pihak lain tanpa kelalaian dari Pengguna.</p>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 3 &mdash; Verifikasi</p>
+    <p>Pengelola Platform berhak sewaktu-waktu meminta Pengguna melakukan proses verifikasi identitas apabila diperlukan untuk: (a) menjaga keamanan platform; (b) mencegah penyalahgunaan layanan; (c) menangani laporan penipuan; (d) memenuhi kewajiban hukum; (e) memenuhi permintaan yang sah dari aparat penegak hukum; (f) kepentingan lain yang berkaitan dengan keamanan dan keandalan layanan.</p>
+    <p>Verifikasi dapat berupa identitas resmi, swafoto (selfie), video verifikasi, bukti kepemilikan rekening, nomor telepon, maupun dokumen lain yang dianggap wajar dan diperlukan.</p>
+    <p>Apabila Pengguna menolak melakukan verifikasi tanpa alasan yang dapat diterima, Pengelola Platform berhak membatasi sebagian atau seluruh akses terhadap layanan.</p>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB V &mdash; Hak dan Kewajiban Pengguna</h3>
+    <p>Pengguna berhak:</p>
+    <ol style="padding-left:18px;margin:6px 0">
+      <li>menggunakan layanan sesuai fitur yang tersedia;</li>
+      <li>memasang iklan sesuai ketentuan;</li>
+      <li>menghubungi Pengguna lain melalui media yang disediakan;</li>
+      <li>menggunakan layanan tambahan apabila tersedia;</li>
+      <li>melaporkan akun, iklan, maupun aktivitas yang diduga melanggar hukum atau Perjanjian ini.</li>
+    </ol>
+    <p>Pengguna berkewajiban:</p>
+    <ol style="padding-left:18px;margin:6px 0">
+      <li>bertindak jujur dan beritikad baik;</li>
+      <li>menghormati hak Pengguna lain;</li>
+      <li>menjaga keamanan Akun;</li>
+      <li>tidak menyalahgunakan layanan;</li>
+      <li>memberikan informasi barang secara benar;</li>
+      <li>bekerja sama apabila diminta memberikan klarifikasi terhadap laporan atau dugaan pelanggaran;</li>
+      <li>mematuhi seluruh kebijakan NitipJual yang berlaku.</li>
+    </ol>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB VI &mdash; Pemasangan Iklan</h3>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 1 &mdash; Ketentuan Umum</p>
+    <ol style="padding-left:18px;margin:6px 0">
+      <li>Penjual bertanggung jawab penuh atas setiap Iklan yang dipublikasikan melalui NitipJual.</li>
+      <li>Setiap Iklan wajib dibuat secara jujur, jelas, akurat, dan tidak menyesatkan.</li>
+      <li>Penjual wajib memiliki hak yang sah untuk menjual Barang yang diiklankan.</li>
+      <li>Pengelola Platform tidak melakukan pemeriksaan terlebih dahulu terhadap seluruh Iklan yang dipublikasikan oleh Pengguna. Namun demikian, Pengelola Platform berhak melakukan peninjauan, penyuntingan, pembatasan, penangguhan, atau penghapusan Iklan apabila ditemukan dugaan pelanggaran terhadap Perjanjian ini, ketentuan hukum yang berlaku, atau berdasarkan laporan dari pihak lain.</li>
+      <li>Pengelola Platform tidak berkewajiban menerbitkan setiap Iklan yang dikirimkan oleh Pengguna.</li>
+    </ol>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 2 &mdash; Informasi Barang</p>
+    <p>Penjual wajib memberikan informasi yang benar mengenai Barang, termasuk nama/jenis barang, merek (apabila ada), kondisi barang, spesifikasi, kelengkapan, harga, lokasi barang, kekurangan atau kerusakan yang diketahui Penjual, serta informasi lain yang dapat memengaruhi keputusan Pembeli. Penjual dilarang dengan sengaja menyembunyikan cacat, kerusakan, atau informasi penting mengenai Barang.</p>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 3 &mdash; Foto dan Media</p>
+    <p>Foto yang diunggah harus menggambarkan kondisi Barang yang sebenarnya. Penggunaan foto ilustrasi hanya diperbolehkan apabila diberi keterangan jelas. Foto tidak boleh mengandung unsur pornografi, kekerasan, ujaran kebencian, diskriminasi, pelanggaran hak cipta, informasi pribadi pihak lain tanpa izin, atau watermark milik pihak lain yang menyesatkan. Pengelola Platform berhak menghapus foto yang tidak sesuai ketentuan.</p>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 4 &mdash; Hak atas Konten</p>
+    <p>Hak kepemilikan atas foto, video, deskripsi, dan Konten lain yang diunggah tetap berada pada Pengguna. Dengan mengunggah Konten, Pengguna memberikan lisensi non-eksklusif, bebas royalti, berlaku selama Konten tersedia di platform, kepada Pengelola Platform untuk menampilkan, menyimpan, memperbanyak, menyesuaikan ukuran/format, mendistribusikan dalam sistem NitipJual, dan menggunakan Konten untuk kepentingan operasional maupun promosi platform sepanjang tetap berkaitan dengan layanan NitipJual. Lisensi berakhir apabila Konten dihapus, kecuali diperlukan untuk kewajiban hukum, sengketa, audit, atau pencadangan sistem.</p>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 5 &mdash; Masa Penayangan</p>
+    <p>Pengelola Platform dapat menetapkan masa berlaku Iklan, dan setelah berakhir dapat menonaktifkan, mengarsipkan, meminta pembaruan, atau menghapus Iklan sesuai kebijakan.</p>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 6 &mdash; Perubahan Iklan</p>
+    <p>Penjual dapat memperbarui informasi Iklan sepanjang Barang belum dinyatakan terjual, dengan ketentuan perubahan tidak digunakan untuk menyesatkan calon Pembeli.</p>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB VII &mdash; Barang yang Dilarang</h3>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 1 &mdash; Ketentuan Umum</p>
+    <p>Pengguna dilarang menawarkan, menjual, membeli, mempromosikan, atau menggunakan NitipJual untuk memperdagangkan Barang yang bertentangan dengan hukum, kesusilaan, ketertiban umum, atau kebijakan Pengelola Platform.</p>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 2 &mdash; Barang Terlarang</p>
+    <p>Termasuk namun tidak terbatas pada: narkotika, psikotropika, dan obat terlarang; senjata api, amunisi, bahan peledak, dan komponennya; senjata tajam yang dilarang diperjualbelikan menurut hukum; uang palsu; dokumen negara palsu; KTP/KK/SIM/paspor/NPWP atau dokumen identitas milik orang lain; rekening bank, buku tabungan, kartu ATM, dompet digital, akun pembayaran, maupun data akses keuangan; barang hasil tindak pidana; organ tubuh manusia; satwa dilindungi beserta bagian tubuhnya; produk bajakan; perangkat lunak ilegal atau alat pembobol sistem keamanan; malware/virus/ransomware/spyware; barang yang melanggar hak kekayaan intelektual pihak lain; serta barang yang dilarang diperdagangkan menurut peraturan perundang-undangan.</p>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 3 &mdash; Barang yang Dibatasi</p>
+    <p>Beberapa jenis barang hanya dapat diperdagangkan apabila memenuhi ketentuan hukum dan kebijakan Pengelola Platform, termasuk makanan/minuman, kosmetik, obat bebas, alat kesehatan, tanaman, hewan peliharaan, barang koleksi, logam mulia, kendaraan bermotor, properti, barang impor, produk digital, serta kategori lain yang ditentukan Pengelola Platform. Pengelola Platform berhak meminta dokumen pendukung sebelum atau selama Iklan aktif.</p>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 4 &mdash; Hak Pengelola Platform</p>
+    <p>Apabila ditemukan dugaan pelanggaran, Pengelola Platform berhak tanpa pemberitahuan terlebih dahulu untuk menolak publikasi, menghapus Iklan, membatasi fitur, menangguhkan/menghentikan Akun, menyimpan bukti digital, dan bekerja sama dengan aparat penegak hukum sesuai ketentuan yang berlaku. Pengguna tetap berhak memberikan klarifikasi apabila diperlukan.</p>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB VIII &mdash; Transaksi Antar Pengguna</h3>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 1 &mdash; Kedudukan Para Pihak</p>
+    <p>Seluruh transaksi jual beli dilakukan secara langsung antara Penjual dan Pembeli. Pengelola Platform bukan merupakan pihak dalam transaksi tersebut. Segala hak dan kewajiban yang timbul dari transaksi menjadi tanggung jawab Penjual dan Pembeli sesuai kesepakatan masing-masing.</p>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 2 &mdash; Negosiasi</p>
+    <p>Harga, metode pembayaran, lokasi transaksi, metode pengiriman, waktu penyerahan, garansi, maupun syarat lainnya ditentukan sendiri oleh Penjual dan Pembeli. Pengelola Platform tidak menentukan harga maupun memaksa Pengguna melakukan transaksi tertentu.</p>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 3 &mdash; Pembayaran</p>
+    <p>Seluruh pembayaran dilakukan langsung antara Penjual dan Pembeli, kecuali di masa mendatang Pengelola Platform secara resmi menyediakan layanan pembayaran yang diatur tersendiri. Pengelola Platform tidak menerima, menyimpan, menahan, ataupun menjamin dana transaksi antar Pengguna. Pengguna bertanggung jawab memastikan keamanan metode pembayaran yang dipilih.</p>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 4 &mdash; Pemeriksaan Barang</p>
+    <p>Pembeli bertanggung jawab melakukan pemeriksaan terhadap Barang sebelum menyelesaikan transaksi. Penggunaan layanan NitipCek merupakan pilihan Pembeli dan tidak menggantikan kewajiban Pembeli untuk memastikan Barang sesuai kebutuhannya.</p>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 5 &mdash; Sengketa Transaksi</p>
+    <p>Apabila terjadi perselisihan antara Penjual dan Pembeli, para pihak wajib terlebih dahulu menyelesaikannya secara musyawarah. Pengelola Platform dapat membantu memfasilitasi komunikasi apabila dianggap perlu, namun tidak berkewajiban memberikan keputusan yang mengikat atau menjadi penengah dalam sengketa tersebut.</p>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB IX &mdash; Ketentuan Layanan NitipCek</h3>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 1 &mdash; Ketentuan Umum</p>
+    <p>NitipCek merupakan layanan tambahan yang disediakan melalui Mitra untuk membantu Pembeli memperoleh informasi mengenai kondisi Barang sebelum transaksi diselesaikan. Penggunaan NitipCek bersifat opsional dan hanya dilakukan apabila disepakati Pembeli dan Penjual. Penggunaan NitipCek tidak mengubah kedudukan Pengelola Platform sebagai penyedia layanan digital dan bukan pihak dalam transaksi jual beli.</p>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 2 &mdash; Ruang Lingkup Pemeriksaan</p>
+    <p>Pemeriksaan dapat meliputi kesesuaian Barang dengan deskripsi, kondisi fisik, kelengkapan, dokumentasi foto/video, dan fungsi dasar Barang apabila memungkinkan diuji sederhana. Jenis pemeriksaan dapat berbeda pada setiap kategori Barang.</p>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 3 &mdash; Batasan Pemeriksaan</p>
+    <p>Pemeriksaan dilakukan berdasarkan kondisi Barang saat pemeriksaan berlangsung. NitipCek bukan jasa appraisal, sertifikasi, inspeksi profesional, audit teknis, maupun penilaian independen. Mitra NitipCek bukan ahli, teknisi, mekanik, surveyor, atau penilai publik kecuali dinyatakan sebaliknya. NitipCek tidak menjamin kualitas, keaslian, umur pakai, bebas dari kerusakan tersembunyi atau cacat produksi, kelayakan penggunaan, kepemilikan, maupun legalitas Barang. Kerusakan yang muncul setelah pemeriksaan menjadi tanggung jawab para pihak sesuai kesepakatan transaksi.</p>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 4 &mdash; Kewajiban Penjual</p>
+    <p>Penjual yang menyetujui NitipCek wajib memberikan akses yang wajar kepada Mitra, menunjukkan Barang yang akan diperiksa, tidak menghalangi proses pemeriksaan, dan memberikan informasi yang benar mengenai Barang.</p>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 5 &mdash; Kewajiban Pembeli</p>
+    <p>Pembeli memahami bahwa hasil NitipCek hanya menjadi bahan pertimbangan, keputusan membeli tetap sepenuhnya berada pada Pembeli, dan penggunaan NitipCek tidak menghilangkan kewajiban Pembeli melakukan penilaian sendiri.</p>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 6 &mdash; Pembatasan Tanggung Jawab</p>
+    <p>Pengelola Platform dan Mitra tidak bertanggung jawab atas kerugian akibat kerusakan tersembunyi, perubahan kondisi Barang setelah pemeriksaan, informasi yang disembunyikan Penjual, cacat internal yang tidak dapat diketahui melalui pemeriksaan visual, maupun kegagalan transaksi setelah pemeriksaan.</p>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB X &mdash; Ketentuan Layanan NitipKirim</h3>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 1 &mdash; Ketentuan Umum</p>
+    <p>NitipKirim merupakan layanan tambahan yang membantu pengambilan dan/atau pengantaran Barang. NitipKirim bukan perusahaan jasa ekspedisi, kurir umum, ataupun perusahaan logistik, dan hanya bertindak sebagai perantara sesuai permintaan Pengguna.</p>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 2 &mdash; Pengambilan Barang</p>
+    <p>Penjual wajib menyerahkan Barang yang sesuai dengan Iklan kepada Mitra yang benar, dan memastikan Barang telah dikemas dengan layak apabila diperlukan.</p>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 3 &mdash; Penyerahan Barang</p>
+    <p>Pembeli wajib memastikan identitas penerima benar, alamat tujuan benar, dan dapat menerima Barang pada waktu yang disepakati.</p>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 4 &mdash; Pembatalan</p>
+    <p>Apabila salah satu pihak membatalkan transaksi setelah Mitra menuju lokasi, biaya layanan yang telah timbul tetap dapat dibebankan kepada pihak yang melakukan pembatalan sesuai tarif yang berlaku.</p>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 5 &mdash; Barang yang Ditolak</p>
+    <p>Mitra berhak menolak mengambil/mengantarkan Barang apabila termasuk kategori terlarang, membahayakan keselamatan, tidak sesuai informasi pada aplikasi, terdapat dugaan tindak pidana, atau kondisinya tidak memungkinkan diangkut secara aman.</p>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 6 &mdash; Batas Tanggung Jawab</p>
+    <p>Pengelola Platform dan Mitra tidak bertanggung jawab atas kerusakan akibat pengemasan tidak layak, kerusakan yang sudah ada sebelum pengambilan, keterlambatan akibat kemacetan/cuaca/bencana/keadaan di luar kendali wajar, pembatalan transaksi oleh Penjual/Pembeli, maupun kehilangan keuntungan atau kerugian tidak langsung akibat keterlambatan layanan. Apabila terjadi kerusakan/kehilangan yang secara langsung disebabkan kelalaian Mitra dalam pelaksanaan NitipKirim, Pengelola Platform akan melakukan penanganan sesuai prosedur internal yang mempertimbangkan fakta kejadian, bukti yang tersedia, dan ketentuan layanan ini.</p>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB XI &mdash; Rating dan Ulasan</h3>
+    <p>Rating dan ulasan bertujuan membantu Pengguna lain memperoleh gambaran mengenai pengalaman transaksi. Pengguna hanya boleh memberikan ulasan berdasarkan pengalaman transaksi yang benar-benar terjadi.</p>
+    <p>Dilarang: membuat ulasan palsu; membeli atau menjual rating; melakukan manipulasi reputasi; memberikan ancaman agar memperoleh rating tertentu; membuat banyak akun untuk meningkatkan rating.</p>
+    <p>Pengelola Platform berhak menyembunyikan ulasan, menghapus ulasan, mengoreksi perhitungan rating, membatasi fitur ulasan, dan menjatuhkan sanksi terhadap akun yang terbukti melakukan manipulasi.</p>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB XII &mdash; Pelaporan dan Takedown</h3>
+    <p>Setiap Pengguna dapat melaporkan Iklan, Akun, Konten, Pesan, atau aktivitas lain yang diduga melanggar hukum atau Perjanjian ini. Laporan sebaiknya disertai informasi memadai seperti kronologi, tangkapan layar, foto, tautan Iklan, atau bukti lain yang relevan.</p>
+    <p>Pengelola Platform akan melakukan peninjauan atas setiap laporan yang diterima dalam waktu yang wajar. Apabila ditemukan dugaan pelanggaran, Pengelola Platform dapat menghapus Konten, menonaktifkan Iklan, membatasi fitur, menangguhkan/menghentikan akun, meminta klarifikasi, menyimpan bukti digital, dan bekerja sama dengan aparat penegak hukum apabila diwajibkan atau diperbolehkan oleh peraturan yang berlaku.</p>
+    <p>Pengguna yang dikenai tindakan dapat menyampaikan keberatan atau klarifikasi melalui mekanisme yang disediakan, dan Pengelola Platform akan meninjaunya sesuai prosedur yang berlaku.</p>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB XIII &mdash; Hak Pengelola Platform</h3>
+    <p>Dalam rangka menjaga keamanan, keandalan, dan keberlangsungan layanan, Pengelola Platform berhak untuk: mengembangkan, mengubah, menambah, mengurangi, membatasi, atau menghentikan sebagian/seluruh fitur layanan; melakukan pemeliharaan, pembaruan sistem, dan perbaikan layanan sewaktu-waktu; menolak, menyunting, membatasi, mengarsipkan, menonaktifkan, atau menghapus Iklan/Konten yang melanggar; memberikan peringatan, membatasi fitur, menangguhkan, atau menghentikan Akun sesuai Perjanjian; meminta informasi/klarifikasi/dokumen pendukung dari Pengguna apabila diperlukan; menggunakan sistem otomatis termasuk kecerdasan buatan (AI) untuk moderasi konten, deteksi penipuan, dan peningkatan keamanan/kualitas layanan, dengan mekanisme keberatan yang disediakan untuk keputusan yang berdampak signifikan; menyimpan log aktivitas dan informasi teknis untuk kepentingan operasional, keamanan, audit, dan pembuktian; serta bekerja sama dengan pihak ketiga sesuai ketentuan hukum dan Kebijakan Privasi NitipJual.</p>
+    <p>Pengelola Platform dapat sewaktu-waktu memperkenalkan fitur, layanan, maupun program baru yang akan tunduk pada Perjanjian ini atau ketentuan tambahan yang diberitahukan kepada Pengguna.</p>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB XIV &mdash; Privasi dan Pengelolaan Data</h3>
+    <p>Pengelola Platform dapat mengumpulkan data yang diperlukan untuk penyelenggaraan layanan, termasuk nama, alamat email, nomor telepon, informasi profil, lokasi, informasi perangkat, alamat IP, log aktivitas, data transaksi layanan, serta informasi lain yang diberikan secara sah oleh Pengguna, digunakan untuk menyediakan layanan, verifikasi identitas, meningkatkan kualitas layanan, menjaga keamanan, menangani laporan, memenuhi kewajiban hukum, dan menghubungi Pengguna terkait layanan.</p>
+    <p>Pengelolaan data pribadi secara lebih rinci diatur dalam <span onclick="bukaHalamanLegal('page-privasi')" style="color:var(--p);cursor:pointer;font-weight:500">Kebijakan Privasi NitipJual</span> yang merupakan bagian tidak terpisahkan dari Perjanjian ini.</p>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB XV &mdash; Hak Kekayaan Intelektual</h3>
+    <p>Seluruh hak kekayaan intelektual atas NitipJual, termasuk nama, logo, desain, antarmuka pengguna, tata letak, perangkat lunak, kode program, basis data, dokumentasi, serta materi lain yang dikembangkan Pengelola Platform, merupakan milik Pengelola Platform atau pihak pemberi lisensi yang sah.</p>
+    <p>Tanpa persetujuan tertulis, Pengguna dilarang menyalin sebagian/seluruh layanan, melakukan reverse engineering, mendekompilasi sistem, mengambil data secara otomatis (scraping), menggunakan bot tanpa izin, memperbanyak database, atau menggunakan identitas/nama/logo NitipJual sedemikian rupa sehingga menimbulkan kesan hubungan resmi dengan Pengelola Platform.</p>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB XVI &mdash; Penolakan Jaminan</h3>
+    <p>Layanan NitipJual disediakan sebagaimana adanya (&ldquo;as is&rdquo;) dan sebagaimana tersedia (&ldquo;as available&rdquo;). Sepanjang diperbolehkan hukum yang berlaku, Pengelola Platform tidak menjamin layanan akan selalu tersedia tanpa gangguan, bebas dari kesalahan/bug/gangguan teknis, bahwa seluruh informasi dari Pengguna selalu benar/lengkap/terbaru, bahwa seluruh Barang yang diiklankan asli/legal/sesuai deskripsi, bahwa seluruh Pengguna bertindak dengan itikad baik, bahwa seluruh transaksi berhasil diselesaikan, atau bahwa layanan memenuhi kebutuhan/harapan setiap Pengguna. Ketentuan ini tidak mengurangi hak Pengguna yang diberikan secara tegas oleh peraturan yang tidak dapat dikesampingkan.</p>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB XVII &mdash; Pembatasan Tanggung Jawab</h3>
+    <p>Sepanjang diperbolehkan hukum yang berlaku, Pengelola Platform tidak bertanggung jawab atas kerugian yang timbul akibat tindakan Penjual/Pembeli, informasi tidak benar dari Pengguna, penipuan antar Pengguna, pembatalan/kegagalan transaksi, kerusakan Barang yang bukan disebabkan kesalahan Pengelola Platform, gangguan jaringan/telekomunikasi/layanan pihak ketiga, tindakan pihak ketiga di luar kendali, maupun penggunaan Akun oleh pihak lain akibat kelalaian Pengguna menjaga keamanan Akunnya.</p>
+    <p>Dalam hal Pengelola Platform berdasarkan putusan pengadilan berkekuatan hukum tetap dinyatakan bertanggung jawab atas kerugian yang secara langsung disebabkan kesalahan Pengelola Platform, tanggung jawab tersebut dibatasi sejauh diperbolehkan hukum yang berlaku dan hanya mencakup kerugian langsung yang dapat dibuktikan secara sah. Pengelola Platform tidak bertanggung jawab atas kerugian tidak langsung, kehilangan keuntungan, kehilangan peluang usaha, atau kerugian konsekuensial lainnya, kecuali ditentukan lain oleh peraturan yang bersifat memaksa.</p>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB XVIII &mdash; Keadaan Kahar (Force Majeure)</h3>
+    <p>Keadaan Kahar adalah keadaan di luar kendali wajar Pengelola Platform yang menyebabkan sebagian/seluruh layanan tidak dapat diselenggarakan sebagaimana mestinya, meliputi namun tidak terbatas pada bencana alam, gempa bumi, banjir, tanah longsor, kebakaran, wabah penyakit/pandemi, perang, aksi terorisme, kerusuhan, pemogokan massal, gangguan jaringan telekomunikasi, gangguan pusat data/penyedia cloud, pemadaman listrik berskala besar, serangan siber di luar pengendalian wajar, perubahan kebijakan pemerintah, maupun keadaan lain yang tidak dapat diprediksi/dikendalikan secara wajar.</p>
+    <p>Selama Keadaan Kahar berlangsung, Pengelola Platform dibebaskan dari tanggung jawab atas keterlambatan/kegagalan layanan yang secara langsung disebabkan keadaan tersebut, dan akan berupaya secara wajar memulihkan layanan sesegera mungkin setelah Keadaan Kahar berakhir.</p>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB XIX &mdash; Perubahan Layanan</h3>
+    <p>Pengelola Platform dapat sewaktu-waktu menambah/mengurangi fitur, mengubah tampilan, menghentikan fitur tertentu, memperkenalkan layanan baru, mengintegrasikan layanan dengan platform lain, maupun melakukan perubahan lain yang dianggap perlu untuk pengembangan layanan. Penggunaan fitur/layanan baru dapat tunduk pada syarat dan ketentuan tambahan yang menjadi bagian tidak terpisahkan dari Perjanjian ini.</p>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB XX &mdash; Perubahan Perjanjian</h3>
+    <p>Pengelola Platform dapat mengubah Perjanjian ini dari waktu ke waktu untuk menyesuaikan perkembangan layanan, perubahan teknologi, kebutuhan operasional, perubahan kebijakan internal, maupun perubahan peraturan perundang-undangan. Perubahan yang bersifat material akan diberitahukan melalui aplikasi, situs web, surat elektronik, atau media komunikasi lain yang dianggap wajar. Dengan tetap menggunakan NitipJual setelah perubahan berlaku, Pengguna dianggap telah membaca, memahami, dan menyetujui Perjanjian yang diperbarui.</p>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB XXI &mdash; Penyelesaian Sengketa</h3>
+    <p>Apabila terjadi perselisihan berkaitan dengan penggunaan NitipJual, Pengguna dan Pengelola Platform sepakat untuk terlebih dahulu mengupayakan penyelesaian secara musyawarah dengan itikad baik. Apabila musyawarah tidak mencapai penyelesaian, para pihak dapat menempuh mekanisme penyelesaian sengketa lain sesuai kesepakatan atau ketentuan peraturan yang berlaku. Apabila sengketa tetap tidak dapat diselesaikan, sengketa akan diselesaikan melalui pengadilan yang berwenang sesuai domisili hukum Pengelola Platform, kecuali ditentukan lain oleh peraturan perundang-undangan yang berlaku.</p>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB XXII &mdash; Ketentuan Penutup</h3>
+    <p><strong style="color:var(--tx)">Keberlakuan Sebagian Ketentuan.</strong> Apabila terdapat ketentuan dalam Perjanjian ini yang dinyatakan tidak sah/tidak berlaku/tidak dapat dilaksanakan berdasarkan putusan pengadilan berkekuatan hukum tetap atau ketentuan peraturan, ketentuan lainnya tetap berlaku dan mengikat sepanjang tidak bertentangan dengan hukum.</p>
+    <p><strong style="color:var(--tx)">Tidak Dianggap Melepaskan Hak.</strong> Keterlambatan atau tidak dilaksanakannya suatu hak oleh Pengelola Platform tidak dapat ditafsirkan sebagai pelepasan atas hak tersebut.</p>
+    <p><strong style="color:var(--tx)">Keberlangsungan Ketentuan.</strong> Ketentuan mengenai pembatasan tanggung jawab, hak kekayaan intelektual, perlindungan data, penyelesaian sengketa, serta ketentuan lain yang menurut sifatnya tetap berlaku, akan tetap mengikat meskipun Akun Pengguna telah ditutup atau hubungan penggunaan layanan telah berakhir.</p>
+    <p><strong style="color:var(--tx)">Bahasa.</strong> Perjanjian ini disusun dalam Bahasa Indonesia. Apabila di kemudian hari tersedia versi dalam bahasa lain, versi Bahasa Indonesia tetap menjadi acuan utama sepanjang diperbolehkan peraturan yang berlaku.</p>
+    <p><strong style="color:var(--tx)">Tanggal Berlaku.</strong> Perjanjian ini mulai berlaku sejak tanggal dipublikasikan oleh Pengelola Platform dan berlaku bagi seluruh Pengguna sejak mengakses atau menggunakan layanan NitipJual.</p>
+
+    <div style="border-top:0.5px solid var(--br);margin:20px 0;padding-top:14px">
+      <p style="font-weight:500;color:var(--tx)">Pernyataan Persetujuan</p>
+      <p>Dengan membuat Akun, mengakses, atau menggunakan layanan NitipJual, Pengguna menyatakan bahwa telah membaca, memahami, dan menyetujui seluruh isi Perjanjian Penggunaan Layanan ini. Apabila Pengguna tidak menyetujui sebagian atau seluruh ketentuan dalam Perjanjian ini, Pengguna diminta untuk tidak menggunakan layanan NitipJual.</p>
+    </div>
+
+    <h2 style="font-size:16px;font-weight:500;color:var(--tx);margin:28px 0 4px">Lampiran I &mdash; Ketentuan Tambahan Penggunaan Layanan</h2>
+    <p style="font-size:11px;color:var(--tx3);margin-bottom:12px">Lampiran ini merupakan bagian yang tidak terpisahkan dari Perjanjian Penggunaan Layanan NitipJual.</p>
+
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">1. Penggunaan Akun</p>
+    <p>Pengguna bertanggung jawab atas seluruh aktivitas yang dilakukan melalui Akunnya, dan wajib segera mengubah kredensial atau menghubungi Pengelola Platform apabila mengetahui/menduga adanya akses tidak sah. Pengguna dilarang memperjualbelikan, memindahtangankan, menyewakan, atau meminjamkan Akun kepada pihak lain tanpa persetujuan tertulis. Pengelola Platform berhak menangguhkan Akun yang terindikasi digunakan secara tidak sah, termasuk penggunaan identitas palsu, pengambilalihan akun (account takeover), atau penyalahgunaan sistem.</p>
+
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">2. Penyalahgunaan Platform</p>
+    <p>Pengguna dilarang menggunakan NitipJual untuk melakukan penipuan, menyebarkan informasi palsu, melakukan spam, melakukan phishing, menyebarkan malware, melakukan social engineering, mengirim pesan massal yang tidak diminta, melakukan scraping data tanpa izin, menggunakan bot atau sistem otomatis yang mengganggu layanan, mencoba memperoleh akses tanpa hak ke sistem NitipJual, atau mengganggu keamanan, integritas, maupun ketersediaan layanan.</p>
+
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">3. Penyalahgunaan Identitas</p>
+    <p>Pengguna dilarang menggunakan identitas orang lain tanpa izin, menyamar sebagai individu/perusahaan/instansi pemerintah/Pengelola Platform, menggunakan dokumen palsu, atau memberikan informasi yang menyesatkan.</p>
+
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">4. Penyalahgunaan Sistem Rating</p>
+    <p>Pengguna dilarang membuat transaksi fiktif, melakukan pertukaran ulasan, membeli atau menjual ulasan, menggunakan banyak akun untuk memengaruhi reputasi, atau memberikan ulasan yang mengandung penghinaan, ancaman, atau informasi yang diketahui tidak benar.</p>
+
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">5. Penyalahgunaan Layanan NitipCek</p>
+    <p>Pengguna dilarang meminta Mitra memberikan penilaian harga (appraisal), meminta Mitra menjamin keaslian Barang, menghalangi proses pemeriksaan, atau memaksa Mitra melakukan tindakan di luar ruang lingkup layanan.</p>
+
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">6. Penyalahgunaan Layanan NitipKirim</p>
+    <p>Pengguna dilarang menggunakan NitipKirim untuk mengirim Barang yang dilarang, Barang berbahaya tanpa pemberitahuan, Barang hasil tindak pidana, atau Barang yang tidak sesuai informasi pada aplikasi.</p>
+
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">7. Bukti Elektronik</p>
+    <p>Pengguna memahami bahwa data elektronik yang dihasilkan sistem NitipJual dapat digunakan sebagai alat bukti sesuai peraturan yang berlaku, meliputi namun tidak terbatas pada log aktivitas, riwayat login, alamat IP, waktu akses, metadata, komunikasi melalui fitur yang disediakan, bukti verifikasi, dokumen elektronik, foto, video, maupun data lain yang secara sah dihasilkan oleh sistem.</p>
+
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">8. Sanksi</p>
+    <p>Pelanggaran terhadap Perjanjian maupun Lampiran ini dapat dikenai satu atau lebih tindakan berikut: peringatan; pembatasan fitur; penghapusan Iklan; penangguhan Akun; penghentian Akun; pelaporan kepada pihak yang berwenang apabila diwajibkan atau diperbolehkan oleh hukum.</p>
+
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">9. Penafsiran</p>
+    <p>Dalam hal terdapat perbedaan penafsiran antara Lampiran ini dengan Perjanjian Penggunaan Layanan, ketentuan dalam Perjanjian Penggunaan Layanan tetap berlaku sepanjang tidak dinyatakan lain secara tegas.</p>
+
+    <div style="background:var(--ps2);border-radius:10px;padding:12px;margin-top:24px;font-size:11px;color:var(--pk2)">
+      Dokumen ini adalah draf yang disusun untuk keperluan operasional NitipJual dan belum ditinjau oleh konsultan hukum berlisensi. Isi dapat diperbarui sewaktu-waktu.
+    </div>
+  </div>
+</div>
+
+<div id="page-privasi" class="page">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="back-btn" onclick="tutupHalamanLegal()"><i class="ti ti-arrow-left"></i></button>
+      <span class="topbar-title">Kebijakan Privasi</span>
+    </div>
+  </div>
+  <div class="content" style="max-width:720px;margin:0 auto;padding:20px 16px 60px;font-size:13px;line-height:1.7;color:var(--tx2)">
+    <h2 style="font-size:17px;font-weight:500;color:var(--tx);margin-bottom:2px">Kebijakan Privasi NitipJual</h2>
+    <p style="font-size:11px;color:var(--tx3);margin-bottom:16px">Versi 1.0 &middot; Terakhir diperbarui: Juli 2026</p>
+
+    <p>Kebijakan Privasi ini merupakan bagian yang tidak terpisahkan dari <span onclick="bukaHalamanLegal('page-syarat')" style="color:var(--p);cursor:pointer;font-weight:500">Perjanjian Penggunaan Layanan NitipJual</span>.</p>
+    <p>Kebijakan ini menjelaskan bagaimana Pengelola Platform mengumpulkan, menggunakan, menyimpan, membagikan, dan melindungi data pribadi Pengguna, serta hak-hak Pengguna atas data pribadinya, sesuai dengan Undang-Undang Nomor 27 Tahun 2022 tentang Pelindungan Data Pribadi (&ldquo;UU PDP&rdquo;) dan peraturan perundang-undangan terkait lainnya.</p>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB I &mdash; Definisi</h3>
+    <ol style="padding-left:18px;margin:6px 0">
+      <li>Data Pribadi adalah data tentang orang perseorangan yang teridentifikasi atau dapat diidentifikasi secara tersendiri atau dikombinasi dengan informasi lainnya, sesuai UU PDP.</li>
+      <li>Pemrosesan Data Pribadi meliputi perolehan, pengumpulan, pengolahan, penganalisisan, penyimpanan, perbaikan, pembaruan, penampilan, pengumuman, transfer, penyebarluasan, pengungkapan, dan/atau penghapusan Data Pribadi.</li>
+      <li>Subjek Data Pribadi adalah orang perseorangan yang Data Pribadinya diproses, dalam hal ini adalah Pengguna NitipJual.</li>
+      <li>Pengendali Data Pribadi adalah Pengelola Platform, yang menentukan tujuan dan melakukan kendali Pemrosesan Data Pribadi.</li>
+      <li>Prosesor Data Pribadi adalah pihak ketiga yang memproses Data Pribadi untuk dan atas nama Pengendali Data Pribadi, termasuk penyedia layanan basis data dan penyimpanan berbasis komputasi awan (cloud).</li>
+    </ol>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB II &mdash; Data yang Dikumpulkan</h3>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 1 &mdash; Data yang Diberikan Langsung oleh Pengguna</p>
+    <ul style="padding-left:18px;margin:6px 0">
+      <li>nama lengkap;</li>
+      <li>alamat email;</li>
+      <li>nomor telepon/WhatsApp;</li>
+      <li>foto profil (apabila diunggah);</li>
+      <li>kota/lokasi;</li>
+      <li>informasi yang dicantumkan dalam Iklan (nama barang, deskripsi, harga, foto, kondisi, kategori);</li>
+      <li>isi pesan dalam fitur percakapan (chat) dengan Pengguna lain;</li>
+      <li>isi pesan yang dikirimkan melalui fitur Bantuan;</li>
+      <li>ulasan dan rating yang diberikan atau diterima.</li>
+    </ul>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 2 &mdash; Data yang Dikumpulkan Secara Otomatis</p>
+    <ul style="padding-left:18px;margin:6px 0">
+      <li>data akun dari penyedia autentikasi pihak ketiga (Google), sebatas nama, alamat email, dan foto profil yang diizinkan Pengguna saat masuk (login);</li>
+      <li>log aktivitas dan riwayat penggunaan fitur;</li>
+      <li>alamat IP;</li>
+      <li>jenis perangkat dan peramban (browser) yang digunakan;</li>
+      <li>waktu dan durasi akses;</li>
+      <li>data teknis lain yang wajar diperlukan untuk operasional dan keamanan sistem.</li>
+    </ul>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 3 &mdash; Sumber Data</p>
+    <p>Data Pribadi diperoleh secara langsung dari Pengguna pada saat pendaftaran, penggunaan fitur, maupun komunikasi dengan Pengelola Platform, serta secara otomatis melalui sistem sebagaimana diatur dalam Pasal 2.</p>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB III &mdash; Dasar dan Tujuan Pemrosesan Data</h3>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 1 &mdash; Dasar Pemrosesan</p>
+    <ol style="padding-left:18px;margin:6px 0">
+      <li>persetujuan eksplisit dari Subjek Data Pribadi;</li>
+      <li>pemenuhan kewajiban perjanjian, yaitu penyediaan layanan yang diminta Pengguna;</li>
+      <li>pemenuhan kewajiban hukum yang berlaku bagi Pengelola Platform;</li>
+      <li>kepentingan sah lainnya sesuai tujuan yang diungkapkan dengan mempertimbangkan keseimbangan antara kepentingan Pengendali Data Pribadi dan hak Subjek Data Pribadi.</li>
+    </ol>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 2 &mdash; Tujuan Penggunaan Data</p>
+    <ol style="padding-left:18px;margin:6px 0">
+      <li>menyediakan dan mengoperasikan layanan NitipJual, termasuk menampilkan Iklan dan memfasilitasi komunikasi antara Penjual dan Pembeli;</li>
+      <li>menampilkan nomor telepon/WhatsApp Penjual kepada calon Pembeli pada halaman detail Iklan, sesuai persetujuan yang diberikan Pengguna saat mengisi profil;</li>
+      <li>melakukan verifikasi identitas apabila diperlukan;</li>
+      <li>menjaga keamanan, mencegah penipuan, dan menangani laporan penyalahgunaan;</li>
+      <li>menghitung dan menampilkan rating serta ulasan;</li>
+      <li>menghubungi Pengguna terkait layanan, termasuk notifikasi transaksi dan tanggapan atas permintaan bantuan;</li>
+      <li>meningkatkan kualitas dan pengembangan fitur layanan;</li>
+      <li>memenuhi kewajiban hukum dan permintaan yang sah dari aparat penegak hukum.</li>
+    </ol>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB IV &mdash; Pembagian Data kepada Pihak Lain</h3>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 1 &mdash; Prinsip Umum</p>
+    <p>Pengelola Platform tidak menjual Data Pribadi Pengguna kepada pihak ketiga untuk tujuan komersial pihak lain.</p>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 2 &mdash; Pihak yang Dapat Menerima Data</p>
+    <ol style="padding-left:18px;margin:6px 0">
+      <li>Pengguna lain, sebatas informasi yang secara wajar diperlukan untuk transaksi (nama, foto profil, nomor telepon/WhatsApp sesuai pengaturan Pengguna, isi Iklan, isi pesan percakapan);</li>
+      <li>Mitra penyedia layanan NitipCek dan NitipKirim, sebatas data yang diperlukan untuk pelaksanaan layanan tersebut (nama, alamat, nomor telepon, detail Barang, lokasi transaksi);</li>
+      <li>Prosesor Data Pribadi yang membantu operasional teknis platform, termasuk penyedia layanan basis data dan hosting (saat ini menggunakan Supabase dan Vercel), yang memproses data berdasarkan instruksi Pengelola Platform dan tunduk pada kewajiban kerahasiaan;</li>
+      <li>aparat penegak hukum atau lembaga berwenang lainnya, apabila diwajibkan atau diperbolehkan oleh peraturan perundang-undangan yang berlaku;</li>
+      <li>pihak lain dengan persetujuan eksplisit dari Pengguna.</li>
+    </ol>
+    <p style="font-weight:500;color:var(--tx);margin-top:10px">Pasal 3 &mdash; Transfer Data</p>
+    <p>Apabila Prosesor Data Pribadi yang digunakan berlokasi di luar wilayah Indonesia, Pengelola Platform akan berupaya memastikan Prosesor tersebut menerapkan tingkat pelindungan data yang setara sebagaimana disyaratkan oleh UU PDP.</p>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB V &mdash; Penyimpanan dan Retensi Data</h3>
+    <p>Data Pribadi disimpan selama Akun Pengguna masih aktif dan diperlukan untuk tujuan sebagaimana diatur dalam Kebijakan ini. Setelah Akun ditutup atau dihentikan, Data Pribadi dapat tetap disimpan dalam jangka waktu tertentu apabila diperlukan untuk memenuhi kewajiban hukum, kepentingan penyelesaian sengketa, kepentingan audit dan pencadangan sistem, atau mencegah penyalahgunaan layanan di kemudian hari. Data yang tidak lagi diperlukan akan dihapus atau dianonimkan sesuai kebijakan retensi internal Pengelola Platform.</p>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB VI &mdash; Hak Subjek Data Pribadi</h3>
+    <p>Sesuai UU PDP, Pengguna memiliki hak untuk:</p>
+    <ol style="padding-left:18px;margin:6px 0">
+      <li>memperoleh informasi mengenai kejelasan identitas, dasar kepentingan hukum, tujuan permintaan, dan penggunaan Data Pribadi;</li>
+      <li>melengkapi, memperbarui, dan/atau memperbaiki kesalahan atau ketidakakuratan Data Pribadi;</li>
+      <li>mengakses dan memperoleh salinan Data Pribadi;</li>
+      <li>mengakhiri pemrosesan, menghapus, dan/atau memusnahkan Data Pribadi, sepanjang tidak bertentangan dengan ketentuan peraturan perundang-undangan;</li>
+      <li>menarik kembali persetujuan pemrosesan Data Pribadi yang telah diberikan;</li>
+      <li>mengajukan keberatan atas tindakan pengambilan keputusan yang hanya didasarkan pada pemrosesan otomatis, termasuk pembuatan profil, yang menimbulkan akibat hukum atau berdampak signifikan bagi Pengguna;</li>
+      <li>menunda atau membatasi Pemrosesan Data Pribadi secara proporsional;</li>
+      <li>mengajukan pengaduan atas dugaan pelanggaran pelindungan Data Pribadi.</li>
+    </ol>
+    <p>Pengguna dapat mengajukan permintaan terkait hak-hak di atas melalui fitur Bantuan yang tersedia di dalam aplikasi. Pengelola Platform akan menindaklanjuti permintaan yang sah dalam waktu yang wajar, dan berhak melakukan verifikasi identitas pemohon sebelum memproses permintaan guna mencegah penyalahgunaan hak oleh pihak yang tidak berwenang.</p>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB VII &mdash; Keamanan Data</h3>
+    <p>Pengelola Platform menerapkan langkah teknis dan organisatoris yang wajar untuk melindungi Data Pribadi dari akses tanpa hak, kebocoran, kehilangan, penyalahgunaan, perubahan, atau pengungkapan yang tidak sah. Meskipun demikian, Pengguna memahami bahwa tidak ada sistem elektronik yang dapat dijamin sepenuhnya bebas dari risiko keamanan.</p>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB VIII &mdash; Kegagalan Pelindungan Data Pribadi</h3>
+    <p>Apabila terjadi kegagalan pelindungan Data Pribadi yang berdampak terhadap Pengguna, Pengelola Platform akan menyampaikan pemberitahuan tertulis kepada Pengguna yang terdampak dan kepada otoritas yang berwenang, sesuai jangka waktu dan mekanisme yang diatur peraturan yang berlaku, sekurang-kurangnya memuat Data Pribadi yang terungkap, kapan dan bagaimana Data Pribadi terungkap, serta upaya penanganan dan pemulihan yang telah dan akan dilakukan.</p>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB IX &mdash; Cookie dan Teknologi Serupa</h3>
+    <p>NitipJual dapat menggunakan cookie atau teknologi serupa untuk menjaga sesi masuk (login) Pengguna dan meningkatkan pengalaman penggunaan layanan. Pengguna dapat mengatur preferensi cookie melalui pengaturan peramban (browser) yang digunakan, dengan catatan pembatasan cookie tertentu dapat memengaruhi fungsi layanan.</p>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB X &mdash; Perubahan Kebijakan Privasi</h3>
+    <p>Pengelola Platform dapat mengubah Kebijakan Privasi ini dari waktu ke waktu untuk menyesuaikan dengan perkembangan layanan, teknologi, atau peraturan perundang-undangan. Perubahan yang bersifat material akan diinformasikan kepada Pengguna melalui aplikasi atau media komunikasi lain yang dianggap wajar.</p>
+
+    <h3 style="font-size:14px;font-weight:500;color:var(--tx);margin:22px 0 8px">BAB XI &mdash; Kontak</h3>
+    <p>Pertanyaan, permintaan, atau pengaduan terkait Kebijakan Privasi ini dan pemrosesan Data Pribadi dapat disampaikan melalui fitur Bantuan yang tersedia di dalam aplikasi NitipJual.</p>
+
+    <div style="border-top:0.5px solid var(--br);margin:20px 0;padding-top:14px">
+      <p style="font-weight:500;color:var(--tx)">Pernyataan Persetujuan</p>
+      <p>Dengan membuat Akun, mengakses, atau menggunakan layanan NitipJual, Pengguna menyatakan telah membaca, memahami, dan menyetujui Kebijakan Privasi ini sebagai bagian yang tidak terpisahkan dari Perjanjian Penggunaan Layanan NitipJual.</p>
+    </div>
+
+    <div style="background:var(--ps2);border-radius:10px;padding:12px;margin-top:16px;font-size:11px;color:var(--pk2)">
+      Dokumen ini adalah draf yang disusun mengikuti kerangka UU No. 27/2022 tentang Pelindungan Data Pribadi dan belum ditinjau oleh konsultan hukum atau petugas pelindungan data berlisensi. Isi dapat diperbarui sewaktu-waktu.
+    </div>
+  </div>
+</div>
 
   <script src="lokasi.js"></script>
   <script src="app.js"></script>

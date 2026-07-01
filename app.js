@@ -561,6 +561,23 @@ function initSwipe(el) {
   el.addEventListener('touchend',e=>{const diff=startX-e.changedTouches[0].clientX; if(Math.abs(diff)>40) diff>0?gantiFotoIndex(fotoIndex+1):gantiFotoIndex(fotoIndex-1)},{passive:true})
 }
 
+async function toggleUlasanDetail(sellerId) {
+  const box = document.getElementById('ulasan-detail-box')
+  const chevron = document.getElementById('ulasan-chevron')
+  if (!box) return
+  const sedangTerbuka = box.style.display !== 'none'
+  if (sedangTerbuka) {
+    box.style.display = 'none'
+    if (chevron) chevron.className = 'ti ti-chevron-down'
+    return
+  }
+  box.style.display = 'block'
+  if (chevron) chevron.className = 'ti ti-chevron-up'
+  box.innerHTML = '<div style="font-size:12px;color:var(--tx3);padding:6px 0">Memuat ulasan...</div>'
+  const { data } = await db.from('ratings').select('rating, komentar, users!ratings_buyer_id_fkey(nama), orders(products(nama))').eq('seller_id', sellerId).order('created_at',{ascending:false}).limit(10)
+  box.innerHTML = `<div style="font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:2px">Ulasan pembeli</div>${renderUlasanList(data)}`
+}
+
 function renderUlasanList(data) {
   if (!data || data.length === 0) return `<div style="font-size:12px;color:var(--tx3);padding:8px 0">Belum ada ulasan.</div>`
   return data.map(r => {
@@ -592,13 +609,9 @@ async function lihatDetail(id) {
   const ratingCount = ratingData?.length || 0
   const ratingAvg = ratingCount>0 ? (ratingData.reduce((s,r)=>s+r.rating,0)/ratingCount).toFixed(1) : null
   const ratingHtml = ratingCount>0
-    ? `<div style="font-size:10px;color:#F2A623;display:flex;align-items:center;gap:2px"><i class="ti ti-star-filled" style="font-size:10px"></i>${ratingAvg} (${ratingCount} ulasan)</div>`
+    ? `<div onclick="toggleUlasanDetail('${p.seller_id}')" style="font-size:10px;color:#F2A623;display:flex;align-items:center;gap:2px;cursor:pointer;width:fit-content"><i class="ti ti-star-filled" style="font-size:10px"></i>${ratingAvg} (${ratingCount} ulasan)<i class="ti ti-chevron-down" id="ulasan-chevron" style="font-size:11px;margin-left:1px"></i></div>`
     : `<div style="font-size:10px;color:var(--color-text-tertiary)">Belum ada ulasan</div>`
-  const { data: ulasanData } = await db.from('ratings').select('rating, komentar, users!ratings_buyer_id_fkey(nama), orders(products(nama))').eq('seller_id', p.seller_id).order('created_at',{ascending:false}).limit(5)
-  const ulasanHtml = ratingCount>0 ? `<div style="border-top:0.5px solid var(--color-border-tertiary);margin:9px 0 0;padding-top:6px">
-    <div style="font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:2px">Ulasan pembeli</div>
-    ${renderUlasanList(ulasanData)}
-  </div>` : ''
+  const ulasanHtml = ratingCount>0 ? `<div id="ulasan-detail-box" style="display:none;border-top:0.5px solid var(--color-border-tertiary);margin:9px 0 0;padding-top:6px"></div>` : ''
   const noHp = p.users?.no_hp
   const waHtml = noHp ? `
     <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#25D366;margin-bottom:8px">

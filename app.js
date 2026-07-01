@@ -1297,6 +1297,26 @@ async function bukaAdmin() {
   if (data?.role !== 'admin') { showToast('Akses ditolak','error'); window.location.hash=''; return }
   showPage('page-admin')
   adminGantiTab('dashboard')
+  subscribeBantuanRealtime()
+}
+
+let bantuanSubscription = null
+function subscribeBantuanRealtime() {
+  if (bantuanSubscription) return
+  bantuanSubscription = db.channel('bantuan-admin')
+    .on('postgres_changes', { event:'INSERT', schema:'public', table:'bantuan_pesan' }, payload => {
+      bunyiNotifikasi()
+      showToast('Pesan bantuan baru masuk!')
+      const aktifTab = document.querySelector('.admin-nav-item[data-tab].active')?.dataset.tab
+      if (aktifTab === 'bantuan') adminMuatBantuan()
+      else {
+        db.from('bantuan_pesan').select('status').eq('status','baru').then(({data})=>{
+          const badge = document.getElementById('admin-badge-bantuan')
+          if (badge && data) { badge.style.display = 'inline-block'; badge.textContent = data.length }
+        })
+      }
+    })
+    .subscribe()
 }
 
 function adminGantiTab(tab) {

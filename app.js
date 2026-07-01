@@ -525,27 +525,46 @@ function scrollChatKeBawah() {
   if (box) box.scrollTop = box.scrollHeight
 }
 
+// Paksa tinggi halaman chat ngikutin tinggi layar yang BENERAN kelihatan
+// (visualViewport), karena di banyak browser HP unit CSS 100dvh tidak
+// otomatis menyusut saat keyboard muncul untuk elemen position:fixed.
+function resizeChatPageUtkKeyboard() {
+  const chatPage = document.getElementById('page-chat')
+  if (!chatPage || !chatPage.classList.contains('active')) return
+  if (!window.visualViewport) { scrollChatKeBawah(); return }
+  const vh = window.visualViewport.height
+  chatPage.style.height = vh + 'px'
+  chatPage.style.maxHeight = vh + 'px'
+  chatPage.style.top = window.visualViewport.offsetTop + 'px'
+  window.scrollTo(0, 0)
+  scrollChatKeBawah()
+}
+
+function resetChatPageStyle() {
+  const chatPage = document.getElementById('page-chat')
+  if (!chatPage) return
+  chatPage.style.height = ''
+  chatPage.style.maxHeight = ''
+  chatPage.style.top = ''
+}
+
 let chatKeyboardFixReady = false
 function initChatKeyboardFix() {
   const input = document.getElementById('chat-input')
   if (!input) return
 
-  // Saat input di-tap, keyboard mulai muncul (animasi ~250-350ms) baru scroll ulang
   input.addEventListener('focus', () => {
-    setTimeout(scrollChatKeBawah, 100)
-    setTimeout(scrollChatKeBawah, 350)
+    setTimeout(resizeChatPageUtkKeyboard, 50)
+    setTimeout(resizeChatPageUtkKeyboard, 300)
+  })
+  input.addEventListener('blur', () => {
+    setTimeout(resetChatPageStyle, 100)
   })
 
-  // Jaring pengaman: sebagian browser mobile (terutama Chrome Android) resize
-  // visualViewport saat keyboard buka/tutup, tapi tidak trigger event lain.
-  // Pasang sekali saja walau bukaChat dipanggil berkali-kali.
+  // Pasang sekali saja walau bukaChat dipanggil berkali-kali
   if (!chatKeyboardFixReady && window.visualViewport) {
-    window.visualViewport.addEventListener('resize', () => {
-      const chatPage = document.getElementById('page-chat')
-      if (chatPage && chatPage.classList.contains('active')) {
-        scrollChatKeBawah()
-      }
-    })
+    window.visualViewport.addEventListener('resize', resizeChatPageUtkKeyboard)
+    window.visualViewport.addEventListener('scroll', resizeChatPageUtkKeyboard)
     chatKeyboardFixReady = true
   }
 }

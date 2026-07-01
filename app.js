@@ -329,6 +329,29 @@ function resetFilter() {
 }
 
 
+
+function toggleLokasiDesktop() {
+  const dd = document.getElementById('lokasi-desktop-dropdown')
+  if (!dd) return
+  dd.style.display = dd.style.display === 'none' ? 'block' : 'none'
+}
+
+function pilihLokasiDesktop(kota, label) {
+  const lbl = document.getElementById('lokasi-desktop-label')
+  if (lbl) lbl.textContent = label
+  filterState.kota = kota
+  document.getElementById('lokasi-desktop-dropdown').style.display = 'none'
+  loadProduk(document.getElementById('search-desktop')?.value || '')
+}
+
+document.addEventListener('click', function(e) {
+  const wrap = document.getElementById('lokasi-desktop-wrap')
+  if (wrap && !wrap.contains(e.target)) {
+    const dd = document.getElementById('lokasi-desktop-dropdown')
+    if (dd) dd.style.display = 'none'
+  }
+})
+
 function toggleSidebarKat(el) {
   const more = document.getElementById('sb-kat-more')
   const icon = el.querySelector('i')
@@ -743,6 +766,29 @@ function tandaiSudahBaca() {
   localStorage.setItem('last-seen-chat', new Date().toISOString())
 }
 
+
+
+function toggleLokasiDesktop() {
+  const dd = document.getElementById('lokasi-desktop-dropdown')
+  if (!dd) return
+  dd.style.display = dd.style.display === 'none' ? 'block' : 'none'
+}
+
+function pilihLokasiDesktop(kota, label) {
+  const lbl = document.getElementById('lokasi-desktop-label')
+  if (lbl) lbl.textContent = label
+  filterState.kota = kota
+  document.getElementById('lokasi-desktop-dropdown').style.display = 'none'
+  loadProduk(document.getElementById('search-desktop')?.value || '')
+}
+
+document.addEventListener('click', function(e) {
+  const wrap = document.getElementById('lokasi-desktop-wrap')
+  if (wrap && !wrap.contains(e.target)) {
+    const dd = document.getElementById('lokasi-desktop-dropdown')
+    if (dd) dd.style.display = 'none'
+  }
+})
 
 function toggleSidebarKat(el) {
   const more = document.getElementById('sb-kat-more')

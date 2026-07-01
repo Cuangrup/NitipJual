@@ -1449,14 +1449,6 @@ document.addEventListener('click', function initAudio() {
   document.removeEventListener('click', initAudio)
 }, { once: true })
 
-document.addEventListener('click', function(e) {
-  const wrap = document.getElementById('lokasi-desktop-wrap')
-  if (wrap && !wrap.contains(e.target)) {
-    const dd = document.getElementById('lokasi-desktop-dropdown')
-    if (dd) dd.style.display = 'none'
-  }
-})
-
 // Browser suka nge-suspend AudioContext kalau tab lagi di background.
 // Ini bikin dia otomatis "bangun" lagi begitu tab aktif lagi, biar notifikasi
 // tetap bisa bunyi walau sempat pindah tab pas ada permintaan masuk.

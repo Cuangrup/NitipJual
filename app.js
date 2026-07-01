@@ -21,10 +21,23 @@ function showToast(pesan, tipe='sukses') {
   setTimeout(() => { toast.style.opacity='0'; toast.style.transition='opacity .3s'; setTimeout(()=>toast.remove(),300) }, 2800)
 }
 
+let sesiAktif = null
+const HALAMAN_WAJIB_LOGIN = ['page-jual', 'page-profil', 'page-chat-list', 'page-chat']
+
 async function cekSession() {
   const { data: { session } } = await db.auth.getSession()
+  sesiAktif = session
   if (session) tampilHome(session.user)
-  else showPage('page-login')
+  else tampilHomeGuest()
+}
+
+function tampilHomeGuest() {
+  const avaEl = document.getElementById('user-ava')
+  if (avaEl) avaEl.innerHTML = '<i class="ti ti-user" style="font-size:16px"></i>'
+  const loginBtn = document.getElementById('topbar-login-btn')
+  if (loginBtn) loginBtn.style.display = 'block'
+  showPage('page-home')
+  loadProduk()
 }
 
 async function tampilHome(user) {
@@ -33,6 +46,8 @@ async function tampilHome(user) {
   const foto = user.user_metadata?.avatar_url
   const avaEl = document.getElementById('user-ava')
   if (avaEl) avaEl.innerHTML = foto ? `<img src="${foto}" alt="${nama}" style="width:100%;height:100%;object-fit:cover">` : inisial
+  const loginBtn = document.getElementById('topbar-login-btn')
+  if (loginBtn) loginBtn.style.display = 'none'
   const profilAva = document.getElementById('profil-ava')
   if (profilAva) profilAva.innerHTML = foto ? `<img src="${foto}" alt="${nama}" style="width:100%;height:100%;object-fit:cover">` : inisial
   const profilNama = document.getElementById('profil-nama')
@@ -72,10 +87,15 @@ async function loginGoogle() {
 async function logout() {
   await db.auth.signOut()
   localStorage.removeItem('draft-iklan')
-  showPage('page-login')
+  sesiAktif = null
+  tampilHomeGuest()
 }
 
 function showPage(id) {
+  if (HALAMAN_WAJIB_LOGIN.includes(id) && !sesiAktif) {
+    showToast('Login dulu untuk lanjut', 'error')
+    id = 'page-login'
+  }
   if (id !== 'page-jual') simpanDraftIklan()
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'))
   document.getElementById(id).classList.add('active')
@@ -911,9 +931,14 @@ function setToggle(groupId, el) {
 
 db.auth.onAuthStateChange((event,session)=>{
   if (event==='SIGNED_IN'&&session) {
+    sesiAktif = session
     const aktif=document.querySelector('.page.active')?.id
     if (aktif==='page-login') tampilHome(session.user)
-  } else if (event==='SIGNED_OUT') showPage('page-login')
+  } else if (event==='SIGNED_OUT') {
+    sesiAktif = null
+    const aktif=document.querySelector('.page.active')?.id
+    if (HALAMAN_WAJIB_LOGIN.includes(aktif)) tampilHomeGuest()
+  }
 })
 
 

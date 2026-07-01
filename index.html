@@ -135,6 +135,7 @@
           <div class="sb-item" onclick="filterKategori(this,'lainnya')"><i class="ti ti-dots"></i>Lainnya</div>
         </div>
         <div class="sb-item" onclick="toggleSidebarKat(this)" style="color:var(--pk);font-size:12px"><i class="ti ti-chevron-down"></i><span>Lihat semua kategori</span></div>
+        <div class="sb-item" onclick="bukaHalamanLegal('page-bantuan')"><i class="ti ti-headset"></i>Bantuan and FAQ</div>
         <hr class="sb-divider">
         <div class="sb-item menu-logout" onclick="logout()"><i class="ti ti-logout"></i>Keluar</div>
       </div>
@@ -467,6 +468,7 @@
           <div class="menu-item" onclick="bukaEditProfil()"><i class="ti ti-user-edit"></i><span>Edit profil</span><i class="ti ti-chevron-right"></i></div>
           <div class="menu-item" onclick="showPage('page-chat-list')"><i class="ti ti-message"></i><span>Chat saya</span><i class="ti ti-chevron-right"></i></div>
           <div class="menu-item"><i class="ti ti-bell"></i><span>Notifikasi</span><i class="ti ti-chevron-right"></i></div>
+          <div class="menu-item" onclick="bukaHalamanLegal('page-bantuan')"><i class="ti ti-headset"></i><span>Bantuan and FAQ</span><i class="ti ti-chevron-right"></i></div>
           <div class="menu-item menu-logout" onclick="logout()"><i class="ti ti-logout"></i><span>Keluar</span><i class="ti ti-chevron-right"></i></div>
         </div>
       </div>
@@ -939,6 +941,126 @@
 
     <div style="background:var(--ps2);border-radius:10px;padding:12px;margin-top:16px;font-size:11px;color:var(--pk2)">
       Dokumen ini adalah draf yang disusun mengikuti kerangka UU No. 27/2022 tentang Pelindungan Data Pribadi dan belum ditinjau oleh konsultan hukum atau petugas pelindungan data berlisensi. Isi dapat diperbarui sewaktu-waktu.
+    </div>
+  </div>
+</div>
+
+
+<div id="page-bantuan" class="page">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="back-btn" onclick="tutupHalamanLegal()"><i class="ti ti-arrow-left"></i></button>
+      <span class="topbar-title">Bantuan and FAQ</span>
+    </div>
+  </div>
+  <div class="content" style="max-width:640px;margin:0 auto;padding:16px 16px 60px">
+    <div class="form-card">
+      <div id="faq-list"></div>
+    </div>
+    <div class="form-card" style="background:var(--ps2);border:0.5px solid var(--pkbr)">
+      <div style="font-size:13px;font-weight:500;color:var(--pk2);margin-bottom:2px">Belum nemu jawabannya?</div>
+      <div style="font-size:11px;color:var(--pk2);margin-bottom:10px">Kirim pesan langsung ke kami, bakal kami baca dan bantu secepatnya.</div>
+      <input id="bantuan-judul" class="finput" placeholder="Judul singkat, misal: Gagal upload foto">
+      <textarea id="bantuan-pesan" class="finput ftextarea" placeholder="Ceritain kendalanya di sini..."></textarea>
+      <button class="btnp" onclick="kirimPesanBantuan()"><i class="ti ti-send"></i> Kirim pesan ke admin</button>
+    </div>
+  </div>
+</div>
+
+<div id="page-admin" class="page">
+  <div style="display:flex;min-height:100vh">
+    <div style="width:200px;background:linear-gradient(160deg,#C4789A,#9B7FD4);padding:18px 12px;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto">
+      <div style="font-size:14px;font-weight:500;color:#fff;padding:0 8px;margin-bottom:18px;display:flex;align-items:center;gap:6px"><i class="ti ti-shield-lock"></i>NitipJual Admin</div>
+      <div class="admin-nav-item active" data-tab="dashboard" onclick="adminGantiTab('dashboard')"><i class="ti ti-chart-bar"></i>Dashboard</div>
+      <div class="admin-nav-item" data-tab="user" onclick="adminGantiTab('user')"><i class="ti ti-users"></i>Kelola User</div>
+      <div class="admin-nav-item" data-tab="iklan" onclick="adminGantiTab('iklan')"><i class="ti ti-shield-check"></i>Moderasi Iklan</div>
+      <div class="admin-nav-item disabled"><i class="ti ti-speakerphone"></i>Pin and Banner<span class="admin-tag">Segera</span></div>
+      <div class="admin-nav-item" data-tab="bantuan" onclick="adminGantiTab('bantuan')"><i class="ti ti-headset"></i>Bantuan<span id="admin-badge-bantuan" class="admin-badge" style="display:none">0</span></div>
+      <hr style="border:none;border-top:1px solid rgba(255,255,255,0.2);margin:14px 0">
+      <div class="admin-nav-item" onclick="window.location.hash='';showPage('page-home')"><i class="ti ti-arrow-left"></i>Keluar Admin</div>
+    </div>
+    <div style="flex:1;padding:22px;overflow-x:hidden">
+
+      <div id="admin-tab-dashboard" class="admin-tab-content">
+        <div style="font-size:16px;font-weight:500;color:var(--tx)">Monitoring pendapatan and NitipBibit</div>
+        <div style="font-size:11px;color:var(--tx3);margin-bottom:14px">Data pendapatan otomatis terisi begitu fitur terkait aktif.</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px">
+          <div class="admin-card">
+            <div class="admin-card-label">Pendapatan pin and banner</div>
+            <div class="admin-card-val">Rp 0</div>
+            <span class="admin-card-note">Fitur belum aktif</span>
+          </div>
+          <div class="admin-card">
+            <div class="admin-card-label">Komisi NitiPGo</div>
+            <div class="admin-card-val">Rp 0</div>
+            <span class="admin-card-note">Integrasi belum aktif</span>
+          </div>
+          <div class="admin-card">
+            <div class="admin-card-label">Dana NitipBibit terkumpul</div>
+            <div class="admin-card-val">Rp 0</div>
+            <span class="admin-card-note">Menunggu integrasi</span>
+          </div>
+        </div>
+        <div style="font-size:13px;font-weight:500;color:var(--tx);margin-bottom:8px">Analitik produk</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="admin-list-box">
+            <div class="admin-list-h"><span><i class="ti ti-heart"></i> Paling difavoritkan</span><span class="admin-detail-link" onclick="adminBukaDetail('favorit')">Lihat detail</span></div>
+            <div id="admin-list-favorit"><p class="empty">Memuat...</p></div>
+          </div>
+          <div class="admin-list-box">
+            <div class="admin-list-h"><span><i class="ti ti-category"></i> Kategori terlaris</span><span class="admin-detail-link" onclick="adminBukaDetail('kategori')">Lihat detail</span></div>
+            <div id="admin-list-kategori"><p class="empty">Memuat...</p></div>
+          </div>
+          <div class="admin-list-box">
+            <div class="admin-list-h"><span><i class="ti ti-clock"></i> Baru ditandai terjual</span><span class="admin-detail-link" onclick="adminBukaDetail('terjual')">Lihat detail</span></div>
+            <div id="admin-list-terjual"><p class="empty">Memuat...</p></div>
+          </div>
+          <div class="admin-list-box">
+            <div class="admin-list-h"><span><i class="ti ti-trophy"></i> Seller paling produktif</span><span class="admin-detail-link" onclick="adminBukaDetail('seller')">Lihat detail</span></div>
+            <div id="admin-list-seller"><p class="empty">Memuat...</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="admin-tab-user" class="admin-tab-content" style="display:none">
+        <div style="font-size:16px;font-weight:500;color:var(--tx);margin-bottom:2px">Kelola User</div>
+        <div style="font-size:11px;color:var(--tx3);margin-bottom:12px">Cari dan kelola status akun pengguna.</div>
+        <input class="finput" id="admin-user-search" placeholder="Cari nama atau email..." oninput="adminMuatUser()" style="max-width:320px">
+        <div id="admin-user-list" style="margin-top:10px"><p class="empty">Memuat...</p></div>
+      </div>
+
+      <div id="admin-tab-iklan" class="admin-tab-content" style="display:none">
+        <div style="font-size:16px;font-weight:500;color:var(--tx);margin-bottom:2px">Moderasi Iklan</div>
+        <div style="font-size:11px;color:var(--tx3);margin-bottom:12px">Tinjau dan hapus iklan yang melanggar ketentuan.</div>
+        <input class="finput" id="admin-iklan-search" placeholder="Cari nama produk..." oninput="adminMuatIklan()" style="max-width:320px">
+        <div id="admin-iklan-list" style="margin-top:10px"><p class="empty">Memuat...</p></div>
+      </div>
+
+      <div id="admin-tab-bantuan" class="admin-tab-content" style="display:none">
+        <div style="font-size:16px;font-weight:500;color:var(--tx);margin-bottom:2px">Permintaan Bantuan</div>
+        <div style="font-size:11px;color:var(--tx3);margin-bottom:12px">Pesan dari user yang belum menemukan jawaban di FAQ.</div>
+        <div id="admin-bantuan-list"><p class="empty">Memuat...</p></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="admin-modal-detail" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;padding:20px">
+    <div style="background:var(--bg);border-radius:14px;width:100%;max-width:420px;max-height:78vh;display:flex;flex-direction:column;overflow:hidden">
+      <div style="padding:14px 16px 10px;border-bottom:0.5px solid var(--br);display:flex;justify-content:space-between;align-items:center;flex-shrink:0">
+        <span id="admin-modal-title" style="font-size:14px;font-weight:500;color:var(--tx)"></span>
+        <i class="ti ti-x" style="color:var(--tx3);cursor:pointer" onclick="document.getElementById('admin-modal-detail').style.display='none'"></i>
+      </div>
+      <div style="padding:10px 16px;flex-shrink:0">
+        <input id="admin-modal-search" class="finput" placeholder="Cari..." style="margin-bottom:0" oninput="adminFilterModal()">
+      </div>
+      <div id="admin-modal-list" style="overflow-y:auto;flex:1;padding:0 16px 12px"></div>
+    </div>
+  </div>
+
+  <div id="admin-modal-pesan" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;padding:20px">
+    <div style="background:var(--bg);border-radius:14px;width:100%;max-width:420px;padding:18px">
+      <div id="admin-pesan-detail-content"></div>
     </div>
   </div>
 </div>

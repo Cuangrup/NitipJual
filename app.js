@@ -167,6 +167,23 @@ function switchTab(el, tabId) {
   document.getElementById(tabId).classList.add('active')
   if (tabId==='tab-iklan') loadIklanSaya()
   if (tabId==='tab-favorit') loadFavoritTab()
+  if (tabId==='tab-ulasan') loadUlasanSaya()
+}
+
+async function loadUlasanSaya() {
+  const { data: { session } } = await db.auth.getSession()
+  if (!session) return
+  const list = document.getElementById('ulasan-list')
+  const ringkasan = document.getElementById('ulasan-ringkasan')
+  const sub = ringkasan?.nextElementSibling
+  if (list) list.innerHTML = '<p class="empty">Memuat ulasan...</p>'
+  const { data, error } = await db.from('ratings').select('rating, komentar, users!ratings_buyer_id_fkey(nama), orders(products(nama))').eq('seller_id', session.user.id).order('created_at',{ascending:false})
+  if (error || !data) { if (list) list.innerHTML = '<p class="empty">Gagal memuat ulasan.</p>'; return }
+  const jumlah = data.length
+  const rerata = jumlah>0 ? (data.reduce((s,r)=>s+r.rating,0)/jumlah).toFixed(1) : '–'
+  if (ringkasan) ringkasan.textContent = jumlah>0 ? `★ ${rerata}` : '–'
+  if (sub) sub.textContent = `dari ${jumlah} ulasan`
+  if (list) list.innerHTML = renderUlasanList(data)
 }
 
 function filterIklan(el, status) {
@@ -544,6 +561,23 @@ function initSwipe(el) {
   el.addEventListener('touchend',e=>{const diff=startX-e.changedTouches[0].clientX; if(Math.abs(diff)>40) diff>0?gantiFotoIndex(fotoIndex+1):gantiFotoIndex(fotoIndex-1)},{passive:true})
 }
 
+function renderUlasanList(data) {
+  if (!data || data.length === 0) return `<div style="font-size:12px;color:var(--tx3);padding:8px 0">Belum ada ulasan.</div>`
+  return data.map(r => {
+    const nama = r.users?.nama || 'Pembeli'
+    const produk = r.orders?.products?.nama || ''
+    const bintangHtml = [1,2,3,4,5].map(i => `<i class="ti ${i<=r.rating?'ti-star-filled':'ti-star'}" style="font-size:11px;color:${i<=r.rating?'#F2A623':'#E7E1F2'}"></i>`).join('')
+    return `<div style="padding:9px 0;border-bottom:0.5px solid var(--color-border-tertiary)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
+        <span style="font-size:12px;font-weight:500;color:var(--color-text-primary)">${nama}</span>
+        <span style="display:flex;gap:1px">${bintangHtml}</span>
+      </div>
+      ${produk?`<div style="font-size:10px;color:var(--tx3);margin-bottom:3px">Untuk: ${produk}</div>`:''}
+      ${r.komentar?`<div style="font-size:12px;color:var(--tx2);line-height:1.4">${r.komentar}</div>`:''}
+    </div>`
+  }).join('')
+}
+
 async function lihatDetail(id) {
   const { data:p, error } = await db.from('products').select('*, users(nama, kota, foto_profil, no_hp)').eq('id',id).single()
   if (error||!p) { showToast('Gagal memuat iklan','error'); return }
@@ -560,6 +594,11 @@ async function lihatDetail(id) {
   const ratingHtml = ratingCount>0
     ? `<div style="font-size:10px;color:#F2A623;display:flex;align-items:center;gap:2px"><i class="ti ti-star-filled" style="font-size:10px"></i>${ratingAvg} (${ratingCount} ulasan)</div>`
     : `<div style="font-size:10px;color:var(--color-text-tertiary)">Belum ada ulasan</div>`
+  const { data: ulasanData } = await db.from('ratings').select('rating, komentar, users!ratings_buyer_id_fkey(nama), orders(products(nama))').eq('seller_id', p.seller_id).order('created_at',{ascending:false}).limit(5)
+  const ulasanHtml = ratingCount>0 ? `<div style="border-top:0.5px solid var(--color-border-tertiary);margin:9px 0 0;padding-top:6px">
+    <div style="font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:2px">Ulasan pembeli</div>
+    ${renderUlasanList(ulasanData)}
+  </div>` : ''
   const noHp = p.users?.no_hp
   const waHtml = noHp ? `
     <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#25D366;margin-bottom:8px">
@@ -587,6 +626,7 @@ async function lihatDetail(id) {
         ${ratingHtml}
       </div>
     </div>
+    ${ulasanHtml}
     ${waHtml}
     ${p.deskripsi?`<div style="border-top:0.5px solid var(--color-border-tertiary);margin:9px 0"></div>
     <div id="desc-text" style="font-size:12px;color:var(--color-text-secondary);line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">${p.deskripsi}</div>

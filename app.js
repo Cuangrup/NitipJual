@@ -23,7 +23,7 @@ function showToast(pesan, tipe='sukses') {
 
 let sesiAktif = null
 let favoritSet = new Set()
-const HALAMAN_WAJIB_LOGIN = ['page-jual', 'page-profil', 'page-chat-list', 'page-chat']
+const HALAMAN_WAJIB_LOGIN = ['page-jual', 'page-profil', 'page-chat-list', 'page-chat', 'page-notifikasi']
 
 async function muatFavoritSaya(userId) {
   favoritSet = new Set()
@@ -112,6 +112,8 @@ async function tampilHome(user) {
   setTimeout(cekChatBaru, 1000)
   setInterval(cekChatBaru, 30000)
   subscribeChatBadge(userId)
+  subscribeNotifikasi(userId)
+  cekBadgeNotif()
   if (!userData?.no_hp) {
     const popup = document.getElementById('popup-nohp')
     if (popup) popup.style.display = 'flex'
@@ -867,8 +869,73 @@ async function kirimLayanan() {
   const { error } = await db.from('layanan_manual').insert(payload)
   if (btn) { btn.innerHTML = btnAsli; btn.disabled = false }
   if (error) { showToast('Gagal mengirim permintaan','error'); return }
+  if (p.seller_id) kirimNotifikasi(p.seller_id, 'layanan_masuk', `Ada permintaan ${jenis==='cek'?'NitipCek':'NitipKirim'}`, `Buat produk "${p.nama}"`, p.id)
   showToast('Permintaan terkirim! Tim kami proses manual dalam waktu dekat.')
   tutupModalLayanan()
+}
+
+// ===================== NOTIFIKASI =====================
+const NOTIF_ICON = { bantuan:'ti-headset', layanan_status:'ti-clipboard-check', layanan_masuk:'ti-bell-ringing', rating:'ti-star-filled', iklan_dihapus:'ti-alert-triangle' }
+const NOTIF_WARNA = { bantuan:'#9B7FD4', layanan_status:'#C4789A', layanan_masuk:'#1565C0', rating:'#F2A623', iklan_dihapus:'#A32D2D' }
+
+async function kirimNotifikasi(userId, jenis, judul, pesan, produkId=null) {
+  await db.from('notifikasi').insert({ user_id: userId, jenis, judul, pesan, produk_id: produkId })
+}
+
+function bukaNotifikasi() {
+  showPage('page-notifikasi')
+  loadNotifikasi()
+}
+
+async function loadNotifikasi() {
+  if (!sesiAktif) return
+  const list = document.getElementById('notif-list')
+  list.innerHTML = '<p class="empty">Memuat notifikasi...</p>'
+  const { data } = await db.from('notifikasi').select('*').eq('user_id', sesiAktif.user.id).order('created_at',{ascending:false}).limit(50)
+  if (!data || !data.length) { list.innerHTML = '<p class="empty">Belum ada notifikasi.</p>'; return }
+  list.innerHTML = data.map(n => {
+    const belumBaca = !n.dibaca
+    const waktu = new Date(n.created_at)
+    const selisihJam = Math.floor((Date.now()-waktu)/3600000)
+    const waktuTxt = selisihJam < 1 ? 'Baru saja' : selisihJam < 24 ? `${selisihJam} jam lalu` : `${Math.floor(selisihJam/24)} hari lalu`
+    return `<div onclick="bacaNotifikasi('${n.id}','${n.produk_id||''}')" style="display:flex;gap:10px;padding:12px;border-radius:12px;background:${belumBaca?'#FEF0F5':'var(--bg)'};border:0.5px solid ${belumBaca?'#F5C0D5':'var(--br)'};margin-bottom:8px;cursor:pointer">
+      <div style="width:34px;height:34px;border-radius:50%;background:${belumBaca?NOTIF_WARNA[n.jenis]+'22':'var(--bg2)'};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <i class="ti ${NOTIF_ICON[n.jenis]||'ti-bell'}" style="font-size:16px;color:${NOTIF_WARNA[n.jenis]||'var(--tx3)'}"></i>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:${belumBaca?700:500};color:var(--tx)">${n.judul}</div>
+        ${n.pesan ? `<div style="font-size:12px;color:var(--tx2);margin-top:2px">${n.pesan}</div>` : ''}
+        <div style="font-size:10px;color:var(--tx3);margin-top:4px">${waktuTxt}</div>
+      </div>
+      ${belumBaca ? `<span style="width:8px;height:8px;border-radius:50%;background:#e53935;flex-shrink:0;margin-top:4px"></span>` : ''}
+    </div>`
+  }).join('')
+  cekBadgeNotif()
+}
+
+async function bacaNotifikasi(id, produkId) {
+  await db.from('notifikasi').update({ dibaca:true }).eq('id', id)
+  loadNotifikasi()
+  if (produkId) lihatDetail(produkId)
+}
+
+async function cekBadgeNotif() {
+  if (!sesiAktif) return
+  const { data } = await db.from('notifikasi').select('id').eq('user_id', sesiAktif.user.id).eq('dibaca', false)
+  const badge = document.getElementById('badge-notif-topbar')
+  if (badge) badge.style.display = data && data.length > 0 ? 'block' : 'none'
+}
+
+let notifSubscription = null
+function subscribeNotifikasi(userId) {
+  if (notifSubscription) return
+  notifSubscription = db.channel('notif-'+userId)
+    .on('postgres_changes', { event:'INSERT', schema:'public', table:'notifikasi', filter:`user_id=eq.${userId}` }, () => {
+      bunyiNotifikasi()
+      cekBadgeNotif()
+      if (document.getElementById('page-notifikasi')?.classList.contains('active')) loadNotifikasi()
+    })
+    .subscribe()
 }
 
 async function hubungiSeller() {
@@ -948,6 +1015,8 @@ async function kirimRating(orderId, sellerId, buyerId) {
   const komentar = document.getElementById('rating-komentar')?.value.trim() || ''
   const { error } = await db.from('ratings').insert({ order_id: orderId, seller_id: sellerId, buyer_id: buyerId, rating, komentar })
   if (error) { showToast('Gagal mengirim rating','error'); return }
+  const namaBuyer = document.getElementById('profil-nama')?.textContent || 'Seorang pembeli'
+  kirimNotifikasi(sellerId, 'rating', 'Rating baru masuk', `${namaBuyer} kasih ${rating} bintang buat produkmu`)
   showToast('Terima kasih atas ratingnya!')
   cekBannerRating(orderId, buyerId)
 }
@@ -1572,7 +1641,9 @@ async function adminMuatIklan() {
 
 async function adminHapusIklan(id) {
   if (!confirm('Hapus iklan ini karena melanggar ketentuan?')) return
+  const { data: produk } = await db.from('products').select('nama, seller_id').eq('id', id).single()
   await db.from('products').update({ status:'dihapus' }).eq('id', id)
+  if (produk?.seller_id) kirimNotifikasi(produk.seller_id, 'iklan_dihapus', 'Iklan kamu dihapus', `"${produk.nama}" dihapus karena melanggar ketentuan NitipJual`, id)
   showToast('Iklan dihapus')
   adminMuatIklan()
 }
@@ -1623,6 +1694,9 @@ async function adminMuatLayanan(jenis) {
 
 async function adminUbahStatusLayanan(id, statusBaru, jenis) {
   await db.from('layanan_manual').update({ status: statusBaru }).eq('id', id)
+  const cache = window[`_admin${jenis}Data`] || []
+  const row = cache.find(x=>x.id===id)
+  if (row) kirimNotifikasi(row.buyer_id, 'layanan_status', `Permintaan ${jenis==='cek'?'NitipCek':'NitipKirim'} ${statusBaru}`, row.products?.nama||'', row.product_id)
   showToast(`Ditandai ${statusBaru}`)
   adminMuatLayanan(jenis)
 }
@@ -1693,6 +1767,8 @@ async function adminHapusPesan(id) {
 
 async function adminTandaiSelesai(id) {
   await db.from('bantuan_pesan').update({ status:'selesai' }).eq('id', id)
+  const p = (window._adminBantuanData||[]).find(x=>x.id===id)
+  if (p) kirimNotifikasi(p.user_id, 'bantuan', 'Pertanyaanmu udah dijawab', p.judul)
   document.getElementById('admin-modal-pesan').style.display = 'none'
   showToast('Ditandai selesai')
   adminMuatBantuan()

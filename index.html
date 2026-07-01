@@ -71,14 +71,14 @@
         </svg>
         <span class="topbar-title">NitipJual</span>
       </div>
-      <div class="topbar-search-wrap" style="gap:0;background:#fff;border-radius:24px;overflow:hidden;border:2px solid rgba(255,255,255,0.4)">
+      <div class="topbar-search-wrap" style="gap:0;background:#fff;border-radius:24px;border:2px solid rgba(255,255,255,0.4);position:relative">
         <div style="position:relative;flex-shrink:0" id="lokasi-desktop-wrap">
           <button onclick="toggleLokasiDesktop()" style="display:flex;align-items:center;gap:6px;padding:0 14px;background:transparent;border:none;border-right:1px solid #eee;cursor:pointer;height:38px;color:#555;font-size:13px;font-family:inherit;white-space:nowrap">
             <i class="ti ti-map-pin" style="font-size:14px;color:#C4789A"></i>
             <span id="lokasi-desktop-label">Semua Kota</span>
             <i class="ti ti-chevron-down" style="font-size:12px"></i>
           </button>
-          <div id="lokasi-desktop-dropdown" style="display:none;position:absolute;top:42px;left:0;background:#fff;border:0.5px solid #eee;border-radius:10px;padding:6px;min-width:180px;z-index:500;box-shadow:0 4px 16px rgba(0,0,0,0.1)">
+          <div id="lokasi-desktop-dropdown" style="display:none;position:absolute;top:48px;left:0;background:#fff;border:0.5px solid #eee;border-radius:10px;padding:6px;min-width:180px;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.15)">
             <div onclick="pilihLokasiDesktop('','Semua Kota')" style="padding:8px 12px;cursor:pointer;font-size:13px;border-radius:6px;color:#555" onmouseover="this.style.background='#FAF5FF'" onmouseout="this.style.background=''">Semua Kota</div>
             <div onclick="pilihLokasiDesktop('Jakarta','Jakarta')" style="padding:8px 12px;cursor:pointer;font-size:13px;border-radius:6px;color:#555" onmouseover="this.style.background='#FAF5FF'" onmouseout="this.style.background=''">Jakarta</div>
             <div onclick="pilihLokasiDesktop('Surabaya','Surabaya')" style="padding:8px 12px;cursor:pointer;font-size:13px;border-radius:6px;color:#555" onmouseover="this.style.background='#FAF5FF'" onmouseout="this.style.background=''">Surabaya</div>

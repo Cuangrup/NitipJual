@@ -28,10 +28,7 @@
       <div class="login-feats">
         <div class="feat-item"><i class="ti ti-map-pin"></i>Produk lokal dekat kamu</div>
         <div class="feat-item"><i class="ti ti-shield-check"></i>Penjual terverifikasi</div>
-        <div class="feat-item highlight">
-          <i class="ti ti-zoom-check"></i>
-          <span>Tersedia layanan verifikasi & cek barang</span>
-        </div>
+        <div class="feat-item highlight"><i class="ti ti-zoom-check"></i><span>Tersedia layanan verifikasi & cek barang</span></div>
       </div>
       <hr class="login-divider">
       <button class="btn-google" onclick="loginGoogle()">
@@ -51,6 +48,20 @@
     </div>
   </div>
 
+  <!-- POPUP WAJIB NO HP -->
+  <div id="popup-nohp" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;align-items:center;justify-content:center;padding:20px">
+    <div style="background:var(--bg);border-radius:20px;padding:24px;width:100%;max-width:360px;text-align:center">
+      <i class="ti ti-phone" style="font-size:36px;color:#C4789A;margin-bottom:12px;display:block"></i>
+      <div style="font-size:16px;font-weight:500;color:var(--tx);margin-bottom:6px">Lengkapi profil dulu</div>
+      <div style="font-size:13px;color:var(--tx2);margin-bottom:16px;line-height:1.5">No. HP diperlukan agar pembeli bisa menghubungimu langsung via WhatsApp</div>
+      <div style="text-align:left;margin-bottom:6px">
+        <div class="slabel">No. HP / WhatsApp <span style="background:#FFEBEE;color:#c62828;font-size:10px;padding:1px 6px;border-radius:4px;font-weight:500">Wajib</span></div>
+        <input class="finput" id="popup-hp" placeholder="Contoh: 08123456789" type="tel">
+      </div>
+      <button class="btnp" onclick="simpanNoHp()"><i class="ti ti-check"></i> Simpan & lanjutkan</button>
+    </div>
+  </div>
+
   <!-- HOME -->
   <div id="page-home" class="page">
     <div class="topbar">
@@ -66,15 +77,18 @@
       <input class="topbar-search" id="search-desktop" placeholder="Cari barang di Gresik, Surabaya, Sidoarjo..." oninput="cariProduk()">
       <div class="topbar-right">
         <i class="ti ti-bell"></i>
-        <div style="position:relative;cursor:pointer" onclick="showPage('page-chat-list')"><i class="ti ti-message" style="font-size:20px;opacity:0.9"></i><span id="badge-chat-topbar" style="display:none;position:absolute;top:-4px;right:-4px;width:8px;height:8px;border-radius:50%;background:#e53935;border:1.5px solid #9B7FD4"></span></div>
-        <div class="user-ava" onclick="showPage('page-profil')" style="cursor:pointer" id="user-ava">?</div>
+        <div style="position:relative;cursor:pointer" onclick="showPage('page-chat-list')">
+          <i class="ti ti-message" style="font-size:20px;opacity:0.9"></i>
+          <span id="badge-chat-topbar" style="display:none;position:absolute;top:-4px;right:-4px;width:8px;height:8px;border-radius:50%;background:#e53935;border:1.5px solid #9B7FD4"></span>
+        </div>
+        <div class="user-ava" id="user-ava" onclick="showPage('page-profil')" style="cursor:pointer">?</div>
       </div>
     </div>
     <div class="home-body">
       <div class="sidebar">
         <div class="sb-section">Menu</div>
         <div class="sb-item active" onclick="showPage('page-home')"><i class="ti ti-home"></i>Beranda</div>
-        <div class="sb-item" onclick="showPage('page-home')"><i class="ti ti-search"></i>Cari iklan</div>
+        <div class="sb-item" onclick="fokusSearch()"><i class="ti ti-search"></i>Cari iklan</div>
         <div class="sb-item" onclick="showPage('page-jual')"><i class="ti ti-speakerphone"></i>Pasang iklan</div>
         <div class="sb-item" onclick="showPage('page-chat-list')"><i class="ti ti-message"></i>Chat saya<span id="badge-chat-sidebar" style="display:none;width:8px;height:8px;border-radius:50%;background:#e53935;margin-left:auto"></span></div>
         <div class="sb-item" onclick="showPage('page-profil')"><i class="ti ti-user"></i>Profil saya</div>
@@ -91,7 +105,7 @@
       <div class="main-content">
         <div class="searchrow mobile-only">
           <input class="searchbox" id="search" placeholder="Cari barang di kotamu..." oninput="cariProduk()">
-          <button class="filterbtn"><i class="ti ti-adjustments-horizontal"></i></button>
+          <button class="filterbtn" onclick="showPage('page-filter')"><i class="ti ti-adjustments-horizontal"></i></button>
         </div>
         <div class="banner">
           <div class="banner-text">
@@ -126,6 +140,64 @@
     </div>
   </div>
 
+  <!-- FILTER -->
+  <div id="page-filter" class="page">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="back-btn" onclick="showPage('page-home')"><i class="ti ti-arrow-left"></i></button>
+        <span class="topbar-title">Filter & Urutkan</span>
+      </div>
+      <button class="back-btn" onclick="resetFilter()" style="font-size:12px;color:rgba(255,255,255,0.8)">Reset</button>
+    </div>
+    <div class="content">
+      <div class="form-card">
+        <div class="slabel">Urutkan</div>
+        <div class="toggle-group" id="sort-group" style="flex-wrap:wrap">
+          <button class="tg-btn active" onclick="setToggle('sort-group',this)" data-val="terbaru">Terbaru</button>
+          <button class="tg-btn" onclick="setToggle('sort-group',this)" data-val="harga_asc">Harga ↑</button>
+          <button class="tg-btn" onclick="setToggle('sort-group',this)" data-val="harga_desc">Harga ↓</button>
+        </div>
+        <div class="slabel">Kota / Wilayah</div>
+        <div class="select-wrap">
+          <select class="finput" id="filter-kota">
+            <option value="">Semua kota</option>
+            <option value="Gresik">Gresik</option>
+            <option value="Surabaya">Surabaya</option>
+            <option value="Sidoarjo">Sidoarjo</option>
+            <option value="Lamongan">Lamongan</option>
+            <option value="Mojokerto">Mojokerto</option>
+            <option value="Pasuruan">Pasuruan</option>
+            <option value="Malang">Malang</option>
+            <option value="Lainnya">Kota lainnya</option>
+          </select>
+          <i class="ti ti-chevron-down select-icon"></i>
+        </div>
+        <div class="slabel">Kondisi</div>
+        <div class="toggle-group" id="kondisi-filter-group">
+          <button class="tg-btn active" onclick="setToggle('kondisi-filter-group',this)" data-val="">Semua</button>
+          <button class="tg-btn" onclick="setToggle('kondisi-filter-group',this)" data-val="baru">Baru</button>
+          <button class="tg-btn" onclick="setToggle('kondisi-filter-group',this)" data-val="preloved">Preloved</button>
+        </div>
+        <div class="slabel">Rentang harga</div>
+        <div style="display:flex;gap:8px;margin-bottom:12px">
+          <div style="flex:1">
+            <div class="harga-wrap">
+              <span class="harga-prefix">Rp</span>
+              <input class="finput harga-input" id="filter-min" type="number" placeholder="Min" style="margin-bottom:0">
+            </div>
+          </div>
+          <div style="flex:1">
+            <div class="harga-wrap">
+              <span class="harga-prefix">Rp</span>
+              <input class="finput harga-input" id="filter-max" type="number" placeholder="Max" style="margin-bottom:0">
+            </div>
+          </div>
+        </div>
+        <button class="btnp" onclick="terapkanFilter()"><i class="ti ti-filter"></i> Terapkan filter</button>
+      </div>
+    </div>
+  </div>
+
   <!-- PASANG IKLAN -->
   <div id="page-jual" class="page">
     <div class="topbar">
@@ -138,9 +210,7 @@
       <div class="form-card">
         <div class="slabel">Foto produk <span class="slabel-note">(max 5, otomatis dikompres)</span></div>
         <div class="photo-row" id="foto-row">
-          <label for="foto-input" class="photo-add" style="cursor:pointer">
-            <i class="ti ti-camera"></i><span>Tambah</span>
-          </label>
+          <label for="foto-input" class="photo-add" style="cursor:pointer"><i class="ti ti-camera"></i><span>Tambah</span></label>
           <input type="file" id="foto-input" accept="image/*" multiple style="display:none" onchange="handleFotoInput(event)">
         </div>
         <div class="slabel">Judul iklan</div>
@@ -196,9 +266,7 @@
           </select>
           <i class="ti ti-chevron-down select-icon"></i>
         </div>
-        <button class="btnp" onclick="postingProduk()">
-          <i class="ti ti-speakerphone"></i> Pasang iklan sekarang
-        </button>
+        <button class="btnp" onclick="postingProduk()"><i class="ti ti-speakerphone"></i> Pasang iklan sekarang</button>
         <div class="bibit-bar" style="margin-top:12px">
           <i class="ti ti-leaf"></i>
           <span>2,5% dari jasa layanan tambahan → NitipBibit</span>
@@ -220,79 +288,6 @@
       </div>
     </div>
     <div id="detail-content" style="flex:1;overflow-y:auto;background:#FAF5FF"></div>
-  </div>
-
-  <!-- PROFIL -->
-  <div id="page-profil" class="page">
-    <div class="topbar">
-      <div class="topbar-left">
-        <button class="back-btn" onclick="showPage('page-home')"><i class="ti ti-arrow-left"></i></button>
-        <svg width="28" height="28" viewBox="0 0 56 56">
-          <rect width="56" height="56" rx="10" fill="rgba(255,255,255,0.2)"/>
-          <path d="M14 14h16l12 14-12 14H14V14z" fill="none" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/>
-          <circle cx="34" cy="28" r="3" fill="#fff"/>
-          <text x="22" y="32" text-anchor="middle" font-size="12" font-weight="700" fill="#fff" font-family="sans-serif">NJ</text>
-        </svg>
-        <span class="topbar-title">Profil</span>
-      </div>
-    </div>
-    <div style="flex:1;overflow-y:auto;background:#FAF5FF">
-      <div class="profil-hero">
-        <div class="profil-ava" id="profil-ava">?</div>
-        <div class="profil-nama" id="profil-nama">-</div>
-        <div class="profil-email" id="profil-email">-</div>
-      </div>
-      <div class="profil-tabs">
-        <button class="profil-tab active" onclick="switchTab(this,'tab-akun')">Akun</button>
-        <button class="profil-tab" onclick="switchTab(this,'tab-iklan')">Iklan Saya</button>
-        <button class="profil-tab" onclick="switchTab(this,'tab-bibit')">NitipBibit</button>
-      </div>
-      <div id="tab-akun" class="tab-content active">
-        <div class="menu-list">
-          <div class="menu-item"><i class="ti ti-user-edit"></i><span>Edit profil</span><i class="ti ti-chevron-right"></i></div>
-          <div class="menu-item"><i class="ti ti-message"></i><span>Chat saya</span><i class="ti ti-chevron-right"></i></div>
-          <div class="menu-item"><i class="ti ti-bell"></i><span>Notifikasi</span><i class="ti ti-chevron-right"></i></div>
-          <div class="menu-item menu-logout" onclick="logout()"><i class="ti ti-logout"></i><span>Keluar</span><i class="ti ti-chevron-right"></i></div>
-        </div>
-      </div>
-      <div id="tab-iklan" class="tab-content">
-        <div style="padding:12px">
-          <div class="filter-row" id="filter-status">
-            <button class="filter-btn active" onclick="filterIklan(this,'')">Semua</button>
-            <button class="filter-btn" onclick="filterIklan(this,'aktif')">Aktif</button>
-            <button class="filter-btn" onclick="filterIklan(this,'terjual')">Terjual</button>
-            <button class="filter-btn" onclick="filterIklan(this,'dihapus')">Dihapus</button>
-          </div>
-          <div id="iklan-saya-list"><p class="empty">Memuat iklan...</p></div>
-        </div>
-      </div>
-      <div id="tab-bibit" class="tab-content">
-        <div style="padding:12px">
-          <div class="bibit-stat-card">
-            <i class="ti ti-leaf" style="font-size:32px;color:#C4789A"></i>
-            <div style="font-size:12px;color:var(--color-text-secondary);margin-top:8px">Total kontribusimu</div>
-            <div style="font-size:24px;font-weight:500;color:#C4789A;margin-top:4px" id="total-kontribusi">Rp 0</div>
-            <div style="font-size:11px;color:var(--color-text-tertiary);margin-top:2px" id="total-transaksi">dari 0 transaksi layanan</div>
-          </div>
-          <div class="bibit-global-card">
-            <div style="font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px">Dana terkumpul bulan ini</div>
-            <div style="font-size:22px;font-weight:500;color:#9B7FD4">Rp 1.240.000</div>
-            <div style="font-size:11px;color:var(--color-text-tertiary);margin-top:2px">dari seluruh pengguna NitipJual</div>
-          </div>
-          <div class="bibit-info">
-            <i class="ti ti-heart" style="font-size:14px"></i>
-            Kontribusimu membantu program Bibit Cerdas, Bibit Sehat, Bibit Pangan & Bibit Mandiri.
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="bnav mobile-only">
-      <button class="nb" onclick="setNav(this);showPage('page-home')"><i class="ti ti-home"></i><span>Beranda</span></button>
-      <button class="nb" onclick="setNav(this);fokusSearch()"><i class="ti ti-search"></i><span>Cari</span></button>
-      <button class="nb-plus" onclick="showPage('page-jual')"><div class="plus-btn"><i class="ti ti-plus"></i></div></button>
-      <button class="nb" style="position:relative" onclick="setNav(this);showPage('page-chat-list')"><i class="ti ti-message"></i><span>Chat</span><span id="badge-chat-mobile" style="display:none;position:absolute;top:6px;left:50%;margin-left:4px;width:8px;height:8px;border-radius:50%;background:#e53935"></span></button>
-      <button class="nb active" onclick="setNav(this);showPage('page-profil')"><i class="ti ti-user"></i><span>Profil</span></button>
-    </div>
   </div>
 
   <!-- EDIT IKLAN -->
@@ -336,10 +331,119 @@
         </div>
         <div class="slabel">Deskripsi</div>
         <textarea class="finput ftextarea" id="edit-deskripsi" placeholder="Deskripsi produk..."></textarea>
-        <button class="btnp" id="btn-simpan-edit" onclick="simpanEdit()">
-          <i class="ti ti-check"></i> Simpan perubahan
-        </button>
+        <button class="btnp" id="btn-simpan-edit" onclick="simpanEdit()"><i class="ti ti-check"></i> Simpan perubahan</button>
       </div>
+    </div>
+  </div>
+
+  <!-- EDIT PROFIL -->
+  <div id="page-edit-profil" class="page">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="back-btn" onclick="showPage('page-profil')"><i class="ti ti-arrow-left"></i></button>
+        <span class="topbar-title">Edit Profil</span>
+      </div>
+    </div>
+    <div class="content">
+      <div class="form-card">
+        <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:16px">
+          <div id="edit-profil-ava" style="width:72px;height:72px;border-radius:50%;background:#FEF0F5;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:500;color:#9B3060;margin-bottom:8px;overflow:hidden;border:2px solid #F5C0D5">?</div>
+        </div>
+        <div class="slabel">Nama lengkap</div>
+        <input class="finput" id="ep-nama" placeholder="Nama lengkap">
+        <div class="slabel">Email</div>
+        <input class="finput" id="ep-email" readonly style="opacity:0.6;cursor:not-allowed">
+        <div class="slabel">No. HP / WhatsApp <span style="background:#FFEBEE;color:#c62828;font-size:10px;padding:1px 6px;border-radius:4px;font-weight:500">Wajib</span></div>
+        <input class="finput" id="ep-hp" placeholder="Contoh: 08123456789" type="tel">
+        <div style="font-size:11px;color:var(--tx3);margin-bottom:12px">Ditampilkan ke pembeli di halaman detail iklan</div>
+        <button class="btnp" onclick="simpanEditProfil()"><i class="ti ti-check"></i> Simpan perubahan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFIL -->
+  <div id="page-profil" class="page">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="back-btn" onclick="showPage('page-home')"><i class="ti ti-arrow-left"></i></button>
+        <svg width="28" height="28" viewBox="0 0 56 56">
+          <rect width="56" height="56" rx="10" fill="rgba(255,255,255,0.2)"/>
+          <path d="M14 14h16l12 14-12 14H14V14z" fill="none" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/>
+          <circle cx="34" cy="28" r="3" fill="#fff"/>
+          <text x="22" y="32" text-anchor="middle" font-size="12" font-weight="700" fill="#fff" font-family="sans-serif">NJ</text>
+        </svg>
+        <span class="topbar-title">Profil</span>
+      </div>
+    </div>
+    <div style="flex:1;overflow-y:auto;background:#FAF5FF">
+      <div class="profil-hero">
+        <div class="profil-ava" id="profil-ava">?</div>
+        <div class="profil-nama" id="profil-nama">-</div>
+        <div class="profil-email" id="profil-email">-</div>
+      </div>
+      <div class="profil-tabs">
+        <button class="profil-tab active" onclick="switchTab(this,'tab-akun')">Akun</button>
+        <button class="profil-tab" onclick="switchTab(this,'tab-iklan')">Iklan Saya</button>
+        <button class="profil-tab" onclick="switchTab(this,'tab-bibit')">NitipBibit</button>
+      </div>
+      <div id="tab-akun" class="tab-content active">
+        <div class="menu-list">
+          <div class="menu-item" onclick="bukaEditProfil()"><i class="ti ti-user-edit"></i><span>Edit profil</span><i class="ti ti-chevron-right"></i></div>
+          <div class="menu-item" onclick="showPage('page-chat-list')"><i class="ti ti-message"></i><span>Chat saya</span><i class="ti ti-chevron-right"></i></div>
+          <div class="menu-item"><i class="ti ti-bell"></i><span>Notifikasi</span><i class="ti ti-chevron-right"></i></div>
+          <div class="menu-item menu-logout" onclick="logout()"><i class="ti ti-logout"></i><span>Keluar</span><i class="ti ti-chevron-right"></i></div>
+        </div>
+      </div>
+      <div id="tab-iklan" class="tab-content">
+        <div style="padding:12px">
+          <div class="filter-row" id="filter-status">
+            <button class="filter-btn active" onclick="filterIklan(this,'')">Semua</button>
+            <button class="filter-btn" onclick="filterIklan(this,'aktif')">Aktif</button>
+            <button class="filter-btn" onclick="filterIklan(this,'terjual')">Terjual</button>
+            <button class="filter-btn" onclick="filterIklan(this,'dihapus')">Dihapus</button>
+          </div>
+          <div id="iklan-saya-list"><p class="empty">Memuat iklan...</p></div>
+        </div>
+      </div>
+      <div id="tab-bibit" class="tab-content">
+        <div style="padding:12px">
+          <div class="bibit-stat-card">
+            <i class="ti ti-leaf" style="font-size:32px;color:#C4789A"></i>
+            <div style="font-size:12px;color:var(--tx2);margin-top:8px">Total kontribusimu</div>
+            <div style="font-size:24px;font-weight:500;color:#C4789A;margin-top:4px">Rp 0</div>
+            <div style="font-size:11px;color:var(--tx3);margin-top:2px">dari 0 transaksi layanan</div>
+          </div>
+          <div class="bibit-global-card">
+            <div style="font-size:12px;font-weight:500;color:var(--tx);margin-bottom:4px">Dana terkumpul bulan ini</div>
+            <div style="font-size:22px;font-weight:500;color:#9B7FD4">Rp 1.240.000</div>
+            <div style="font-size:11px;color:var(--tx3);margin-top:2px">dari seluruh pengguna NitipJual</div>
+          </div>
+          <div class="bibit-info">
+            <i class="ti ti-heart" style="font-size:14px"></i>
+            Kontribusimu membantu program Bibit Cerdas, Bibit Sehat, Bibit Pangan & Bibit Mandiri.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="bnav mobile-only">
+      <button class="nb" onclick="setNav(this);showPage('page-home')"><i class="ti ti-home"></i><span>Beranda</span></button>
+      <button class="nb" onclick="setNav(this);fokusSearch()"><i class="ti ti-search"></i><span>Cari</span></button>
+      <button class="nb-plus" onclick="showPage('page-jual')"><div class="plus-btn"><i class="ti ti-plus"></i></div></button>
+      <button class="nb" style="position:relative" onclick="setNav(this);showPage('page-chat-list')"><i class="ti ti-message"></i><span>Chat</span></button>
+      <button class="nb active" onclick="setNav(this);showPage('page-profil')"><i class="ti ti-user"></i><span>Profil</span></button>
+    </div>
+  </div>
+
+  <!-- CHAT LIST -->
+  <div id="page-chat-list" class="page">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="back-btn" onclick="showPage('page-home')"><i class="ti ti-arrow-left"></i></button>
+        <span class="topbar-title">Chat Saya</span>
+      </div>
+    </div>
+    <div style="flex:1;overflow-y:auto;background:#FAF5FF;padding:12px" id="chat-list-content">
+      <p class="empty">Memuat chat...</p>
     </div>
   </div>
 
@@ -356,24 +460,11 @@
       </div>
     </div>
     <div id="chat-messages" style="flex:1;overflow-y:auto;padding:12px;background:#FAF5FF;display:flex;flex-direction:column;gap:6px"></div>
-    <div style="display:flex;gap:8px;padding:10px 12px;background:var(--color-background-primary);border-top:0.5px solid var(--color-border-tertiary)">
+    <div style="display:flex;gap:8px;padding:10px 12px;background:var(--bg);border-top:0.5px solid var(--br)">
       <input id="chat-input" class="searchbox" placeholder="Ketik pesan..." style="flex:1;border-radius:20px" onkeydown="if(event.key==='Enter')kirimPesan()">
       <button onclick="kirimPesan()" style="width:40px;height:40px;border-radius:50%;background:linear-gradient(90deg,#C4789A,#9B7FD4);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">
         <i class="ti ti-send" style="font-size:16px;color:#fff"></i>
       </button>
-    </div>
-  </div>
-
-  <!-- CHAT LIST -->
-  <div id="page-chat-list" class="page">
-    <div class="topbar">
-      <div class="topbar-left">
-        <button class="back-btn" onclick="showPage('page-home')"><i class="ti ti-arrow-left"></i></button>
-        <span class="topbar-title">Chat Saya</span>
-      </div>
-    </div>
-    <div style="flex:1;overflow-y:auto;background:#FAF5FF;padding:12px" id="chat-list-content">
-      <p class="empty">Memuat chat...</p>
     </div>
   </div>
 

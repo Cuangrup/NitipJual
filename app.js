@@ -1437,15 +1437,17 @@ async function adminMuatBantuan() {
   if (badge) { badge.style.display = belumDibaca>0 ? 'inline-block' : 'none'; badge.textContent = belumDibaca }
   window._adminBantuanData = data || []
   if (!data || !data.length) { list.innerHTML = '<p class="empty">Belum ada pesan.</p>'; return }
-  list.innerHTML = data.map(p=>`
-    <div class="admin-user-row" style="cursor:pointer" onclick="adminLihatPesan('${p.id}')">
+  list.innerHTML = data.map(p=>{
+    const baru = p.status==='baru'
+    return `<div class="admin-user-row" style="cursor:pointer;background:${baru?'#FEF0F5':'transparent'};border:${baru?'0.5px solid #F5C0D5':'0.5px solid transparent'};border-radius:10px;margin-bottom:6px" onclick="adminLihatPesan('${p.id}')">
       <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(90deg,#C4789A,#9B7FD4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:500;flex-shrink:0">${(p.users?.nama||'?').split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase()}</div>
       <div style="flex:1;min-width:0">
-        <div style="font-weight:500;color:var(--tx)">${p.users?.nama||'User'}</div>
-        <div style="font-size:11px;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.judul}</div>
+        <div style="font-weight:${baru?700:500};color:var(--tx)">${p.users?.nama||'User'}</div>
+        <div style="font-size:11px;color:${baru?'#9B3060':'var(--tx2)'};font-weight:${baru?500:400};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.judul}</div>
       </div>
-      <span style="font-size:9px;padding:2px 7px;border-radius:8px;background:${p.status==='baru'?'#FCEBEB':'#EAF3DE'};color:${p.status==='baru'?'#A32D2D':'#3B6D11'};flex-shrink:0">${p.status==='baru'?'Baru':'Selesai'}</span>
-    </div>`).join('')
+      <span style="font-size:9px;padding:2px 7px;border-radius:8px;background:${baru?'#F5C0D5':'#EAF3DE'};color:${baru?'#9B3060':'#3B6D11'};flex-shrink:0">${baru?'Baru':'Selesai'}</span>
+    </div>`
+  }).join('')
 }
 
 function adminLihatPesan(id) {
@@ -1455,8 +1457,19 @@ function adminLihatPesan(id) {
     <div style="font-size:13px;font-weight:500;color:var(--tx);margin-bottom:2px">${p.judul}</div>
     <div style="font-size:11px;color:var(--tx3);margin-bottom:10px">dari ${p.users?.nama||'User'}</div>
     <div style="font-size:12px;color:var(--tx2);line-height:1.6;margin-bottom:14px">${p.pesan}</div>
-    ${p.status==='baru' ? `<button class="btnp" onclick="adminTandaiSelesai('${p.id}')">Tandai selesai</button>` : `<div style="text-align:center;font-size:11px;color:var(--tx3)">Sudah ditandai selesai</div>`}`
+    <div style="display:flex;gap:8px">
+      ${p.status==='baru' ? `<button class="btnp" style="flex:1" onclick="adminTandaiSelesai('${p.id}')">Tandai selesai</button>` : `<div style="flex:1;text-align:center;font-size:11px;color:var(--tx3);align-self:center">Sudah selesai</div>`}
+      <button onclick="adminHapusPesan('${p.id}')" style="background:#FCEBEB;color:#A32D2D;border:none;border-radius:12px;padding:0 16px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit">Hapus</button>
+    </div>`
   document.getElementById('admin-modal-pesan').style.display = 'flex'
+}
+
+async function adminHapusPesan(id) {
+  if (!confirm('Hapus pesan bantuan ini?')) return
+  await db.from('bantuan_pesan').delete().eq('id', id)
+  document.getElementById('admin-modal-pesan').style.display = 'none'
+  showToast('Pesan dihapus')
+  adminMuatBantuan()
 }
 
 async function adminTandaiSelesai(id) {

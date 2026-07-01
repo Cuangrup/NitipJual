@@ -793,7 +793,7 @@ function renderModalLayanan() {
       <input id="ml-rekening-refund" class="finput" placeholder="Nomor rekening/e-wallet kamu">
       <div id="ml-upload-box" onclick="document.getElementById('ml-bukti-file').click()" style="border:1.5px dashed var(--pkbr);border-radius:10px;padding:16px;text-align:center;color:var(--pk);margin-bottom:12px;cursor:pointer">
         <i class="ti ti-upload" style="font-size:20px"></i>
-        <div id="ml-upload-label" style="font-size:12px;margin-top:6px">Upload bukti transfer</div>
+        <div id="ml-upload-label" style="font-size:12px;margin-top:6px">Upload bukti transfer <span style="color:#A32D2D">*wajib</span></div>
       </div>
       <input type="file" id="ml-bukti-file" accept="image/*" style="display:none" onchange="pilihBuktiTransfer(event)">
       <button class="btnp" onclick="kirimLayanan()">Kirim dan tunggu konfirmasi</button>
@@ -830,6 +830,7 @@ function lanjutKePembayaran() {
 }
 
 async function kirimLayanan() {
+  if (!layananState.buktiFile) return showToast('Upload bukti transfer dulu ya','error')
   const p = produkAktif
   const { jenis } = layananState
   const btn = document.querySelector('#modal-layanan-body .btnp')

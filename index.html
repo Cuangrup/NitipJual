@@ -1072,5 +1072,16 @@
       <div id="modal-pilih-pembeli-content"></div>
     </div>
   </div>
+  <div id="modal-layanan" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;padding:20px">
+    <div style="background:var(--bg);border-radius:16px;width:100%;max-width:400px;max-height:85vh;display:flex;flex-direction:column;overflow:hidden">
+      <div id="modal-layanan-head" style="background:var(--grad-h);padding:14px 18px;color:#fff;flex-shrink:0">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <span id="modal-layanan-title" style="font-size:14px;font-weight:500"></span>
+          <i class="ti ti-x" style="cursor:pointer;font-size:16px" onclick="tutupModalLayanan()"></i>
+        </div>
+      </div>
+      <div id="modal-layanan-body" style="padding:14px 18px 18px;overflow-y:auto"></div>
+    </div>
+  </div>
 </body>
 </html>

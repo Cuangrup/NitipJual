@@ -798,11 +798,18 @@ function renderModalLayanan() {
 function lanjutKePembayaran() {
   const alamat = document.getElementById('ml-alamat')?.value.trim()
   if (!alamat) return showToast('Isi alamat dulu ya','error')
-  if (layananState.jenis === 'go') {
+  layananState.alamat = alamat
+  if (layananState.jenis === 'cek') {
+    layananState.buyerHp = document.getElementById('ml-buyer-hp')?.value.trim() || ''
+    layananState.catatan = document.getElementById('ml-catatan')?.value.trim() || ''
+  } else {
     const nama = document.getElementById('ml-nama-penerima')?.value.trim()
     const hp = document.getElementById('ml-hp-penerima')?.value.trim()
     const alamatPenerima = document.getElementById('ml-alamat-penerima')?.value.trim()
     if (!nama || !hp || !alamatPenerima) return showToast('Lengkapi info penerima dulu','error')
+    layananState.namaPenerima = nama
+    layananState.hpPenerima = hp
+    layananState.alamatPenerima = alamatPenerima
   }
   layananState.step = 2
   renderModalLayanan()
@@ -811,23 +818,22 @@ function lanjutKePembayaran() {
 async function kirimLayanan() {
   const p = produkAktif
   const { jenis } = layananState
-  const alamat = document.getElementById('ml-alamat')?.value.trim() || ''
   const payload = {
     jenis,
     buyer_id: sesiAktif.user.id,
     product_id: p.id,
     seller_nama: p.users?.nama || '',
     seller_hp: p.users?.no_hp || '',
-    alamat_jemput: alamat,
+    alamat_jemput: layananState.alamat || '',
     rekening_refund: document.getElementById('ml-rekening-refund')?.value.trim() || ''
   }
   if (jenis === 'cek') {
-    payload.buyer_hp = document.getElementById('ml-buyer-hp')?.value.trim() || ''
-    payload.catatan = document.getElementById('ml-catatan')?.value.trim() || ''
+    payload.buyer_hp = layananState.buyerHp || ''
+    payload.catatan = layananState.catatan || ''
   } else {
-    payload.nama_penerima = document.getElementById('ml-nama-penerima')?.value.trim() || ''
-    payload.hp_penerima = document.getElementById('ml-hp-penerima')?.value.trim() || ''
-    payload.alamat_penerima = document.getElementById('ml-alamat-penerima')?.value.trim() || ''
+    payload.nama_penerima = layananState.namaPenerima || ''
+    payload.hp_penerima = layananState.hpPenerima || ''
+    payload.alamat_penerima = layananState.alamatPenerima || ''
   }
   const { error } = await db.from('layanan_manual').insert(payload)
   if (error) { showToast('Gagal mengirim permintaan','error'); return }

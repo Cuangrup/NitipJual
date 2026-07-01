@@ -71,7 +71,12 @@
         </svg>
         <span class="topbar-title">NitipJual</span>
       </div>
-      <input class="topbar-search" id="search-desktop" placeholder="Mau cari apa hari ini?" oninput="cariProduk()">
+      <div style="flex:1;max-width:440px;display:flex;gap:6px;margin:0 20px">
+        <input class="topbar-search" id="search-desktop" placeholder="Mau cari apa hari ini?" oninput="cariProduk()" style="flex:1;margin:0;max-width:none">
+        <button onclick="showPage('page-filter')" style="background:rgba(255,255,255,0.2);border:none;border-radius:20px;padding:0 14px;color:#fff;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:5px;white-space:nowrap;font-family:inherit">
+          <i class="ti ti-adjustments-horizontal" style="font-size:16px"></i> Filter
+        </button>
+      </div>
       <div class="topbar-right">
         <i class="ti ti-bell"></i>
         <div style="position:relative;cursor:pointer" onclick="showPage('page-chat-list')">

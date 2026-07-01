@@ -21,13 +21,7 @@ function showToast(pesan, tipe='sukses') {
   setTimeout(() => { toast.style.opacity='0'; toast.style.transition='opacity .3s'; setTimeout(()=>toast.remove(),300) }, 2800)
 }
 
-async function 
-document.addEventListener('click', function initAudio() {
-  getAudioCtx()
-  document.removeEventListener('click', initAudio)
-}, { once: true })
-
-cekSession() {
+async function cekSession() {
   const { data: { session } } = await db.auth.getSession()
   if (session) tampilHome(session.user)
   else showPage('page-login')
@@ -849,6 +843,11 @@ db.auth.onAuthStateChange((event,session)=>{
   } else if (event==='SIGNED_OUT') showPage('page-login')
 })
 
+
+document.addEventListener('click', function initAudio() {
+  getAudioCtx()
+  document.removeEventListener('click', initAudio)
+}, { once: true })
 
 document.addEventListener('click', function initAudio() {
   getAudioCtx()

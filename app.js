@@ -557,29 +557,100 @@ async function loadChatList() {
   const container = document.getElementById('chat-list-content')
   if (!container) return
   container.innerHTML = '<p class="empty">Memuat chat...</p>'
+
+  const lastSeen = localStorage.getItem('last-seen-chat') || '1970-01-01'
+
   const { data, error } = await db.from('orders')
     .select('id, kode, status, harga_deal, seller_id, buyer_id, products(nama, foto_urls), seller:users!orders_seller_id_fkey(nama, foto_profil), buyer:users!orders_buyer_id_fkey(nama, foto_profil)')
     .or(`buyer_id.eq.${userId},seller_id.eq.${userId}`)
     .order('created_at',{ascending:false})
+
   if (error || !data || data.length===0) { container.innerHTML='<p class="empty">Belum ada chat.</p>'; return }
-  container.innerHTML = data.map(o => {
+
+  const orderIds = data.map(o => o.id)
+  const { data: unreadChats } = await db.from('chats')
+    .select('order_id, created_at')
+    .in('order_id', orderIds)
+    .neq('sender_id', userId)
+    .gt('created_at', lastSeen)
+
+  const unreadMap = {}
+  if (unreadChats) {
+    unreadChats.forEach(c => {
+      unreadMap[c.order_id] = (unreadMap[c.order_id] || 0) + 1
+    })
+  }
+
+  const { data: lastMsgs } = await db.from('chats')
+    .select('order_id, pesan, sender_id, created_at')
+    .in('order_id', orderIds)
+    .order('created_at', {ascending: false})
+
+  const lastMsgMap = {}
+  if (lastMsgs) {
+    lastMsgs.forEach(m => {
+      if (!lastMsgMap[m.order_id]) lastMsgMap[m.order_id] = m
+    })
+  }
+
+  const unreadItems = data.filter(o => unreadMap[o.id])
+  const readItems = data.filter(o => !unreadMap[o.id])
+
+  const renderItem = (o) => {
     const isSeller = o.seller_id === userId
     const lawan = isSeller ? o.buyer : o.seller
     const lawanNama = lawan?.nama || 'Pengguna'
     const lawanAva = lawanNama.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase()
     const produkNama = o.products?.nama || 'Produk'
     const roleLabel = isSeller ? 'Pembeli' : 'Penjual'
-    return `<div onclick="bukaOrder('${o.id}')" style="background:var(--color-background-primary);border-radius:12px;border:0.5px solid var(--color-border-tertiary);padding:12px;display:flex;gap:10px;margin-bottom:8px;cursor:pointer;align-items:center">
-      <div style="width:44px;height:44px;border-radius:50%;background:#FEF0F5;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;color:#9B3060;flex-shrink:0;overflow:hidden">
+    const unreadCount = unreadMap[o.id] || 0
+    const lastMsg = lastMsgMap[o.id]
+    const isUnread = unreadCount > 0
+
+    const waktu = lastMsg ? (() => {
+      const d = new Date(lastMsg.created_at)
+      const now = new Date()
+      const diff = Math.floor((now - d) / 86400000)
+      if (diff === 0) return d.getHours()+':'+String(d.getMinutes()).padStart(2,'0')
+      if (diff === 1) return 'Kemarin'
+      return d.toLocaleDateString('id-ID',{day:'numeric',month:'short'})
+    })() : ''
+
+    return `<div onclick="bukaOrder('${o.id}')" style="
+      background:${isUnread ? '#FEF0F5' : 'var(--color-background-primary)'};
+      border-radius:12px;
+      border:${isUnread ? '0.5px solid #F5C0D5' : '0.5px solid var(--color-border-tertiary)'};
+      padding:12px;display:flex;gap:10px;margin-bottom:8px;cursor:pointer;align-items:center">
+      <div style="width:44px;height:44px;border-radius:50%;background:${isUnread?'#FEF0F5':'#F3EEFB'};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;color:${isUnread?'#9B3060':'#6B3FA0'};flex-shrink:0;overflow:hidden">
         ${lawan?.foto_profil?`<img src="${lawan.foto_profil}" style="width:100%;height:100%;object-fit:cover">`:lawanAva}
       </div>
       <div style="flex:1;min-width:0">
-        <div style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:2px">${lawanNama} <span style="font-size:10px;color:var(--color-text-tertiary)">(${roleLabel})</span></div>
-        <div style="font-size:11px;color:var(--color-text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${produkNama}</div>
+        <div style="font-size:13px;font-weight:${isUnread?'700':'500'};color:var(--color-text-primary);margin-bottom:2px">
+          ${lawanNama} <span style="font-size:10px;color:var(--color-text-tertiary);font-weight:400">(${roleLabel})</span>
+        </div>
+        <div style="font-size:11px;color:var(--color-text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:2px">${produkNama}</div>
+        ${lastMsg ? `<div style="font-size:10px;color:${isUnread?'#9B3060':'var(--color-text-muted)'};font-weight:${isUnread?'500':'400'};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${lastMsg.sender_id===userId?'Kamu: ':''}${lastMsg.pesan}</div>` : ''}
       </div>
-      <div style="font-size:12px;font-weight:500;color:#C4789A">Rp ${Number(o.harga_deal||0).toLocaleString('id-ID')}</div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
+        <div style="font-size:9px;color:${isUnread?'#C4789A':'var(--color-text-tertiary)'};font-weight:${isUnread?'500':'400'}">${waktu}</div>
+        ${isUnread ? `<div style="min-width:18px;height:18px;border-radius:9px;background:linear-gradient(90deg,#C4789A,#9B7FD4);color:#fff;font-size:9px;font-weight:500;display:flex;align-items:center;justify-content:center;padding:0 5px">${unreadCount}</div>` : `<div style="font-size:11px;font-weight:500;color:#C4789A">Rp ${Number(o.harga_deal||0).toLocaleString('id-ID')}</div>`}
+      </div>
     </div>`
-  }).join('')
+  }
+
+  let html = ''
+  if (unreadItems.length > 0) {
+    html += `<div style="font-size:11px;font-weight:500;color:var(--color-text-secondary);margin-bottom:6px;padding:0 2px">Pesan baru</div>`
+    html += unreadItems.map(renderItem).join('')
+    if (readItems.length > 0) {
+      html += `<div style="font-size:11px;font-weight:500;color:var(--color-text-secondary);margin:10px 0 6px;padding:0 2px">Sudah dibaca</div>`
+      html += readItems.map(renderItem).join('')
+    }
+  } else {
+    html += data.map(renderItem).join('')
+  }
+
+  container.innerHTML = html
 }
 
 async function bukaOrder(orderId) {
@@ -590,10 +661,48 @@ async function bukaOrder(orderId) {
   bukaChat(orderId, p)
 }
 
+
+function bunyiNotifikasi() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)()
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+    osc.connect(gain)
+    gain.connect(ctx.destination)
+    osc.type = 'sine'
+    gain.gain.setValueAtTime(0, ctx.currentTime)
+    gain.gain.linearRampToValueAtTime(0.8, ctx.currentTime + 0.01)
+    gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.15)
+    osc.frequency.setValueAtTime(880, ctx.currentTime)
+    osc.frequency.setValueAtTime(1100, ctx.currentTime + 0.08)
+    osc.start(ctx.currentTime)
+    osc.stop(ctx.currentTime + 0.15)
+    setTimeout(() => {
+      const osc2 = ctx.createOscillator()
+      const gain2 = ctx.createGain()
+      osc2.connect(gain2)
+      gain2.connect(ctx.destination)
+      osc2.type = 'sine'
+      gain2.gain.setValueAtTime(0, ctx.currentTime)
+      gain2.gain.linearRampToValueAtTime(0.6, ctx.currentTime + 0.01)
+      gain2.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.2)
+      osc2.frequency.setValueAtTime(1320, ctx.currentTime)
+      osc2.start(ctx.currentTime)
+      osc2.stop(ctx.currentTime + 0.2)
+    }, 150)
+  } catch(e) { console.log('Audio not supported') }
+}
+
 function subscribeChatBadge(userId) {
   db.channel('badge-chat')
     .on('postgres_changes',{ event:'INSERT', schema:'public', table:'chats' }, payload => {
-      if (payload.new.sender_id !== userId) cekChatBaru()
+      if (payload.new.sender_id !== userId) {
+        cekChatBaru()
+        bunyiNotifikasi()
+        if (document.getElementById('page-chat-list')?.classList.contains('active')) {
+          loadChatList()
+        }
+      }
     }).subscribe()
 }
 

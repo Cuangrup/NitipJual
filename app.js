@@ -660,7 +660,8 @@ async function lihatDetail(id) {
     <div onclick="toggleDesc()" id="desc-toggle" style="font-size:11px;color:#9B7FD4;font-weight:500;margin-top:3px;cursor:pointer">Lihat selengkapnya</div>`:''}
   </div>`
   const layananHtml=`<div style="padding:0 14px 6px">
-    <div style="font-size:11px;font-weight:500;color:var(--color-text-secondary);margin-bottom:6px">Layanan tambahan (opsional)</div>
+    <div style="font-size:11px;font-weight:500;color:var(--color-text-secondary);margin-bottom:2px">Layanan tambahan (opsional)</div>
+    <div style="font-size:10px;color:var(--color-text-tertiary);margin-bottom:6px"><i class="ti ti-info-circle" style="font-size:10px"></i> Pastikan kamu sudah menghubungi penjual sebelum menggunakan kedua layanan ini</div>
     <div style="display:flex;gap:6px;margin-bottom:10px">
       <div onclick="bukaModalLayanan('cek')" style="flex:1;background:var(--color-background-primary);border-radius:10px;border:0.5px solid var(--color-border-tertiary);padding:9px 10px;cursor:pointer">
         <span style="background:#F3EEFB;color:#6B3FA0;font-size:9px;padding:2px 6px;border-radius:6px;font-weight:500;display:inline-block;margin-bottom:3px">NitipCek</span>

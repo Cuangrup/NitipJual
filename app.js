@@ -778,16 +778,15 @@ function renderModalLayanan() {
       <button class="btnp" onclick="lanjutKePembayaran()">Lanjut ke pembayaran</button>`
   }
 
-  if (step === 2) {
+  if (step === 2 && jenis === 'cek') {
     if (!layananState.kodeUnik) layananState.kodeUnik = Math.floor(Math.random()*899)+100
-    const tarifDasar = jenis==='cek' ? 20000 : null
-    const nominalTampil = tarifDasar ? `Rp ${(tarifDasar+layananState.kodeUnik).toLocaleString('id-ID')}` : 'Sesuai jarak'
-    layananState.nominalTotal = tarifDasar ? tarifDasar+layananState.kodeUnik : null
+    const nominalTotal = 20000 + layananState.kodeUnik
+    layananState.nominalTotal = nominalTotal
     body.innerHTML = `
       <div style="background:var(--ps2);border-radius:10px;padding:12px;margin-bottom:10px;text-align:center">
         <div style="font-size:11px;color:var(--pk2)">Tarif layanan</div>
-        <div style="font-size:20px;font-weight:500;color:var(--pk2);margin-top:2px">${nominalTampil}</div>
-        ${tarifDasar ? `<div style="font-size:10px;color:var(--pk2);margin-top:2px">Termasuk kode unik ${layananState.kodeUnik} — transfer PAS sesuai nominal ini biar gampang dicek admin</div>` : `<div style="font-size:10px;color:var(--pk2);margin-top:2px">Tarif & kode unik pembayaran diinfokan admin lewat WA setelah jarak dihitung</div>`}
+        <div style="font-size:20px;font-weight:500;color:var(--pk2);margin-top:2px">Rp ${nominalTotal.toLocaleString('id-ID')}</div>
+        <div style="font-size:10px;color:var(--pk2);margin-top:2px">Termasuk kode unik ${layananState.kodeUnik} — transfer PAS sesuai nominal ini biar gampang dicek admin</div>
       </div>
       <div style="font-size:11px;font-weight:500;color:var(--tx3);text-transform:uppercase;letter-spacing:0.03em;margin-bottom:4px">Transfer ke rekening</div>
       <div style="font-size:13px;font-weight:500;color:var(--tx);margin-bottom:10px">BCA 1300295441 a.n. Mohammad Rusdianto</div>
@@ -799,6 +798,17 @@ function renderModalLayanan() {
       </div>
       <input type="file" id="ml-bukti-file" accept="image/*" style="display:none" onchange="pilihBuktiTransfer(event)">
       <button class="btnp" onclick="kirimLayanan()">Kirim dan tunggu konfirmasi</button>
+      <button onclick="layananState.step=1;renderModalLayanan()" style="width:100%;padding:9px;background:transparent;color:var(--tx2);border:none;font-size:12px;cursor:pointer;font-family:inherit;margin-top:4px">Kembali ke form order</button>`
+  }
+
+  if (step === 2 && jenis === 'go') {
+    body.innerHTML = `
+      <div style="background:var(--ps2);border-radius:10px;padding:12px;margin-bottom:12px;text-align:center">
+        <div style="font-size:11px;color:var(--pk2)">Tarif layanan</div>
+        <div style="font-size:20px;font-weight:500;color:var(--pk2);margin-top:2px">Sesuai jarak</div>
+        <div style="font-size:10px;color:var(--pk2);margin-top:2px">Tarif diinfokan tim kami lewat WA setelah jarak dihitung. Pembayaran bisa COD ke mitra atau transfer belakangan, nggak perlu bukti transfer sekarang.</div>
+      </div>
+      <button class="btnp" onclick="kirimLayanan()">Kirim permintaan</button>
       <button onclick="layananState.step=1;renderModalLayanan()" style="width:100%;padding:9px;background:transparent;color:var(--tx2);border:none;font-size:12px;cursor:pointer;font-family:inherit;margin-top:4px">Kembali ke form order</button>`
   }
 }
@@ -832,7 +842,7 @@ function lanjutKePembayaran() {
 }
 
 async function kirimLayanan() {
-  if (!layananState.buktiFile) return showToast('Upload bukti transfer dulu ya','error')
+  if (layananState.jenis === 'cek' && !layananState.buktiFile) return showToast('Upload bukti transfer dulu ya','error')
   const p = produkAktif
   const { jenis } = layananState
   const btn = document.querySelector('#modal-layanan-body .btnp')

@@ -71,7 +71,7 @@
         </svg>
         <span class="topbar-title">NitipJual</span>
       </div>
-      <div class="topbar-search-wrap" style="gap:0;background:#fff;border-radius:24px;border:2px solid rgba(255,255,255,0.4);position:relative">
+      <div class="topbar-search-wrap" style="gap:0;background:#fff;border-radius:24px;border:2px solid rgba(255,255,255,0.4);position:relative;overflow:hidden;height:44px;align-items:center">
         <div style="position:relative;flex-shrink:0" id="lokasi-desktop-wrap">
           <button onclick="toggleLokasiDesktop()" style="display:flex;align-items:center;gap:6px;padding:0 14px;background:transparent;border:none;border-right:1px solid #eee;cursor:pointer;height:38px;color:#555;font-size:13px;font-family:inherit;white-space:nowrap">
             <i class="ti ti-map-pin" style="font-size:14px;color:#C4789A"></i>
@@ -93,7 +93,7 @@
           </div>
         </div>
         <input id="search-desktop" placeholder="Temukan barang incaranmu..." oninput="cariProduk()" style="flex:1;border:none;outline:none;padding:0 14px;font-size:13px;color:#333;background:transparent;font-family:inherit">
-        <button onclick="cariProduk()" style="background:linear-gradient(90deg,#C4789A,#9B7FD4);border:none;padding:0 16px;cursor:pointer;display:flex;align-items:center">
+        <button onclick="cariProduk()" style="background:linear-gradient(90deg,#C4789A,#9B7FD4);border:none;outline:none;padding:0 16px;height:100%;cursor:pointer;display:flex;align-items:center;flex-shrink:0">
           <i class="ti ti-search" style="font-size:17px;color:#fff"></i>
         </button>
       </div>

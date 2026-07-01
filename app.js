@@ -488,8 +488,9 @@ function bukaFavoritSaya() {
 let _halamanSebelumLegal = 'page-login'
 function bukaHalamanLegal(id) {
   const aktif = document.querySelector('.page.active')?.id
-  if (aktif && aktif !== 'page-syarat' && aktif !== 'page-privasi') _halamanSebelumLegal = aktif
+  if (aktif && aktif !== 'page-syarat' && aktif !== 'page-privasi' && aktif !== 'page-bantuan') _halamanSebelumLegal = aktif
   showPage(id)
+  if (id === 'page-bantuan') renderFaqList()
 }
 function tutupHalamanLegal() {
   showPage(_halamanSebelumLegal)
@@ -1238,4 +1239,212 @@ document.addEventListener('click', function initAudio() {
   document.removeEventListener('click', initAudio)
 }, { once: true })
 
+// ===================== BANTUAN & FAQ =====================
+const FAQ_LIST = [
+  {q:'Gimana cara membeli barang di NitipJual?', a:'Cari barang yang kamu mau, klik "Hubungi via NitipJual" untuk chat langsung sama penjual, lalu nego harga & cara ketemu/kirim. Transaksinya (COD/transfer) dilakukan langsung antara kamu dan penjual.'},
+  {q:'Apakah NitipJual menjamin keamanan transaksi?', a:'NitipJual bukan rekening bersama (escrow) — kami tidak memegang uangmu. Transaksi terjadi langsung antara pembeli dan penjual. Untuk menambah rasa aman, kamu bisa gunakan NitipCek agar ada mitra yang memverifikasi barang sebelum kamu membayar.'},
+  {q:'Gimana cara tau penjual bisa dipercaya?', a:'Cek badge "Terverifikasi", lihat rating dan ulasan dari pembeli sebelumnya di halaman produk. Makin banyak ulasan positif dan akun makin aktif, biasanya makin bisa dipercaya.'},
+  {q:'Gimana bedain seller terpercaya sama yang berpotensi menipu?', a:'Waspada kalau: belum punya ulasan sama sekali, minta transfer penuh di muka tanpa mau COD/nego ketemu, atau terburu-buru memaksa transaksi. Kalau ragu, gunakan NitipCek dulu sebelum membayar.'},
+  {q:'Apakah aman COD (ketemu langsung)?', a:'Disarankan bertemu di tempat umum yang ramai, ajak teman kalau perlu, dan cek barangnya dulu sebelum membayar.'},
+  {q:'Gimana kalau saya kena tipu atau barang tidak sesuai?', a:'Karena transaksi terjadi di luar platform, NitipJual tidak bisa menjamin refund. Tapi laporkan lewat menu Bantuan ini, tim kami akan meninjau dan bisa mengambil tindakan ke akun yang bersangkutan.'},
+  {q:'Gimana cara ngasih rating ke penjual?', a:'Setelah penjual menandai kamu sebagai pembeli (lewat "Tandai Terjual"), kamu akan mendapat banner di halaman chat untuk memberi bintang dan komentar.'},
+  {q:'Apa konsekuensinya kalau penjual dapat rating jelek?', a:'Rating terlihat publik di halaman produk dan profil penjual, sehingga bisa memengaruhi kepercayaan pembeli lain ke depannya. Pola rating buruk yang berulang juga jadi bahan pertimbangan tim kami untuk ditinjau.'},
+  {q:'Gimana cara posting iklan?', a:'Klik "+ Jual" atau menu "Pasang Iklan", isi detail barang, upload foto, pilih lokasi, lalu submit.'},
+  {q:'Kenapa harus isi nomor HP?', a:'Supaya pembeli bisa langsung menghubungi kamu via WhatsApp dari halaman produk.'}
+]
+
+function renderFaqList() {
+  const el = document.getElementById('faq-list')
+  if (!el) return
+  el.innerHTML = FAQ_LIST.map((f,i)=>`
+    <div style="border-bottom:0.5px solid var(--br);padding:10px 0">
+      <div onclick="toggleFaq(${i})" style="font-size:13px;font-weight:500;color:var(--tx);display:flex;justify-content:space-between;align-items:center;cursor:pointer;gap:8px">
+        <span>${f.q}</span><i class="ti ti-chevron-down" id="faq-chev-${i}" style="font-size:13px;color:var(--tx3);flex-shrink:0"></i>
+      </div>
+      <div id="faq-a-${i}" style="display:none;font-size:12px;color:var(--tx2);margin-top:6px;line-height:1.6">${f.a}</div>
+    </div>`).join('')
+}
+
+function toggleFaq(i) {
+  const a = document.getElementById(`faq-a-${i}`)
+  const chev = document.getElementById(`faq-chev-${i}`)
+  const buka = a.style.display !== 'none'
+  a.style.display = buka ? 'none' : 'block'
+  chev.className = buka ? 'ti ti-chevron-down' : 'ti ti-chevron-up'
+}
+
+async function kirimPesanBantuan() {
+  if (!sesiAktif) { showToast('Login dulu untuk kirim pesan','error'); showPage('page-login'); return }
+  const judul = document.getElementById('bantuan-judul').value.trim()
+  const pesan = document.getElementById('bantuan-pesan').value.trim()
+  if (!judul || !pesan) return showToast('Isi judul dan pesan dulu ya','error')
+  const { error } = await db.from('bantuan_pesan').insert({ user_id: sesiAktif.user.id, judul, pesan })
+  if (error) { showToast('Gagal mengirim pesan','error'); return }
+  document.getElementById('bantuan-judul').value = ''
+  document.getElementById('bantuan-pesan').value = ''
+  showToast('Pesan terkirim! Kami akan segera membantu.')
+}
+
+// ===================== ADMIN =====================
+async function cekHashAdmin() {
+  if (window.location.hash === '#admin') await bukaAdmin()
+}
+window.addEventListener('hashchange', cekHashAdmin)
+
+async function bukaAdmin() {
+  if (!sesiAktif) { showToast('Login dulu ya','error'); window.location.hash=''; return }
+  const { data } = await db.from('users').select('role').eq('id', sesiAktif.user.id).single()
+  if (data?.role !== 'admin') { showToast('Akses ditolak','error'); window.location.hash=''; return }
+  showPage('page-admin')
+  adminGantiTab('dashboard')
+}
+
+function adminGantiTab(tab) {
+  document.querySelectorAll('.admin-nav-item[data-tab]').forEach(el=>el.classList.remove('active'))
+  document.querySelector(`.admin-nav-item[data-tab="${tab}"]`)?.classList.add('active')
+  document.querySelectorAll('.admin-tab-content').forEach(el=>el.style.display='none')
+  document.getElementById(`admin-tab-${tab}`).style.display='block'
+  if (tab==='dashboard') adminMuatDashboard()
+  if (tab==='user') adminMuatUser()
+  if (tab==='iklan') adminMuatIklan()
+  if (tab==='bantuan') adminMuatBantuan()
+}
+
+async function adminMuatDashboard() {
+  const { data: favs } = await db.from('favorites').select('product_id, products(nama)')
+  const favCount = {}
+  ;(favs||[]).forEach(f=>{ if(!f.products) return; favCount[f.product_id]=favCount[f.product_id]||{nama:f.products.nama,count:0}; favCount[f.product_id].count++ })
+  const favSorted = Object.values(favCount).sort((a,b)=>b.count-a.count)
+
+  const { data: terjualProd } = await db.from('products').select('nama, kategori, seller_id, created_at, users(nama)').eq('status','terjual')
+  const katCount = {}
+  ;(terjualProd||[]).forEach(p=>{ katCount[p.kategori]=(katCount[p.kategori]||0)+1 })
+  const katSorted = Object.entries(katCount).sort((a,b)=>b[1]-a[1]).map(([k,v])=>({label:k, val:v}))
+
+  const terbaru = [...(terjualProd||[])].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).map(p=>({label:p.nama, val:p.users?.nama||'-'}))
+
+  const sellerCount = {}
+  ;(terjualProd||[]).forEach(p=>{ sellerCount[p.seller_id]=sellerCount[p.seller_id]||{nama:p.users?.nama||'-',count:0}; sellerCount[p.seller_id].count++ })
+  const sellerSorted = Object.values(sellerCount).sort((a,b)=>b.count-a.count)
+
+  window._adminDashboardData = {
+    favorit: favSorted.map(f=>({label:f.nama, val:f.count})),
+    kategori: katSorted,
+    terjual: terbaru,
+    seller: sellerSorted.map(s=>({label:s.nama, val:s.count+' terjual'}))
+  }
+
+  const isiMini = (id, rows, kosongTxt) => {
+    const el = document.getElementById(id)
+    if (!rows.length) { el.innerHTML = `<p class="empty" style="padding:8px 0;font-size:11px">${kosongTxt}</p>`; return }
+    el.innerHTML = rows.slice(0,3).map(r=>`<div class="admin-list-row"><span>${r.label}</span><span class="admin-list-val">${r.val}</span></div>`).join('')
+  }
+  isiMini('admin-list-favorit', window._adminDashboardData.favorit, 'Belum ada yang favoritkan produk.')
+  isiMini('admin-list-kategori', window._adminDashboardData.kategori, 'Belum ada transaksi terjual.')
+  isiMini('admin-list-terjual', window._adminDashboardData.terjual, 'Belum ada transaksi terjual.')
+  isiMini('admin-list-seller', window._adminDashboardData.seller, 'Belum ada seller yang berhasil jual.')
+}
+
+function adminBukaDetail(jenis) {
+  const map = { favorit:'Produk paling difavoritkan', kategori:'Kategori terlaris', terjual:'Baru ditandai terjual', seller:'Seller paling produktif' }
+  document.getElementById('admin-modal-title').textContent = map[jenis]
+  window._adminModalRows = window._adminDashboardData?.[jenis] || []
+  document.getElementById('admin-modal-search').value = ''
+  adminFilterModal()
+  document.getElementById('admin-modal-detail').style.display = 'flex'
+}
+
+function adminFilterModal() {
+  const kw = document.getElementById('admin-modal-search').value.trim().toLowerCase()
+  const rows = (window._adminModalRows||[]).filter(r=>!kw || r.label.toLowerCase().includes(kw))
+  const list = document.getElementById('admin-modal-list')
+  list.innerHTML = rows.length ? rows.map(r=>`<div class="admin-list-row"><span>${r.label}</span><span class="admin-list-val">${r.val}</span></div>`).join('') : '<p class="empty">Tidak ditemukan.</p>'
+}
+
+async function adminMuatUser() {
+  const kw = document.getElementById('admin-user-search')?.value.trim().toLowerCase() || ''
+  const { data } = await db.from('users').select('*').order('nama')
+  const filtered = (data||[]).filter(u => !kw || (u.nama||'').toLowerCase().includes(kw) || (u.email||'').toLowerCase().includes(kw))
+  const list = document.getElementById('admin-user-list')
+  if (!filtered.length) { list.innerHTML = '<p class="empty">Tidak ada user.</p>'; return }
+  window._adminUserData = filtered
+  list.innerHTML = filtered.map(u=>`
+    <div class="admin-user-row">
+      <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(90deg,#C4789A,#9B7FD4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:500;flex-shrink:0">${(u.nama||'?').split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase()}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:500;color:var(--tx)">${u.nama||'(tanpa nama)'} ${u.role==='admin'?'<span style="font-size:9px;background:#F3EEFB;color:#7A5AAA;padding:1px 6px;border-radius:6px;margin-left:4px">Admin</span>':''}</div>
+        <div style="font-size:10px;color:var(--tx3)">${u.email}</div>
+      </div>
+      <span style="font-size:10px;padding:2px 8px;border-radius:8px;background:${u.status==='suspend'?'#FCEBEB':'#EAF3DE'};color:${u.status==='suspend'?'#A32D2D':'#3B6D11'};flex-shrink:0">${u.status==='suspend'?'Suspend':'Aktif'}</span>
+      <button class="admin-btn-sm" style="background:${u.status==='suspend'?'#EAF3DE':'#FCEBEB'};color:${u.status==='suspend'?'#3B6D11':'#A32D2D'}" onclick="adminToggleSuspend('${u.id}','${u.status==='suspend'?'aktif':'suspend'}')">${u.status==='suspend'?'Aktifkan':'Suspend'}</button>
+    </div>`).join('')
+}
+
+async function adminToggleSuspend(userId, statusBaru) {
+  await db.from('users').update({ status: statusBaru }).eq('id', userId)
+  showToast(statusBaru==='suspend' ? 'User disuspend' : 'User diaktifkan lagi')
+  adminMuatUser()
+}
+
+async function adminMuatIklan() {
+  const kw = document.getElementById('admin-iklan-search')?.value.trim().toLowerCase() || ''
+  const { data } = await db.from('products').select('*, users(nama)').neq('status','dihapus').order('created_at',{ascending:false})
+  const filtered = (data||[]).filter(p => !kw || p.nama.toLowerCase().includes(kw))
+  const list = document.getElementById('admin-iklan-list')
+  if (!filtered.length) { list.innerHTML = '<p class="empty">Tidak ada iklan.</p>'; return }
+  list.innerHTML = filtered.map(p=>`
+    <div class="admin-user-row">
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:500;color:var(--tx)">${p.nama}</div>
+        <div style="font-size:10px;color:var(--tx3)">${p.users?.nama||'-'} &middot; Rp ${Number(p.harga).toLocaleString('id-ID')} &middot; ${p.status}</div>
+      </div>
+      <button class="admin-btn-sm" style="background:#FCEBEB;color:#A32D2D" onclick="adminHapusIklan('${p.id}')">Hapus</button>
+    </div>`).join('')
+}
+
+async function adminHapusIklan(id) {
+  if (!confirm('Hapus iklan ini karena melanggar ketentuan?')) return
+  await db.from('products').update({ status:'dihapus' }).eq('id', id)
+  showToast('Iklan dihapus')
+  adminMuatIklan()
+}
+
+async function adminMuatBantuan() {
+  const { data } = await db.from('bantuan_pesan').select('*, users(nama)').order('created_at',{ascending:false})
+  const list = document.getElementById('admin-bantuan-list')
+  const belumDibaca = (data||[]).filter(p=>p.status==='baru').length
+  const badge = document.getElementById('admin-badge-bantuan')
+  if (badge) { badge.style.display = belumDibaca>0 ? 'inline-block' : 'none'; badge.textContent = belumDibaca }
+  window._adminBantuanData = data || []
+  if (!data || !data.length) { list.innerHTML = '<p class="empty">Belum ada pesan.</p>'; return }
+  list.innerHTML = data.map(p=>`
+    <div class="admin-user-row" style="cursor:pointer" onclick="adminLihatPesan('${p.id}')">
+      <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(90deg,#C4789A,#9B7FD4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:500;flex-shrink:0">${(p.users?.nama||'?').split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase()}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:500;color:var(--tx)">${p.users?.nama||'User'}</div>
+        <div style="font-size:11px;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.judul}</div>
+      </div>
+      <span style="font-size:9px;padding:2px 7px;border-radius:8px;background:${p.status==='baru'?'#FCEBEB':'#EAF3DE'};color:${p.status==='baru'?'#A32D2D':'#3B6D11'};flex-shrink:0">${p.status==='baru'?'Baru':'Selesai'}</span>
+    </div>`).join('')
+}
+
+function adminLihatPesan(id) {
+  const p = (window._adminBantuanData||[]).find(x=>x.id===id)
+  if (!p) return
+  document.getElementById('admin-pesan-detail-content').innerHTML = `
+    <div style="font-size:13px;font-weight:500;color:var(--tx);margin-bottom:2px">${p.judul}</div>
+    <div style="font-size:11px;color:var(--tx3);margin-bottom:10px">dari ${p.users?.nama||'User'}</div>
+    <div style="font-size:12px;color:var(--tx2);line-height:1.6;margin-bottom:14px">${p.pesan}</div>
+    ${p.status==='baru' ? `<button class="btnp" onclick="adminTandaiSelesai('${p.id}')">Tandai selesai</button>` : `<div style="text-align:center;font-size:11px;color:var(--tx3)">Sudah ditandai selesai</div>`}`
+  document.getElementById('admin-modal-pesan').style.display = 'flex'
+}
+
+async function adminTandaiSelesai(id) {
+  await db.from('bantuan_pesan').update({ status:'selesai' }).eq('id', id)
+  document.getElementById('admin-modal-pesan').style.display = 'none'
+  showToast('Ditandai selesai')
+  adminMuatBantuan()
+}
+
 cekSession()
+cekHashAdmin()

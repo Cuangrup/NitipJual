@@ -374,6 +374,12 @@ function cariProduk() {
   loadProduk(kw)
 }
 
+function bukaFavoritSaya() {
+  showPage('page-profil')
+  const tabBtn = document.querySelector('.profil-tab[onclick*="tab-favorit"]')
+  if (tabBtn) switchTab(tabBtn, 'tab-favorit')
+}
+
 function kembaliBeranda() {
   filterState = { sort:'terbaru', kota:'', kondisi:'', minHarga:'', maxHarga:'' }
   document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'))

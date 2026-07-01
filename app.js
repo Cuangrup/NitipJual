@@ -659,21 +659,15 @@ async function lihatDetail(id) {
   const layananHtml=`<div style="padding:0 14px 6px">
     <div style="font-size:11px;font-weight:500;color:var(--color-text-secondary);margin-bottom:6px">Layanan tambahan (opsional)</div>
     <div style="display:flex;gap:6px;margin-bottom:10px">
-      <div id="card-cek" onclick="toggleLayanan('cek')" style="flex:1;background:var(--color-background-primary);border-radius:10px;border:0.5px solid var(--color-border-tertiary);padding:9px 10px;cursor:pointer">
+      <div onclick="bukaModalLayanan('cek')" style="flex:1;background:var(--color-background-primary);border-radius:10px;border:0.5px solid var(--color-border-tertiary);padding:9px 10px;cursor:pointer">
         <span style="background:#F3EEFB;color:#6B3FA0;font-size:9px;padding:2px 6px;border-radius:6px;font-weight:500;display:inline-block;margin-bottom:3px">NitipCek</span>
         <div style="font-size:11px;font-weight:500;color:var(--color-text-primary);margin-bottom:5px">Verifikasi barang</div>
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div style="font-size:11px;color:#C4789A;font-weight:500">Rp 10.000</div>
-          <div id="tog-cek" style="width:28px;height:15px;border-radius:8px;background:var(--color-border-secondary);position:relative;transition:background .2s;flex-shrink:0"><div style="position:absolute;top:2px;left:2px;width:11px;height:11px;background:#fff;border-radius:50%;transition:left .2s"></div></div>
-        </div>
+        <div style="font-size:11px;color:#C4789A;font-weight:500">Rp 20.000</div>
       </div>
-      <div id="card-go" onclick="toggleLayanan('go')" style="flex:1;background:var(--color-background-primary);border-radius:10px;border:0.5px solid var(--color-border-tertiary);padding:9px 10px;cursor:pointer">
+      <div onclick="bukaModalLayanan('go')" style="flex:1;background:var(--color-background-primary);border-radius:10px;border:0.5px solid var(--color-border-tertiary);padding:9px 10px;cursor:pointer">
         <span style="background:#E3F2FD;color:#1565C0;font-size:9px;padding:2px 6px;border-radius:6px;font-weight:500;display:inline-block;margin-bottom:3px">NitipKirim</span>
         <div style="font-size:11px;font-weight:500;color:var(--color-text-primary);margin-bottom:5px">Antar ke rumahku</div>
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div style="font-size:11px;color:#C4789A;font-weight:500">Sesuai jarak</div>
-          <div id="tog-go" style="width:28px;height:15px;border-radius:8px;background:var(--color-border-secondary);position:relative;transition:background .2s;flex-shrink:0"><div style="position:absolute;top:2px;left:2px;width:11px;height:11px;background:#fff;border-radius:50%;transition:left .2s"></div></div>
-        </div>
+        <div style="font-size:11px;color:#C4789A;font-weight:500">Sesuai jarak</div>
       </div>
     </div>
     <button onclick="hubungiSeller()" style="width:100%;padding:13px;background:linear-gradient(90deg,#C4789A,#9B7FD4);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;font-family:inherit;margin-bottom:16px">
@@ -717,17 +711,106 @@ function toggleDesc() {
   toggle.textContent=collapsed?'Sembunyikan':'Lihat selengkapnya'
 }
 
-function toggleLayanan(type) {
-  const card=document.getElementById(`card-${type}`)
-  const tog=document.getElementById(`tog-${type}`)
-  if (!card||!tog) return
-  const dot=tog.querySelector('div')
-  const isOn=tog.dataset.on==='1'
-  tog.dataset.on=isOn?'0':'1'
-  tog.style.background=isOn?'var(--color-border-secondary)':'#9B7FD4'
-  dot.style.left=isOn?'2px':'15px'
-  card.style.border=isOn?'0.5px solid var(--color-border-tertiary)':'1.5px solid #9B7FD4'
-  card.style.background=isOn?'var(--color-background-primary)':'#FAF5FF'
+const FORMAT_KERJA_NITIPCEK = [
+  'Konfirmasi ke buyer bahwa barang dan seller ada di lokasi & bisa dibeli',
+  'Foto barang dari 4 sudut (depan, belakang, kiri, kanan)',
+  'Foto kondisi detail (cacat/lecet jika ada)',
+  'Video singkat 30 detik kondisi barang',
+  'Konfirmasi kesesuaian barang dengan foto iklan',
+  'Laporan tertulis: sesuai/tidak sesuai + catatan',
+  'Laporan ke buyer bisa via WhatsApp'
+]
+
+let layananState = { jenis: null, step: 1 }
+
+async function bukaModalLayanan(jenis) {
+  if (!sesiAktif) { showToast('Login dulu untuk pakai layanan ini','error'); showPage('page-login'); return }
+  if (!produkAktif) return
+  layananState = { jenis, step: 1 }
+  const { data: userData } = await db.from('users').select('no_hp').eq('id', sesiAktif.user.id).single()
+  layananState.buyerHp = userData?.no_hp || ''
+  document.getElementById('modal-layanan-title').textContent = jenis==='cek' ? 'Form order NitipCek' : 'Form order NitipKirim'
+  document.getElementById('modal-layanan').style.display = 'flex'
+  renderModalLayanan()
+}
+
+function tutupModalLayanan() {
+  document.getElementById('modal-layanan').style.display = 'none'
+}
+
+function renderModalLayanan() {
+  const p = produkAktif
+  const body = document.getElementById('modal-layanan-body')
+  const { jenis, step, buyerHp } = layananState
+
+  if (step === 1 && jenis === 'cek') {
+    body.innerHTML = `
+      <div style="font-size:11px;font-weight:500;color:var(--tx3);text-transform:uppercase;letter-spacing:0.03em;margin-bottom:4px">Info penjual</div>
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid var(--br);font-size:12px"><span style="color:var(--tx2)">Nama</span><span style="font-weight:500;color:var(--tx)">${p.users?.nama||'-'}</span></div>
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid var(--br);font-size:12px"><span style="color:var(--tx2)">No. HP</span><span style="font-weight:500;color:var(--tx)">${p.users?.no_hp||'-'}</span></div>
+      <div style="font-size:10px;color:var(--tx3);margin:8px 0 4px">Alamat lengkap (isi manual, NitipJual cuma simpan nama kota)</div>
+      <input id="ml-alamat" class="finput" placeholder="Contoh: Jl. Mawar No. 12, ${p.kota||p.users?.kota||''}">
+      <div style="font-size:11px;font-weight:500;color:var(--tx3);text-transform:uppercase;letter-spacing:0.03em;margin:10px 0 4px">Kontak kamu (buyer)</div>
+      <div style="font-size:10px;color:var(--tx3);margin-bottom:4px">Buat mitra hubungi kamu soal laporan hasil cek</div>
+      <input id="ml-buyer-hp" class="finput" value="${buyerHp}" placeholder="No. WhatsApp kamu">
+      <div style="font-size:11px;font-weight:500;color:var(--tx3);text-transform:uppercase;letter-spacing:0.03em;margin:10px 0 4px">Format pekerjaan mitra (standar wajib)</div>
+      <ul style="list-style:none;padding:0;margin:4px 0">
+        ${FORMAT_KERJA_NITIPCEK.map(t=>`<li style="font-size:11px;color:var(--tx2);padding:3px 0;display:flex;gap:6px"><i class="ti ti-check" style="color:#059669;flex-shrink:0;margin-top:2px"></i>${t}</li>`).join('')}
+      </ul>
+      <div style="font-size:11px;font-weight:500;color:var(--tx3);text-transform:uppercase;letter-spacing:0.03em;margin:10px 0 4px">Catatan tambahan (opsional)</div>
+      <textarea id="ml-catatan" class="finput ftextarea" placeholder="Ada yang mau dicek khusus?"></textarea>
+      <button class="btnp" onclick="lanjutKePembayaran()">Lanjut ke pembayaran</button>`
+  }
+
+  if (step === 1 && jenis === 'go') {
+    body.innerHTML = `
+      <div style="font-size:11px;font-weight:500;color:var(--tx3);text-transform:uppercase;letter-spacing:0.03em;margin-bottom:4px">Lokasi jemput</div>
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid var(--br);font-size:12px"><span style="color:var(--tx2)">Nama penjual</span><span style="font-weight:500;color:var(--tx)">${p.users?.nama||'-'}</span></div>
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid var(--br);font-size:12px"><span style="color:var(--tx2)">No. HP penjual</span><span style="font-weight:500;color:var(--tx)">${p.users?.no_hp||'-'}</span></div>
+      <div style="font-size:10px;color:var(--tx3);margin:8px 0 4px">Alamat jemput (isi manual)</div>
+      <input id="ml-alamat" class="finput" placeholder="Contoh: Jl. Mawar No. 12, ${p.kota||p.users?.kota||''}">
+      <div style="font-size:11px;font-weight:500;color:var(--tx3);text-transform:uppercase;letter-spacing:0.03em;margin:10px 0 4px">Info penerima (wajib diisi)</div>
+      <input id="ml-nama-penerima" class="finput" placeholder="Nama penerima">
+      <input id="ml-hp-penerima" class="finput" placeholder="No. HP penerima">
+      <textarea id="ml-alamat-penerima" class="finput ftextarea" placeholder="Alamat lengkap tujuan pengiriman"></textarea>
+      <button class="btnp" onclick="lanjutKePembayaran()">Lanjut ke pembayaran</button>`
+  }
+
+  if (step === 2) {
+    body.innerHTML = `
+      <div style="background:var(--ps2);border-radius:10px;padding:12px;margin-bottom:10px;text-align:center">
+        <div style="font-size:11px;color:var(--pk2)">Tarif layanan</div>
+        <div style="font-size:20px;font-weight:500;color:var(--pk2);margin-top:2px">${jenis==='cek'?'Rp 20.000':'Sesuai jarak'}</div>
+      </div>
+      <div style="font-size:11px;font-weight:500;color:var(--tx3);text-transform:uppercase;letter-spacing:0.03em;margin-bottom:4px">Transfer ke rekening</div>
+      <div style="font-size:13px;font-weight:500;color:var(--tx);margin-bottom:10px">BCA 1234567890 a.n. NitipGo</div>
+      <div style="font-size:11px;font-weight:500;color:var(--tx3);text-transform:uppercase;letter-spacing:0.03em;margin-bottom:4px">Untuk keperluan refund (jika perlu)</div>
+      <input id="ml-rekening-refund" class="finput" placeholder="Nomor rekening/e-wallet kamu">
+      <div style="border:1.5px dashed var(--pkbr);border-radius:10px;padding:16px;text-align:center;color:var(--pk);margin-bottom:12px">
+        <i class="ti ti-upload" style="font-size:20px"></i>
+        <div style="font-size:12px;margin-top:6px">Upload bukti transfer</div>
+      </div>
+      <button class="btnp" onclick="kirimLayanan()">Kirim dan tunggu konfirmasi</button>
+      <button onclick="layananState.step=1;renderModalLayanan()" style="width:100%;padding:9px;background:transparent;color:var(--tx2);border:none;font-size:12px;cursor:pointer;font-family:inherit;margin-top:4px">Kembali ke form order</button>`
+  }
+}
+
+function lanjutKePembayaran() {
+  const alamat = document.getElementById('ml-alamat')?.value.trim()
+  if (!alamat) return showToast('Isi alamat dulu ya','error')
+  if (layananState.jenis === 'go') {
+    const nama = document.getElementById('ml-nama-penerima')?.value.trim()
+    const hp = document.getElementById('ml-hp-penerima')?.value.trim()
+    const alamatPenerima = document.getElementById('ml-alamat-penerima')?.value.trim()
+    if (!nama || !hp || !alamatPenerima) return showToast('Lengkapi info penerima dulu','error')
+  }
+  layananState.step = 2
+  renderModalLayanan()
+}
+
+function kirimLayanan() {
+  showToast('Layanan ini masih dalam tahap pengembangan bersama NitiPGo, belum bisa diproses otomatis')
+  tutupModalLayanan()
 }
 
 async function hubungiSeller() {
